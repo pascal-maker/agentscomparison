@@ -6,7 +6,7 @@ import tempfile
 import uuid
 import base64
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 # ---------------------------
 # Fix Python path to detect local sam2 directory
@@ -108,6 +108,7 @@ class MedicalVLMAgent:
         with torch.no_grad():
             generated_ids = self.model.generate(**inputs, max_new_tokens=128)
 
+        # Trim the generated tokens so we only get the new text, not the prompt repeated
         generated_ids_trimmed = [
             out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
@@ -168,27 +169,34 @@ def main():
         st.image(image, caption="Uploaded Image", width=None)
         image_np = np.array(image)
 
-        prompt_input = st.text_input("Enter coordinate prompts (format: x,y or x1,y1; x2,y2)", value="")
+        st.markdown("Draw bounding boxes on the uploaded image using format: `x1,y1,x2,y2` per line, ensuring x1<x2 and y1<y2.")
+        bbox_input = st.text_area("Bounding boxes (one per line):", value="")
 
-        if prompt_input.strip():
+        bbox_list = []
+        if bbox_input.strip():
             try:
-                prompt_list = [
-                    [int(coord.strip()) for coord in point.split(",")]
-                    for point in prompt_input.split(";") if point.strip()
-                ]
+                lines = bbox_input.strip().split("\n")
+                for line in lines:
+                    coords = [int(p.strip()) for p in line.split(",")]
+                    if len(coords) == 4:
+                        x1, y1, x2, y2 = coords
+                        # Fix or clamp so x1 < x2, y1 < y2
+                        if x2 < x1:
+                            x1, x2 = x2, x1
+                        if y2 < y1:
+                            y1, y2 = y2, y1
+                        bbox_list.append([x1, y1, x2, y2])
             except Exception as e:
-                st.error(f"Error parsing coordinate prompts: {e}")
-                prompt_list = []
-        else:
-            prompt_list = []
+                st.error(f"Error parsing bounding boxes: {e}")
 
-        st.markdown(f"Using coordinate prompts: {prompt_list}" if prompt_list else "No coordinate prompts provided; using automatic segmentation.")
+        st.markdown(f"Using bounding boxes: {bbox_list}" if bbox_list else "No bounding boxes provided; using automatic segmentation.")
 
         if st.button("Run SAM2 Segmentation"):
             try:
-                with torch.inference_mode(), torch.autocast("cuda", dtype=torch.bfloat16):
+                with torch.inference_mode(), torch.autocast("mps", dtype=torch.float32):
                     predictor.set_image(image_np)
-                    masks, _, _ = predictor.predict(input_prompts=prompt_list)
+                    # <-- Make sure your SAM2 returns 3 items, or adjust accordingly.
+                    masks, _, _ = predictor.predict(input_prompts=bbox_list)
                     output_image = predictor.plot()
                 segmented_image = Image.fromarray(output_image)
                 st.image(segmented_image, caption="Segmented Output", width=None)
