@@ -1,0 +1,27 @@
+# Python version: 3.10 recommended
+
+# Core libraries
+torch>=2.0,<3.0
+numpy>=1.20.0
+requests>=2.0
+
+# Transformers pinned for CheXagent
+transformers==4.40.0
+
+# Streamlit
+streamlit>=1.20
+
+# PIL (Pillow)
+pillow>=8.0.0
+
+# Qwen VLM
+# We'll rely on 'transformers==4.40.0' for some of the Qwen2.5 Instruct code,
+# but note that certain Qwen features might need a more recent version.
+# If they fail on 4.40.0, you may have to isolate CheXagent in a separate environment.
+
+# Dependencies for optional tasks:
+# SAM2 is not on PyPI. You likely need to install it from GitHub or a local directory.
+# qwen_vl_utils is presumably local or from a GitHub repo as well.
+
+# If you want or need xformers (sometimes helpful for performance), you can install:
+# xformers>=0.0.20

@@ -1,20 +1,59 @@
-import streamlit as st
+import io
 import os
 import sys
-import torch
-import tempfile
 import uuid
 import base64
+import tempfile
+import torch
 import numpy as np
+import streamlit as st
+import requests
 from PIL import Image, ImageDraw
+from transformers import AutoModelForCausalLM, AutoTokenizer, Qwen2_5_VLForConditionalGeneration, AutoProcessor
 
-# ---------------------------
-# Fix Python path to detect local sam2 directory
+# ------------------------------------------------------
+# CheXagent Inference Section
+# ------------------------------------------------------
+@st.cache_resource(show_spinner=False)
+def load_chexagent_model():
+    device_chex = "mps" if torch.backends.mps.is_available() else "cpu"
+    dtype = torch.bfloat16  # adjust if needed
+    model_name = "StanfordAIMI/CheXagent-2-3b"
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", trust_remote_code=True)
+    model = model.to(dtype)
+    model.eval()
+    return tokenizer, model, device_chex, dtype
+
+def run_chexagent_inference(image_path, prompt):
+    tokenizer, model, device_chex, dtype = load_chexagent_model()
+    # Build the query using the uploaded image path and prompt.
+    query = tokenizer.from_list_format([*[{'image': image_path}], {'text': prompt}])
+    conv = [
+        {"from": "system", "value": "You are a helpful assistant."},
+        {"from": "human", "value": query}
+    ]
+    input_ids = tokenizer.apply_chat_template(conv, add_generation_prompt=True, return_tensors="pt")
+    output = model.generate(
+        input_ids.to(device_chex),
+        do_sample=False,
+        num_beams=1,
+        temperature=1.0,
+        top_p=1.0,
+        use_cache=True,
+        max_new_tokens=512
+    )[0]
+    response = tokenizer.decode(output[input_ids.size(1):-1])
+    return response
+
+# ------------------------------------------------------
+# Streamlit Demo for Medical Qwen VLM & SAM2 Integration
+# ------------------------------------------------------
+# Fix Python path to detect local SAM2 directory.
 sys.path.append(os.path.abspath("."))
 
 # ---------------------------
-# Qwen VLM Imports
-from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
+# Qwen VLM Imports and utility
 from qwen_vl_utils import process_vision_info
 
 # ---------------------------
@@ -33,17 +72,14 @@ torch.classes.__path__ = []
 # Disable Streamlit file-watcher warnings
 os.environ["STREAMLIT_SERVER_FILE_WATCHER_TYPE"] = "none"
 
-# ---------------------------
 @st.cache_resource(show_spinner=False)
 def load_qwen_model_and_processor(hf_token=None):
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
-    st.write(f"Using device for Qwen: {device}")
-
+    device_qwen = "mps" if torch.backends.mps.is_available() else "cpu"
+    st.write(f"Using device for Qwen: {device_qwen}")
     auth_kwargs = {}
     if hf_token and hf_token.strip():
         auth_kwargs["use_auth_token"] = hf_token
-
-    model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+    model_qwen = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         "Qwen/Qwen2.5-VL-3B-Instruct",
         trust_remote_code=True,
         attn_implementation="eager",
@@ -52,17 +88,14 @@ def load_qwen_model_and_processor(hf_token=None):
         device_map=None,
         **auth_kwargs
     )
-    model.to(device)
-
+    model_qwen.to(device_qwen)
     processor = AutoProcessor.from_pretrained(
         "Qwen/Qwen2.5-VL-3B-Instruct",
         trust_remote_code=True,
         **auth_kwargs
     )
+    return model_qwen, processor, device_qwen
 
-    return model, processor, device
-
-# ---------------------------
 class MedicalVLMAgent:
     def __init__(self, model, processor, device):
         self.model = model
@@ -80,7 +113,6 @@ class MedicalVLMAgent:
             "role": "system",
             "content": [{"type": "text", "text": self.system_prompt}]
         }]
-
         user_content = []
         if image:
             temp_filename = f"/tmp/{uuid.uuid4()}.png"
@@ -90,11 +122,9 @@ class MedicalVLMAgent:
             user_text = "Please describe the image or provide some medical context."
         user_content.append({"type": "text", "text": user_text})
         messages.append({"role": "user", "content": user_content})
-
         text_prompt = self.processor.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
-
         image_inputs, video_inputs = process_vision_info(messages)
         inputs = self.processor(
             text=[text_prompt],
@@ -104,11 +134,8 @@ class MedicalVLMAgent:
             return_tensors="pt"
         )
         inputs = inputs.to(self.device)
-
         with torch.no_grad():
             generated_ids = self.model.generate(**inputs, max_new_tokens=128)
-
-        # Trim the generated tokens so we only get the new text, not the prompt repeated
         generated_ids_trimmed = [
             out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
@@ -117,7 +144,6 @@ class MedicalVLMAgent:
         )
         return output_texts[0] if output_texts else "**No output text was generated.**"
 
-# ---------------------------
 @st.cache_resource(show_spinner=False)
 def load_sam2_predictor():
     if not SAM2_AVAILABLE:
@@ -129,49 +155,75 @@ def load_sam2_predictor():
         st.error(f"Error loading SAM2 predictor: {e}")
         return None
 
-# ---------------------------
 def main():
-    st.title("Medical Qwen VLM & SAM2 Integration")
-    st.markdown("<p style='text-align: center;'>Choose between Medical Q&A and Tumor Segmentation</p>", unsafe_allow_html=True)
+    st.title("Medical Qwen VLM, SAM2 & CheXagent Integration")
+    st.markdown("<p style='text-align: center;'>Choose between CheXagent Inference, Medical Q&A, and Tumor Segmentation</p>", unsafe_allow_html=True)
 
     hf_token = st.sidebar.text_input("Enter your HF token (if needed)", type="password")
-    task = st.sidebar.radio("Select Task", ["Medical Q&A with Qwen VLM", "Tumor Segmentation with SAM2"])
-    uploaded_file = st.sidebar.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
+    task = st.sidebar.radio("Select Task", [
+        "CheXagent Inference", 
+        "Medical Q&A with Qwen VLM", 
+        "Tumor Segmentation with SAM2"
+    ])
 
-    if task == "Medical Q&A with Qwen VLM":
-        model, processor, device = load_qwen_model_and_processor(hf_token)
-        agent = MedicalVLMAgent(model, processor, device)
+    # ---------------------------
+    # CheXagent Inference Task
+    if task == "CheXagent Inference":
+        st.subheader("CheXagent Inference")
+        uploaded_file = st.file_uploader("Upload an image for CheXagent Inference", type=["jpg", "png", "jpeg"])
+        prompt = st.text_area("Enter your prompt for CheXagent inference:")
+        if st.button("Run CheXagent Inference"):
+            if not uploaded_file:
+                st.error("Please upload an image.")
+            elif not prompt.strip():
+                st.error("Please enter a prompt.")
+            else:
+                # Save the uploaded image to a temporary file and get its path.
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
+                    tmp_file.write(uploaded_file.getvalue())
+                    tmp_file_path = tmp_file.name
+                with st.spinner("Running CheXagent inference..."):
+                    response_chex = run_chexagent_inference(tmp_file_path, prompt)
+                st.markdown("### CheXagent Inference Response:")
+                st.write(response_chex)
+                os.remove(tmp_file_path)
 
+    # ---------------------------
+    # Medical Q&A with Qwen VLM Task
+    elif task == "Medical Q&A with Qwen VLM":
+        model_qwen, processor, device_qwen = load_qwen_model_and_processor(hf_token)
+        agent = MedicalVLMAgent(model_qwen, processor, device_qwen)
+        st.subheader("Medical Q&A with Qwen VLM")
         user_question = st.text_area("Ask a medical question or describe symptoms:")
+        uploaded_file = st.file_uploader("Upload an image (optional)", type=["jpg", "png", "jpeg"])
         if uploaded_file:
             image = Image.open(uploaded_file).convert("RGB")
-            st.image(image, caption="Uploaded Image", width=None)
+            st.image(image, caption="Uploaded Image")
         else:
             image = None
-
         if st.button("Submit Q&A"):
             with st.spinner("Generating response..."):
                 response = agent.run(user_question, image)
                 st.markdown("### Response:")
                 st.write(response)
 
+    # ---------------------------
+    # Tumor Segmentation with SAM2 Task
     elif task == "Tumor Segmentation with SAM2":
         if not SAM2_AVAILABLE:
             st.error("SAM2 is not installed or failed to import.")
             return
-
         predictor = load_sam2_predictor()
-        if uploaded_file is None:
+        uploaded_file = st.file_uploader("Upload an image for segmentation", type=["jpg", "png", "jpeg"])
+        if not uploaded_file:
             st.warning("Please upload an image for segmentation.")
             return
-
+        st.subheader("Tumor Segmentation with SAM2")
         image = Image.open(uploaded_file).convert("RGB")
-        st.image(image, caption="Uploaded Image", width=None)
+        st.image(image, caption="Uploaded Image")
         image_np = np.array(image)
-
-        st.markdown("Draw bounding boxes on the uploaded image using format: `x1,y1,x2,y2` per line, ensuring x1<x2 and y1<y2.")
+        st.markdown("Draw bounding boxes on the uploaded image using format: `x1,y1,x2,y2` (one per line, ensuring x1 < x2 and y1 < y2).")
         bbox_input = st.text_area("Bounding boxes (one per line):", value="")
-
         bbox_list = []
         if bbox_input.strip():
             try:
@@ -180,7 +232,6 @@ def main():
                     coords = [int(p.strip()) for p in line.split(",")]
                     if len(coords) == 4:
                         x1, y1, x2, y2 = coords
-                        # Fix or clamp so x1 < x2, y1 < y2
                         if x2 < x1:
                             x1, x2 = x2, x1
                         if y2 < y1:
@@ -188,18 +239,15 @@ def main():
                         bbox_list.append([x1, y1, x2, y2])
             except Exception as e:
                 st.error(f"Error parsing bounding boxes: {e}")
-
         st.markdown(f"Using bounding boxes: {bbox_list}" if bbox_list else "No bounding boxes provided; using automatic segmentation.")
-
         if st.button("Run SAM2 Segmentation"):
             try:
                 with torch.inference_mode(), torch.autocast("mps", dtype=torch.float32):
                     predictor.set_image(image_np)
-                    # <-- Make sure your SAM2 returns 3 items, or adjust accordingly.
                     masks, _, _ = predictor.predict(input_prompts=bbox_list)
                     output_image = predictor.plot()
                 segmented_image = Image.fromarray(output_image)
-                st.image(segmented_image, caption="Segmented Output", width=None)
+                st.image(segmented_image, caption="Segmented Output")
             except Exception as e:
                 st.error(f"SAM2 Prediction Error: {e}")
 
