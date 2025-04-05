@@ -9,42 +9,9 @@ import numpy as np
 import streamlit as st
 import requests
 from PIL import Image, ImageDraw
-from transformers import AutoModelForCausalLM, AutoTokenizer, Qwen2_5_VLForConditionalGeneration, AutoProcessor
+from transformers import  Qwen2_5_VLForConditionalGeneration, AutoProcessor
 
-# ------------------------------------------------------
-# CheXagent Inference Section
-# ------------------------------------------------------
-@st.cache_resource(show_spinner=False)
-def load_chexagent_model():
-    device_chex = "mps" if torch.backends.mps.is_available() else "cpu"
-    dtype = torch.bfloat16  # adjust if needed
-    model_name = "StanfordAIMI/CheXagent-2-3b"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", trust_remote_code=True)
-    model = model.to(dtype)
-    model.eval()
-    return tokenizer, model, device_chex, dtype
 
-def run_chexagent_inference(image_path, prompt):
-    tokenizer, model, device_chex, dtype = load_chexagent_model()
-    # Build the query using the uploaded image path and prompt.
-    query = tokenizer.from_list_format([*[{'image': image_path}], {'text': prompt}])
-    conv = [
-        {"from": "system", "value": "You are a helpful assistant."},
-        {"from": "human", "value": query}
-    ]
-    input_ids = tokenizer.apply_chat_template(conv, add_generation_prompt=True, return_tensors="pt")
-    output = model.generate(
-        input_ids.to(device_chex),
-        do_sample=False,
-        num_beams=1,
-        temperature=1.0,
-        top_p=1.0,
-        use_cache=True,
-        max_new_tokens=512
-    )[0]
-    response = tokenizer.decode(output[input_ids.size(1):-1])
-    return response
 
 # ------------------------------------------------------
 # Streamlit Demo for Medical Qwen VLM & SAM2 Integration
@@ -156,41 +123,19 @@ def load_sam2_predictor():
         return None
 
 def main():
-    st.title("Medical Qwen VLM, SAM2 & CheXagent Integration")
-    st.markdown("<p style='text-align: center;'>Choose between CheXagent Inference, Medical Q&A, and Tumor Segmentation</p>", unsafe_allow_html=True)
+    st.title("Medical Qwen VLM, SAM2 & ")
+    st.markdown("<p style='text-align: center;'>Choose between, Medical Q&A, and Tumor Segmentation</p>", unsafe_allow_html=True)
 
     hf_token = st.sidebar.text_input("Enter your HF token (if needed)", type="password")
     task = st.sidebar.radio("Select Task", [
-        "CheXagent Inference", 
         "Medical Q&A with Qwen VLM", 
         "Tumor Segmentation with SAM2"
     ])
 
-    # ---------------------------
-    # CheXagent Inference Task
-    if task == "CheXagent Inference":
-        st.subheader("CheXagent Inference")
-        uploaded_file = st.file_uploader("Upload an image for CheXagent Inference", type=["jpg", "png", "jpeg"])
-        prompt = st.text_area("Enter your prompt for CheXagent inference:")
-        if st.button("Run CheXagent Inference"):
-            if not uploaded_file:
-                st.error("Please upload an image.")
-            elif not prompt.strip():
-                st.error("Please enter a prompt.")
-            else:
-                # Save the uploaded image to a temporary file and get its path.
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
-                    tmp_file.write(uploaded_file.getvalue())
-                    tmp_file_path = tmp_file.name
-                with st.spinner("Running CheXagent inference..."):
-                    response_chex = run_chexagent_inference(tmp_file_path, prompt)
-                st.markdown("### CheXagent Inference Response:")
-                st.write(response_chex)
-                os.remove(tmp_file_path)
-
+   
     # ---------------------------
     # Medical Q&A with Qwen VLM Task
-    elif task == "Medical Q&A with Qwen VLM":
+    if task == "Medical Q&A with Qwen VLM":
         model_qwen, processor, device_qwen = load_qwen_model_and_processor(hf_token)
         agent = MedicalVLMAgent(model_qwen, processor, device_qwen)
         st.subheader("Medical Q&A with Qwen VLM")
