@@ -82,7 +82,7 @@ class MedicalVLMAgent:
         self.processor = processor
         self.device = device
         self.system_prompt = (
-            "You are a medical information assistant with vision capabilities. "
+            "You are a medical information assistant with vision capabilities and understanding. "
             "Disclaimer: I am not a licensed medical professional. "
             "The information provided is for reference only and should not be taken as medical advice. "
             "If you have serious concerns, consult a healthcare provider."
