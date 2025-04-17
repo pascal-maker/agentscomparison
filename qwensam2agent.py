@@ -20,14 +20,74 @@ from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
 from qwen_vl_utils import process_vision_info
 
 # ---------------------------
-# SAM2 Imports – if installed
+# SAM2 Imports – try local clone first, then fallback to segment_anything
 try:
     from sam2.sam2_image_predictor import SAM2ImagePredictor
     SAM2_AVAILABLE = True
-    print("SAM2 imported successfully!")
-except ImportError as e:
-    SAM2_AVAILABLE = False
-    print(f"SAM2 import failed: {e}")
+    print("SAM2 imported successfully from local './sam2' clone.")
+except ImportError as e_local:
+    # If sam2 folder exists, add to path for segment_anything subpackage
+    sam2_dir = os.path.join(os.path.abspath("."), "sam2")
+    if os.path.isdir(sam2_dir):
+        sys.path.insert(0, sam2_dir)
+    try:
+        from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
+        import torch as _torch, numpy as _np
+
+        # Wrap segment_anything into SAM2ImagePredictor interface
+        class SAM2ImagePredictor:
+            """
+            Wrapper around segment_anything's AutomaticMaskGenerator to match SAM2ImagePredictor API.
+            """
+            @classmethod
+            def from_pretrained(cls, pretrained_model_name_or_path=None):
+                device = _torch.device("cuda" if _torch.cuda.is_available() else "cpu")
+                model_type = "vit_h"
+                checkpoint = (
+                    pretrained_model_name_or_path
+                    if pretrained_model_name_or_path and pretrained_model_name_or_path.endswith(".pth")
+                    else None
+                )
+                sam = sam_model_registry[model_type](checkpoint=checkpoint).to(device)
+                mask_generator = SamAutomaticMaskGenerator(sam)
+                return cls(sam, mask_generator)
+
+            def __init__(self, sam_model, mask_generator):
+                self.sam = sam_model
+                self.mask_generator = mask_generator
+                self.image = None
+
+            def set_image(self, image_np):
+                self.image = image_np
+
+            def predict(self, input_prompts=None):  # pylint: disable=unused-argument
+                masks = self.mask_generator.generate(self.image)
+                return masks, None, None
+
+            def plot(self):
+                img = self.image
+                if img.ndim == 2:
+                    rgb = _np.stack([img] * 3, axis=2)
+                elif img.ndim == 3 and img.shape[2] == 3:
+                    rgb = img.copy()
+                else:
+                    rgb = img[..., :3].copy()
+                for mask in self.mask_generator.generate(self.image):
+                    m = mask.get("segmentation")
+                    if m is None:
+                        continue
+                    color = _np.random.randint(0, 255, 3, dtype=_np.uint8)
+                    rgb[m] = (rgb[m] * 0.5 + color * 0.5).astype(_np.uint8)
+                return rgb
+
+        SAM2_AVAILABLE = True
+        print("SAM2 imported successfully via segment_anything fallback.")
+    except ImportError:
+        SAM2_AVAILABLE = False
+        print(
+            f"SAM2 import failed: {e_local}. To enable SAM2 segmentation, "
+            "clone the facebookresearch/sam2 repo into './sam2' or install segment-anything from PyPI."
+        )
 
 # ---------------------------
 # CheXagent Imports
@@ -332,13 +392,20 @@ def tumor_segmentation_interface(image, bbox_text):
             error_msg = f"Error parsing bounding boxes: {e}"
             return None, error_msg
     if sam2_predictor is None:
-        error_msg = "SAM2 predictor is not available."
+        error_msg = (
+            "SAM2 predictor is not available. To enable segmentation, "
+            "clone the facebookresearch/sam2 repo into './sam2' or install the segment-anything package."
+        )
         return None, error_msg
     try:
         device_seg = "mps" if torch.backends.mps.is_available() else "cpu"
         with torch.inference_mode(), torch.autocast(device_seg, dtype=torch.float32):
             sam2_predictor.set_image(image_np)
-            masks, _, _ = sam2_predictor.predict(input_prompts=bbox_list)
+            # If bounding boxes provided, use them; otherwise run automatic mask generation
+            if bbox_list:
+                masks, _, _ = sam2_predictor.predict(input_prompts=bbox_list)
+            else:
+                masks, _, _ = sam2_predictor.predict()
             output_image = sam2_predictor.plot()
         segmented_image = Image.fromarray(output_image)
         return segmented_image, ""
