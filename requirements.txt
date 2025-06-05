@@ -2,17 +2,17 @@
 
 # Core libraries
 torch>=2.0,<3.0
-numpy>=1.20.0
-requests>=2.0
+numpy>=1.22.2
+requests>=2.32.2
 
 # Transformers pinned for CheXagent
 transformers==4.40.0
 
 # Streamlit
-streamlit>=1.20
+streamlit>=1.43.2
 
 # PIL (Pillow)
-pillow>=8.0.0
+pillow>=10.3.0
 
 # Qwen VLM
 # We'll rely on 'transformers==4.40.0' for some of the Qwen2.5 Instruct code,
@@ -25,3 +25,8 @@ pillow>=8.0.0
 
 # If you want or need xformers (sometimes helpful for performance), you can install:
 # xformers>=0.0.20
+pyarrow>=14.0.1 # not directly required, pinned by Snyk to avoid a vulnerability
+tornado>=6.5 # not directly required, pinned by Snyk to avoid a vulnerability
+urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
+validators>=0.21.0 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
