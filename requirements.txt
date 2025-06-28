@@ -4,6 +4,7 @@
 torch>=2.0,<3.0
 numpy>=1.22.2
 requests>=2.32.2
+google-generativeai>=0.3.0
 
 # Transformers pinned for CheXagent
 transformers==4.40.0
@@ -21,6 +22,8 @@ pillow>=10.3.0
 
 # Dependencies for optional tasks:
 # SAM2 is not on PyPI. You likely need to install it from GitHub or a local directory.
+# For segment-anything fallback, ensure protobuf<4.21.0 to avoid protobuf compatibility issues:
+#   pip install segment-anything protobuf<4.21.0
 # qwen_vl_utils is presumably local or from a GitHub repo as well.
 
 # If you want or need xformers (sometimes helpful for performance), you can install:
