@@ -5,6 +5,7 @@ torch>=2.0,<3.0
 numpy>=1.22.2
 requests>=2.32.2
 google-generativeai>=0.3.0
+trackio>=0.1.0
 
 # Transformers pinned for CheXagent
 transformers==4.40.0
