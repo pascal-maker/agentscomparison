@@ -1,0 +1,22 @@
+chat:
+  quick_prompts:
+    pal:
+      - "Tell me about yourself"
+      - "Note: decided to use Postgres for the new project"
+      - "Research event sourcing patterns and save the key findings"
+    knowledge-agent:
+      - "What is Agno?"
+      - "How do I create my first agent?"
+      - "What documents are in your knowledge base?"
+    mcp-agent:
+      - "What is Agno?"
+      - "What tools do you have access to?"
+      - "What are Learning Machines?"
+    notion-agent:
+      - "Search for pages in my workspace"
+      - "Create a new page called Test Page"
+      - "What can you do?"
+    discovery-orchestrator:
+      - "Start report for Countroll with template URL and intake URL"
+      - "approve"
+      - "What sections are in the template?"
