@@ -125,6 +125,8 @@ def extract_page_id(url_or_id: str) -> str:
     """
     Extract Notion page ID from URL or return as-is if already an ID.
 
+    Returns the raw 32-character hex ID (without dashes) as required by Notion API.
+
     Examples:
     - https://www.notion.so/workspace/Page-Name-abc123def456 -> abc123def456
     - abc123def456 -> abc123def456
@@ -136,13 +138,14 @@ def extract_page_id(url_or_id: str) -> str:
         # Get the last segment
         parts = url_clean.rstrip("/").split("/")
         last_part = parts[-1]
-        # ID is the last 32 chars (with dashes removed) or after the last dash
+        # ID is the last 32 chars (with dashes removed)
         match = re.search(r"([a-f0-9]{32})$", last_part.replace("-", ""))
         if match:
-            raw_id = match.group(1)
-            # Format as UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-            return f"{raw_id[:8]}-{raw_id[8:12]}-{raw_id[12:16]}-{raw_id[16:20]}-{raw_id[20:]}"
-    # Return as-is (assume it's already an ID)
+            return match.group(1)  # Return raw hex without dashes
+    # If already an ID, remove any dashes
+    clean_id = url_or_id.replace("-", "")
+    if re.match(r"^[a-f0-9]{32}$", clean_id):
+        return clean_id
     return url_or_id
 
 
