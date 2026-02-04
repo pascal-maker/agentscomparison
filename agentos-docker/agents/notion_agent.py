@@ -11,7 +11,7 @@ Run:
 from os import getenv
 
 from agno.agent import Agent
-from agno.models.ollama import Ollama
+from agno.models.anthropic import Claude
 from agno.tools.notion import NotionTools
 
 from db import get_postgres_db
@@ -55,7 +55,7 @@ You can:
 notion_agent = Agent(
     id="notion-agent",
     name="Notion Agent",
-    model=Ollama(id="llama3.2", host="http://host.docker.internal:11434"),
+    model=Claude(id="claude-sonnet-4-5-20250514"),
     db=agent_db,
     tools=[NotionTools()],
     instructions=instructions,

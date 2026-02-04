@@ -5,17 +5,28 @@ Notion Reader Agent
 Reads Notion pages using MCP (Model Context Protocol).
 
 Uses the official Notion MCP server to access private pages.
+
+SAFETY FEATURES:
+- SAFE_MODE: When enabled, only allows access to allowlisted pages/workspaces
+- Prevents accidental access to production workspaces (e.g., Sweetspot client data)
 """
 
 import os
 import re
-from typing import Optional
+import logging
+from typing import Optional, List, Set
 
 from agno.agent import Agent
 from agno.models.anthropic import Claude
 from agno.tools.mcp import MCPTools
 
 from db import get_postgres_db
+
+# ============================================================================
+# Logging Setup
+# ============================================================================
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("NotionReader")
 
 # ============================================================================
 # Setup
@@ -26,9 +37,88 @@ agent_db = get_postgres_db(contents_table="notion_reader_contents")
 NOTION_TOKEN = os.getenv("NOTION_TOKEN", "")
 if NOTION_TOKEN:
     masked = f"{NOTION_TOKEN[:6]}...{NOTION_TOKEN[-4:]}"
-    print(f"[NotionReader] NOTION_TOKEN loaded: {masked}")
+    logger.info(f"NOTION_TOKEN loaded: {masked}")
 else:
-    print("[NotionReader] WARNING: NOTION_TOKEN not set")
+    logger.warning("NOTION_TOKEN not set - MCP will not work")
+
+# ============================================================================
+# Safety Configuration
+# ============================================================================
+# SAFE_MODE prevents access to pages outside the allowlist
+SAFE_MODE = os.getenv("NOTION_SAFE_MODE", "true").lower() in ("true", "1", "yes")
+
+# Allowlisted workspace IDs (comma-separated in env)
+ALLOWED_WORKSPACES: Set[str] = set(
+    ws.strip() for ws in os.getenv("NOTION_ALLOWED_WORKSPACES", "").split(",") if ws.strip()
+)
+
+# Allowlisted page IDs (comma-separated in env)
+ALLOWED_PAGES: Set[str] = set(
+    pg.strip() for pg in os.getenv("NOTION_ALLOWED_PAGES", "").split(",") if pg.strip()
+)
+
+# Blocked workspace patterns (always blocked, even if SAFE_MODE is off)
+BLOCKED_WORKSPACE_PATTERNS = [
+    "sweetspot",
+    "sweetspot-experts",
+]
+
+logger.info(f"SAFE_MODE: {SAFE_MODE}")
+logger.info(f"Allowed workspaces: {len(ALLOWED_WORKSPACES)}")
+logger.info(f"Allowed pages: {len(ALLOWED_PAGES)}")
+
+
+class NotionAccessError(Exception):
+    """Raised when access to a Notion page is blocked by safety rules."""
+    pass
+
+
+def is_page_allowed(url_or_id: str) -> tuple[bool, str]:
+    """
+    Check if a page is allowed based on safety rules.
+
+    Returns:
+        Tuple of (is_allowed, reason)
+    """
+    page_id = extract_page_id(url_or_id)
+
+    # Check for blocked workspace patterns in URL
+    url_lower = url_or_id.lower()
+    for pattern in BLOCKED_WORKSPACE_PATTERNS:
+        if pattern in url_lower:
+            reason = f"BLOCKED: URL contains blocked workspace pattern '{pattern}'"
+            logger.warning(f"🚫 {reason} - URL: {url_or_id}")
+            return False, reason
+
+    # If SAFE_MODE is off, allow (unless blocked above)
+    if not SAFE_MODE:
+        logger.info(f"✅ SAFE_MODE off - allowing access to: {page_id}")
+        return True, "SAFE_MODE disabled"
+
+    # Check if page is in allowlist
+    if page_id in ALLOWED_PAGES:
+        logger.info(f"✅ Page {page_id} is in allowlist")
+        return True, "Page in allowlist"
+
+    # Check if page ID (without dashes) is in allowlist
+    page_id_nodash = page_id.replace("-", "")
+    for allowed in ALLOWED_PAGES:
+        if allowed.replace("-", "") == page_id_nodash:
+            logger.info(f"✅ Page {page_id} matches allowlist entry")
+            return True, "Page in allowlist"
+
+    # Check workspace in URL
+    workspace_match = re.search(r"notion\.so/([^/]+)/", url_or_id)
+    if workspace_match:
+        workspace = workspace_match.group(1)
+        if workspace in ALLOWED_WORKSPACES:
+            logger.info(f"✅ Workspace '{workspace}' is in allowlist")
+            return True, f"Workspace '{workspace}' in allowlist"
+
+    # Default: deny in SAFE_MODE
+    reason = f"DENIED: Page {page_id} not in allowlist (SAFE_MODE=true)"
+    logger.warning(f"🚫 {reason}")
+    return False, reason
 
 
 def extract_page_id(url_or_id: str) -> str:
@@ -57,33 +147,116 @@ def extract_page_id(url_or_id: str) -> str:
 
 
 # ============================================================================
-# MCP Configuration for Notion
+# Notion Client Configuration
 # ============================================================================
-# The Notion MCP server needs to be run with:
-# npx @notionhq/notion-mcp-server
-#
-# We configure MCPTools to connect to it via stdio transport.
-# The server will use NOTION_TOKEN from environment.
+# Using notion-client directly for more reliable page reading
 
-def create_notion_mcp_tools() -> Optional[MCPTools]:
-    """Create MCPTools configured for Notion MCP server."""
-    if not NOTION_TOKEN:
-        print("[NotionReader] Cannot create MCP tools: NOTION_TOKEN not set")
-        return None
+try:
+    from notion_client import Client as NotionClient
+    NOTION_CLIENT = NotionClient(auth=NOTION_TOKEN) if NOTION_TOKEN else None
+    if NOTION_CLIENT:
+        logger.info("Notion client initialized")
+except ImportError:
+    logger.warning("notion-client not installed, using MCP fallback")
+    NOTION_CLIENT = None
+except Exception as e:
+    logger.warning(f"Failed to initialize Notion client: {e}")
+    NOTION_CLIENT = None
+
+
+def get_page_content_direct(page_id: str) -> dict:
+    """
+    Read a Notion page directly using the Notion API client.
+
+    Returns:
+        dict with 'title', 'content', 'success', 'error'
+    """
+    result = {
+        "title": "",
+        "content": "",
+        "success": False,
+        "error": None,
+    }
+
+    if not NOTION_CLIENT:
+        result["error"] = "Notion client not available"
+        return result
 
     try:
-        # Use command-based MCP (spawns npx process)
-        # The Notion MCP server exposes tools like:
-        # - notion_retrieve_page
-        # - notion_retrieve_block_children
-        # - notion_search
+        # Get page metadata
+        page = NOTION_CLIENT.pages.retrieve(page_id=page_id)
+
+        # Extract title
+        title_prop = page.get("properties", {}).get("title", {})
+        if title_prop.get("title"):
+            result["title"] = title_prop["title"][0].get("plain_text", "")
+
+        # Get block children (content)
+        blocks = NOTION_CLIENT.blocks.children.list(block_id=page_id)
+
+        # Convert blocks to markdown
+        content_lines = [f"# {result['title']}\n"]
+
+        for block in blocks.get("results", []):
+            block_type = block.get("type")
+            block_data = block.get(block_type, {})
+
+            # Extract text from rich_text
+            text = ""
+            if "rich_text" in block_data:
+                text = "".join([t.get("plain_text", "") for t in block_data["rich_text"]])
+
+            if block_type == "heading_1":
+                content_lines.append(f"\n# {text}")
+            elif block_type == "heading_2":
+                content_lines.append(f"\n## {text}")
+            elif block_type == "heading_3":
+                content_lines.append(f"\n### {text}")
+            elif block_type == "paragraph":
+                if text:
+                    content_lines.append(text)
+            elif block_type == "bulleted_list_item":
+                content_lines.append(f"- {text}")
+            elif block_type == "numbered_list_item":
+                content_lines.append(f"1. {text}")
+            elif block_type == "to_do":
+                checked = "x" if block_data.get("checked") else " "
+                content_lines.append(f"- [{checked}] {text}")
+            elif block_type == "code":
+                lang = block_data.get("language", "")
+                content_lines.append(f"```{lang}\n{text}\n```")
+            elif block_type == "quote":
+                content_lines.append(f"> {text}")
+            elif block_type == "divider":
+                content_lines.append("\n---\n")
+            elif block_type == "table_of_contents":
+                content_lines.append("[Table of Contents]")
+
+        result["content"] = "\n".join(content_lines)
+        result["success"] = True
+        logger.info(f"Successfully read page: {result['title']}")
+
+    except Exception as e:
+        result["error"] = str(e)
+        logger.error(f"Failed to read page: {e}")
+
+    return result
+
+
+# MCP fallback (for compatibility)
+def create_notion_mcp_tools() -> Optional[MCPTools]:
+    """Create MCPTools configured for Notion MCP server (fallback)."""
+    if not NOTION_TOKEN:
+        return None
+    try:
         return MCPTools(
             command="npx @notionhq/notion-mcp-server",
+            transport="stdio",
             env={"NOTION_TOKEN": NOTION_TOKEN},
-            timeout_seconds=30,
+            timeout_seconds=60,
         )
     except Exception as e:
-        print(f"[NotionReader] Failed to create MCP tools: {e}")
+        logger.warning(f"Failed to create MCP tools: {e}")
         return None
 
 
@@ -143,16 +316,19 @@ notion_reader_agent = Agent(
 # ============================================================================
 # Helper Functions
 # ============================================================================
-def read_notion_page(url_or_id: str, use_fallback: bool = True) -> dict:
+def read_notion_page(url_or_id: str, use_fallback: bool = True, bypass_safety: bool = False) -> dict:
     """
     Read a Notion page and return structured content.
 
+    Uses the direct Notion API client for reliability.
+
     Args:
         url_or_id: Notion page URL or ID
-        use_fallback: If True, return fallback content when MCP fails
+        use_fallback: If True, return fallback content when API fails
+        bypass_safety: If True, skip safety checks (USE WITH CAUTION)
 
     Returns:
-        dict with keys: title, content, metadata, success, error
+        dict with keys: title, content, metadata, success, error, blocked
     """
     page_id = extract_page_id(url_or_id)
 
@@ -165,24 +341,54 @@ def read_notion_page(url_or_id: str, use_fallback: bool = True) -> dict:
         },
         "success": False,
         "error": None,
+        "blocked": False,
     }
 
-    if not notion_mcp:
-        result["error"] = "Notion MCP not configured. Set NOTION_TOKEN environment variable."
-        if use_fallback:
-            result["content"] = "[MCP not available - using fallback content]"
-        return result
+    # Safety check (unless bypassed)
+    if not bypass_safety:
+        is_allowed, reason = is_page_allowed(url_or_id)
+        if not is_allowed:
+            result["error"] = reason
+            result["blocked"] = True
+            logger.error(f"Access blocked: {reason}")
+            return result
 
-    try:
-        # Use the agent to read the page
-        response = notion_reader_agent.run(
-            f"Read the Notion page with ID: {page_id}. "
-            f"Return the full content as markdown."
-        )
-        result["content"] = response.content if hasattr(response, 'content') else str(response)
-        result["success"] = True
-    except Exception as e:
-        result["error"] = str(e)
+    # Try direct Notion client first (more reliable)
+    if NOTION_CLIENT:
+        logger.info(f"📖 Reading Notion page via API: {page_id}")
+        direct_result = get_page_content_direct(page_id)
+
+        if direct_result["success"]:
+            result["title"] = direct_result["title"]
+            result["content"] = direct_result["content"]
+            result["success"] = True
+            logger.info(f"✅ Successfully read page: {direct_result['title']}")
+            return result
+        else:
+            logger.warning(f"Direct API failed: {direct_result['error']}, trying MCP...")
+
+    # Fallback to MCP if direct client fails
+    if notion_mcp:
+        try:
+            logger.info(f"📖 Reading Notion page via MCP: {page_id}")
+            response = notion_reader_agent.run(
+                f"Read the Notion page with ID: {page_id}. "
+                f"Return the full content as markdown."
+            )
+            result["content"] = response.content if hasattr(response, 'content') else str(response)
+            result["success"] = True
+            logger.info(f"✅ Successfully read page via MCP: {page_id}")
+            return result
+        except Exception as e:
+            logger.error(f"❌ MCP failed: {e}")
+            result["error"] = str(e)
+
+    # Neither worked
+    if not NOTION_CLIENT and not notion_mcp:
+        result["error"] = "No Notion client available. Set NOTION_TOKEN in .env"
+
+    if use_fallback and not result["success"]:
+        result["content"] = "[Content unavailable - using fallback]"
 
     return result
 

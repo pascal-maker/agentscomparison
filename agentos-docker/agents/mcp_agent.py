@@ -9,7 +9,7 @@ Run:
 """
 
 from agno.agent import Agent
-from agno.models.ollama import Ollama
+from agno.models.anthropic import Claude
 from agno.tools.mcp import MCPTools
 
 from db import get_postgres_db
@@ -46,7 +46,7 @@ You are a helpful assistant with access to external tools via MCP (Model Context
 mcp_agent = Agent(
     id="mcp-agent",
     name="MCP Agent",
-    model=Ollama(id="llama3.2", host="http://host.docker.internal:11434"),
+    model=Claude(id="claude-sonnet-4-5-20250514"),
     db=agent_db,
     tools=[MCPTools(url="https://docs.agno.com/mcp")],
     instructions=instructions,
