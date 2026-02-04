@@ -61,17 +61,28 @@ def ensure_output_dir():
 # Customer Configuration
 # ============================================================================
 class CustomerConfig:
-    """Customer-specific configuration for report generation."""
+    """
+    Customer-specific configuration for report generation.
+
+    Supports different project types with appropriate sections:
+    - technical: IT/Software discovery (architecture, stack, infrastructure)
+    - product: Product management (vision, roadmap, market analysis)
+    - process: Business process (current state, pain points, target state)
+    - transformation: Digital transformation (maturity, roadmap, change mgmt)
+    - generic: Minimal structure (summary, context, findings, recommendations)
+    """
 
     def __init__(
         self,
         name: str,
+        project_type: str = "technical",  # technical, product, process, transformation, generic
         mandatory_sections: List[str] = None,
         optional_sections: List[str] = None,
         custom_terminology: Dict[str, str] = None,
         input_pages: List[str] = None,
     ):
         self.name = name
+        self.project_type = project_type
         self.mandatory_sections = mandatory_sections or []
         self.optional_sections = optional_sections or []
         self.custom_terminology = custom_terminology or {}
@@ -81,26 +92,112 @@ class CustomerConfig:
     def from_dict(cls, data: Dict[str, Any]) -> "CustomerConfig":
         return cls(
             name=data.get("name", "Client"),
+            project_type=data.get("project_type", "technical"),
             mandatory_sections=data.get("mandatory_sections", []),
             optional_sections=data.get("optional_sections", []),
             custom_terminology=data.get("custom_terminology", {}),
             input_pages=data.get("input_pages", []),
         )
 
+    def get_sections(self) -> List[str]:
+        """Get sections based on project type or custom mandatory sections."""
+        if self.mandatory_sections:
+            return self.mandatory_sections
+        # Import here to avoid circular import
+        from teams.discovery_orchestrator import TEMPLATE_PRESETS
+        return TEMPLATE_PRESETS.get(self.project_type, TEMPLATE_PRESETS["generic"])
 
-# Default template sections
-DEFAULT_TEMPLATE_SECTIONS = [
-    "Executive Summary",
-    "Business Context",
-    "Technical Architecture Overview",
-    "Technology Stack",
-    "Infrastructure & Hosting",
-    "Security & Identity",
-    "Development Practices",
-    "Team & Organization",
-    "Support & Operations",
-    "Recommendations",
-]
+
+# ============================================================================
+# Template Section Presets (Customer-Specific)
+# ============================================================================
+# Different project types have different relevant sections
+
+TEMPLATE_PRESETS = {
+    # Technical Discovery (IT/Software projects)
+    "technical": [
+        "Executive Summary",
+        "Business Context",
+        "Technical Architecture Overview",
+        "Technology Stack",
+        "Infrastructure & Hosting",
+        "Security & Identity",
+        "Development Practices",
+        "Team & Organization",
+        "Support & Operations",
+        "Recommendations",
+    ],
+
+    # Product Management Discovery
+    "product": [
+        "Executive Summary",
+        "Product Vision & Strategy",
+        "Market Analysis",
+        "User Research & Personas",
+        "Product Roadmap",
+        "Feature Prioritization",
+        "Competitive Landscape",
+        "Go-to-Market Strategy",
+        "Success Metrics & KPIs",
+        "Recommendations",
+    ],
+
+    # Business Process Discovery
+    "process": [
+        "Executive Summary",
+        "Current State Analysis",
+        "Stakeholder Mapping",
+        "Process Flow & Pain Points",
+        "Opportunity Assessment",
+        "Target State Design",
+        "Implementation Approach",
+        "Change Management",
+        "Risk Assessment",
+        "Recommendations",
+    ],
+
+    # Digital Transformation Discovery
+    "transformation": [
+        "Executive Summary",
+        "Business Context & Drivers",
+        "Current State Assessment",
+        "Digital Maturity Analysis",
+        "Technology Landscape",
+        "People & Skills",
+        "Process Optimization",
+        "Target Operating Model",
+        "Transformation Roadmap",
+        "Recommendations",
+    ],
+
+    # Generic/Custom (minimal structure)
+    "generic": [
+        "Executive Summary",
+        "Context & Background",
+        "Current State",
+        "Analysis & Findings",
+        "Recommendations",
+    ],
+}
+
+# Default template sections (backward compatibility)
+DEFAULT_TEMPLATE_SECTIONS = TEMPLATE_PRESETS["technical"]
+
+
+def get_template_sections(preset: str = "technical", custom_sections: List[str] = None) -> List[str]:
+    """
+    Get template sections based on preset or custom list.
+
+    Args:
+        preset: One of 'technical', 'product', 'process', 'transformation', 'generic'
+        custom_sections: Override with custom section list
+
+    Returns:
+        List of section titles
+    """
+    if custom_sections:
+        return custom_sections
+    return TEMPLATE_PRESETS.get(preset, TEMPLATE_PRESETS["generic"])
 
 
 # ============================================================================
