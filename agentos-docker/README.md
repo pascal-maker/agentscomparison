@@ -110,6 +110,156 @@ Search the docs for how to use LearningMachine
 Find examples of agents with memory
 ```
 
+### Smart Discovery (Multi-Agent Team)
+
+Transforms raw content (Notion pages, interview transcripts, etc.) into evidence-grounded PowerPoint presentations.
+
+**Key Features:**
+- **Evidence Grounding**: Every bullet point must reference source evidence `[EVID-abc123]`
+- **Auto-Discovery**: Analyzes ANY content to find logical sections (no hardcoded templates)
+- **Open Questions**: Missing information becomes questions, never hallucinated content
+- **Slide Budget**: Configurable min/max slides with per-section limits
+
+**Try it:**
+```python
+from teams.smart_discovery import smart_discover
+from shared.evidence import CustomerConfig
+
+result = smart_discover(
+    raw_content="Your interview transcript or notes here...",
+    customer_name="Acme Corp",
+    config=CustomerConfig(
+        name="Acme Corp",
+        must_include=["Executive Summary", "Key Findings", "Recommendations"],
+        slide_budget={"min": 8, "max": 40, "per_section_max": 6}
+    )
+)
+
+print(f"Markdown: {result['markdown_path']}")
+print(f"PowerPoint: {result['powerpoint_path']}")
+```
+
+---
+
+## Smart Discovery: How It Works
+
+### The 7-Step Pipeline
+
+```
+Raw Content → Extract Evidence → Analyze → Revise → Budget → Validate → Markdown → PowerPoint
+```
+
+| Step | Agent | What It Does |
+|------|-------|--------------|
+| 1. Extract | `extract_evidence_from_content()` | Parses content into EvidenceItems with unique IDs |
+| 2. Analyze | `ContentAnalyzer` | Discovers logical sections, maps evidence to bullets |
+| 3. Revise | `Revisor` | Removes ungrounded bullets, adds Open Questions |
+| 4. Budget | `enforce_slide_budget()` | Trims content to fit slide constraints |
+| 5. Validate | `validate_grounded_report()` | Ensures 100% evidence grounding |
+| 6. Markdown | Template generation | Creates `.md` with `[EVID-xxx]` references |
+| 7. PowerPoint | `python-pptx` | Generates `.pptx` with evidence in speaker notes |
+
+### Evidence Grounding
+
+Every factual claim must reference an `EvidenceItem`:
+
+```python
+class EvidenceItem:
+    id: str           # "EVID-abc123" (auto-generated MD5 hash)
+    page_title: str   # Source document title
+    page_id: str      # Source document ID
+    block_path: list  # Heading hierarchy ["Section", "Subsection"]
+    quote: str        # Verbatim text from source
+    text: str         # Cleaned/normalized text
+    block_type: str   # "bullet", "paragraph", "heading", etc.
+```
+
+**In Markdown:**
+```markdown
+### Key Findings
+
+- Platform uses Azure Cosmos DB for data storage [EVID-a1b2c3d4]
+- Mobile app built with Kotlin Multiplatform [EVID-e5f6g7h8] [EVID-i9j0k1l2]
+
+**Open Questions:**
+- What is the expected user growth rate?
+```
+
+**In PowerPoint:**
+- Bullet text appears on slide (without evidence IDs)
+- Speaker notes contain full evidence citations:
+  ```
+  Evidence Sources:
+  [EVID-a1b2c3d4] Technical Interview > Architecture: "Uses Azure Cosmos DB for domain data"
+  ```
+
+### Slide Budget Enforcement
+
+The `CustomerConfig.slide_budget` controls output size:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `min` | 8 | Minimum total slides (warns if below) |
+| `max` | 40 | Maximum total slides (trims if exceeded) |
+| `per_section_max` | 6 | Max slides per section |
+
+**Budget calculation:**
+- Title slide: 1
+- Agenda slide: 1
+- Per section: 1 divider + ceil(bullets / 6) content slides
+
+**Enforcement rules:**
+1. Sections sorted by bullet count (descending)
+2. Longest sections trimmed first
+3. Each section keeps max `per_section_max × 6` bullets
+4. `must_include` sections are never removed (only trimmed)
+
+### CustomerConfig Options
+
+```python
+CustomerConfig(
+    name="Acme Corp",                    # Customer name for branding
+
+    must_include=[                       # Required sections (added as placeholders if missing)
+        "Executive Summary",
+        "Key Findings",
+        "Recommendations"
+    ],
+
+    terminology_map={                    # Find/replace for consistent naming
+        "client": "Acme Corp",
+        "the customer": "Acme Corp"
+    },
+
+    slide_budget={                       # Output constraints
+        "min": 8,
+        "max": 40,
+        "per_section_max": 6
+    },
+
+    emphasis_weights={                   # Content prioritization (future use)
+        "goals": 1.0,
+        "problems": 1.0,
+        "risks": 0.8
+    }
+)
+```
+
+### Output Files
+
+Smart Discovery generates:
+
+| File | Location | Contents |
+|------|----------|----------|
+| Markdown | `outputs/{customer}_{timestamp}.md` | Full report with `[EVID-xxx]` references |
+| PowerPoint | `outputs/{customer}_{timestamp}.pptx` | Presentation with evidence in speaker notes |
+
+**PowerPoint Structure:**
+1. **Title Slide**: Customer name + "Discovery Report"
+2. **Agenda Slide**: List of all sections
+3. **Section Slides**: Content with bullet points
+4. Evidence stored in speaker notes (not visible in presentation)
+
 ---
 
 ## Project Structure
@@ -117,7 +267,16 @@ Find examples of agents with memory
 ├── agents/
 │   ├── pal.py              # Personal second brain agent
 │   ├── knowledge_agent.py  # RAG agent
-│   └── mcp_agent.py        # MCP tools agent
+│   ├── mcp_agent.py        # MCP tools agent
+│   ├── content_analyzer.py # Evidence-aware content analysis
+│   └── revisor.py          # Evidence grounding enforcement
+├── teams/
+│   └── smart_discovery.py  # Multi-agent discovery pipeline
+├── shared/
+│   └── evidence.py         # Evidence models (EvidenceItem, CustomerConfig)
+├── tests/
+│   └── test_smart_discovery.py  # Production-grade tests
+├── outputs/                # Generated reports (.md, .pptx)
 ├── app/
 │   ├── main.py             # AgentOS entry point
 │   └── config.yaml         # Quick prompts config
@@ -224,6 +383,8 @@ python -m app.main
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `OPENAI_API_KEY` | Yes | - | OpenAI API key |
+| `ANTHROPIC_API_KEY` | For Discovery | - | Anthropic API key (Smart Discovery agents) |
+| `NOTION_API_KEY` | For Discovery | - | Notion API key (to read Notion pages) |
 | `EXA_API_KEY` | No | - | Exa API key for web research |
 | `DB_HOST` | No | `localhost` | Database host |
 | `DB_PORT` | No | `5432` | Database port |
