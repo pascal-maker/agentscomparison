@@ -1,3 +1,9 @@
+---
+name: smart-discovery
+description: Generate evidence-grounded PowerPoint from Notion with LLM analysis
+args: <notion_url> [customer_name]
+---
+
 # Smart Discovery
 
 Generate an evidence-grounded PowerPoint presentation from a Notion page with LLM analysis.

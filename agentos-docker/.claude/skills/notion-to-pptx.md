@@ -1,3 +1,9 @@
+---
+name: notion-to-pptx
+description: Convert any Notion page directly to PowerPoint (no LLM, preserves structure)
+args: <notion_url> [title]
+---
+
 # Notion to PowerPoint (Simple Mode)
 
 Convert any Notion page directly to PowerPoint slides - no LLM analysis, just preserves the original structure.
