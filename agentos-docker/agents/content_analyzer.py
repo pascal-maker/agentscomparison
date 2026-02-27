@@ -15,7 +15,6 @@ from typing import List, Dict, Any, Tuple
 from agno.agent import Agent
 from agno.models.anthropic import Claude
 
-from db import get_postgres_db
 from shared.evidence import (
     EvidenceItem,
     EvidenceCollection,
@@ -34,8 +33,6 @@ logger = logging.getLogger("ContentAnalyzer")
 # ============================================================================
 # Setup
 # ============================================================================
-agent_db = get_postgres_db(contents_table="content_analyzer_contents")
-
 # ============================================================================
 # Agent Instructions
 # ============================================================================
@@ -97,7 +94,6 @@ content_analyzer_agent = Agent(
     id="content-analyzer",
     name="Content Analyzer",
     model=Claude(id="claude-sonnet-4-20250514"),
-    db=agent_db,
     instructions=instructions,
     add_datetime_to_context=True,
     markdown=True,

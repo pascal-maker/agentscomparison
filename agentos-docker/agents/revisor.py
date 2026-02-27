@@ -17,7 +17,6 @@ from typing import List, Dict, Any, Tuple
 from agno.agent import Agent
 from agno.models.anthropic import Claude
 
-from db import get_postgres_db
 from shared.evidence import (
     EvidenceCollection,
     GroundedSection,
@@ -35,8 +34,6 @@ logger = logging.getLogger("Revisor")
 # ============================================================================
 # Setup
 # ============================================================================
-agent_db = get_postgres_db(contents_table="revisor_contents")
-
 # ============================================================================
 # Agent Instructions (for LLM-assisted revision)
 # ============================================================================
@@ -78,7 +75,6 @@ revisor_agent = Agent(
     id="revisor",
     name="Revisor",
     model=Claude(id="claude-sonnet-4-20250514"),
-    db=agent_db,
     instructions=instructions,
     add_datetime_to_context=True,
     markdown=True,

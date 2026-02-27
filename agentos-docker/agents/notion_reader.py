@@ -20,8 +20,6 @@ from agno.agent import Agent
 from agno.models.anthropic import Claude
 from agno.tools.mcp import MCPTools
 
-from db import get_postgres_db
-
 # ============================================================================
 # Logging Setup
 # ============================================================================
@@ -31,8 +29,6 @@ logger = logging.getLogger("NotionReader")
 # ============================================================================
 # Setup
 # ============================================================================
-agent_db = get_postgres_db(contents_table="notion_reader_contents")
-
 # Notion token for MCP (masked for security)
 NOTION_TOKEN = os.getenv("NOTION_TOKEN", "")
 if NOTION_TOKEN:
@@ -167,9 +163,10 @@ except Exception as e:
     NOTION_CLIENT = None
 
 
-def get_page_content_direct(page_id: str) -> dict:
+def get_page_content_direct(page_id: str, depth: int = 0, max_depth: int = 3) -> dict:
     """
     Read a Notion page directly using the Notion API client.
+    Recursively reads child pages up to max_depth levels deep.
 
     Returns:
         dict with 'title', 'content', 'success', 'error'
@@ -189,22 +186,38 @@ def get_page_content_direct(page_id: str) -> dict:
         # Get page metadata
         page = NOTION_CLIENT.pages.retrieve(page_id=page_id)
 
-        # Extract title
+        # Extract title (works for both regular pages and database entries)
         title_prop = page.get("properties", {}).get("title", {})
         if title_prop.get("title"):
             result["title"] = title_prop["title"][0].get("plain_text", "")
+        if not result["title"]:
+            # Try Name property (database pages)
+            for prop in page.get("properties", {}).values():
+                if prop.get("type") == "title" and prop.get("title"):
+                    result["title"] = prop["title"][0].get("plain_text", "")
+                    break
 
-        # Get block children (content)
-        blocks = NOTION_CLIENT.blocks.children.list(block_id=page_id)
+        heading_prefix = "#" * max(1, depth + 1)
+        content_lines = [f"{heading_prefix} {result['title']}\n"] if result["title"] else []
 
-        # Convert blocks to markdown
-        content_lines = [f"# {result['title']}\n"]
+        # Paginate through all blocks
+        all_blocks = []
+        cursor = None
+        while True:
+            kwargs = {"block_id": page_id, "page_size": 100}
+            if cursor:
+                kwargs["start_cursor"] = cursor
+            response = NOTION_CLIENT.blocks.children.list(**kwargs)
+            all_blocks.extend(response.get("results", []))
+            if not response.get("has_more"):
+                break
+            cursor = response.get("next_cursor")
 
-        for block in blocks.get("results", []):
+        for block in all_blocks:
             block_type = block.get("type")
             block_data = block.get(block_type, {})
 
-            # Extract text from rich_text
+            # Extract plain text from rich_text
             text = ""
             if "rich_text" in block_data:
                 text = "".join([t.get("plain_text", "") for t in block_data["rich_text"]])
@@ -232,12 +245,55 @@ def get_page_content_direct(page_id: str) -> dict:
                 content_lines.append(f"> {text}")
             elif block_type == "divider":
                 content_lines.append("\n---\n")
-            elif block_type == "table_of_contents":
-                content_lines.append("[Table of Contents]")
+            elif block_type == "callout":
+                if text:
+                    content_lines.append(f"> {text}")
+            elif block_type == "toggle":
+                if text:
+                    content_lines.append(f"\n### {text}")
+                # Toggle children are fetched via has_children below
+            elif block_type == "child_page":
+                # Sub-page — recurse if within depth limit
+                child_title = block_data.get("title", "")
+                child_id = block.get("id", "").replace("-", "")
+                if depth < max_depth and child_id:
+                    logger.info(f"  {'  ' * depth}↳ Reading sub-page: {child_title} ({child_id})")
+                    child_result = get_page_content_direct(child_id, depth=depth + 1, max_depth=max_depth)
+                    if child_result["success"]:
+                        content_lines.append(f"\n{child_result['content']}")
+                    else:
+                        content_lines.append(f"\n## {child_title}\n[Could not read sub-page: {child_result['error']}]")
+                else:
+                    content_lines.append(f"\n## {child_title}\n[Sub-page not expanded — max depth reached]")
+                continue
+            elif block_type == "link_to_page":
+                # Explicit link-to-page block
+                linked_id = (
+                    block_data.get("page_id", "") or block_data.get("database_id", "")
+                ).replace("-", "")
+                if depth < max_depth and linked_id:
+                    logger.info(f"  {'  ' * depth}↳ Following linked page: {linked_id}")
+                    child_result = get_page_content_direct(linked_id, depth=depth + 1, max_depth=max_depth)
+                    if child_result["success"]:
+                        content_lines.append(f"\n{child_result['content']}")
+                continue
+
+            # Recurse into blocks that have children (e.g. toggles, synced blocks)
+            if block.get("has_children") and block_type not in ("child_page", "link_to_page") and depth < max_depth:
+                child_block_id = block.get("id", "").replace("-", "")
+                if child_block_id:
+                    child_result = get_page_content_direct(child_block_id, depth=depth + 1, max_depth=max_depth)
+                    if child_result["success"] and child_result["content"]:
+                        # Append child content without the H1 title line
+                        child_lines = [
+                            l for l in child_result["content"].split("\n")
+                            if not l.startswith("# ")
+                        ]
+                        content_lines.extend(child_lines)
 
         result["content"] = "\n".join(content_lines)
         result["success"] = True
-        logger.info(f"Successfully read page: {result['title']}")
+        logger.info(f"{'  ' * depth}✅ Read page: {result['title']} ({len(all_blocks)} blocks)")
 
     except Exception as e:
         result["error"] = str(e)
@@ -308,7 +364,6 @@ notion_reader_agent = Agent(
     id="notion-reader",
     name="Notion Reader",
     model=Claude(id="claude-sonnet-4-20250514"),
-    db=agent_db,
     tools=[notion_mcp] if notion_mcp else [],
     instructions=instructions,
     add_datetime_to_context=True,
