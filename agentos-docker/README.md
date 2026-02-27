@@ -1,448 +1,266 @@
-# AgentOS Docker Template
+# Smart Discovery — Notion → PowerPoint Pipeline
 
-Deploy a multi-agent system to production with Docker.
-
-[What is AgentOS?](https://docs.agno.com/agent-os/introduction) · [Agno Docs](https://docs.agno.com) · [Discord](https://agno.com/discord)
+Converts Notion pages (interviews, workshops, desk research) into evidence-grounded Sweetspot PowerPoint reports.
 
 ---
 
-## What's Included
+## How it works
 
-| Agent | Pattern | Description |
-|-------|---------|-------------|
-| **Pal** | Learning + Tools | Your AI-powered second brain |
-| Knowledge Agent | RAG | Answers questions from a knowledge base |
-| MCP Agent | Tool Use | Connects to external services via MCP |
+```
+Notion pages → Evidence extraction → Template slots → Slot filler agents → .pptx + .md
+```
 
-**Pal** (Personal Agent that Learns) is your AI-powered second brain. It researches, captures, organizes, connects, and retrieves your personal knowledge - so nothing useful is ever lost.
+1. **Read** — fetches Notion pages recursively (follows all sub-pages, toggles, callouts)
+2. **Extract** — every paragraph, bullet, and heading becomes a tagged evidence item (`EVID-xxxxxxxx`)
+3. **Fill slots** — one Claude call per template slot, with keyword-filtered evidence for that section
+4. **Output** — Sweetspot-styled `.pptx` + full `.md` report with evidence citations
+
+Every bullet in the output references at least one `[EVID-xxx]` ID. Gaps where evidence is missing become **Open Questions** instead of hallucinated content.
 
 ---
 
-## Quick Start
+## Quick start
 
-### Prerequisites
+### 1. Install dependencies
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- [OpenAI API key](https://platform.openai.com/api-keys)
+```bash
+uv venv .venv --python 3.12
+VIRTUAL_ENV=.venv uv pip install -r requirements.txt streamlit
+```
 
-### 1. Clone and configure
-```sh
-git clone https://github.com/agno-agi/agentos-docker-template.git agentos-docker
-cd agentos-docker
+### 2. Set up environment
+
+```bash
 cp example.env .env
-# Add your OPENAI_API_KEY to .env
 ```
 
-### 2. Start locally
-```sh
-docker compose up -d --build
+Edit `.env`:
+
+```
+ANTHROPIC_API_KEY=sk-ant-your_key_here
+NOTION_TOKEN=ntn_your_integration_token_here
+NOTION_SAFE_MODE=false
 ```
 
-- **API**: http://localhost:8000
-- **Docs**: http://localhost:8000/docs
-- **Database**: localhost:5432
+### 3. Run the app
 
-### 3. Connect to control plane
+```bash
+.venv/bin/streamlit run streamlit_app.py
+```
 
-1. Open [os.agno.com](https://os.agno.com)
-2. Click "Add OS" → "Local"
-3. Enter `http://localhost:8000`
+Open **http://localhost:8501**
 
 ---
 
-## The Agents
+## Setting up Notion access
 
-### Pal (Personal Agent that Learns)
+See [NOTION_SETUP.md](NOTION_SETUP.md) for full instructions. Short version:
 
-Your AI-powered second brain. Pal researches, captures, organizes, connects, and retrieves your personal knowledge - so nothing useful is ever lost.
+1. Go to [notion.so/my-integrations](https://www.notion.so/my-integrations) → create integration → copy token → paste into `.env`
+2. For every Notion page you want to read: open the page → **···** (top right) → **Connections** → select your integration
+3. Sharing a parent page covers all its child pages automatically
 
-**What Pal stores:**
-
-| Type | Examples |
-|------|----------|
-| **Notes** | Ideas, decisions, snippets, learnings |
-| **Bookmarks** | URLs with context - why you saved it |
-| **People** | Contacts - who they are, how you know them |
-| **Meetings** | Notes, decisions, action items |
-| **Projects** | Goals, status, related items |
-| **Research** | Findings from web search, saved for later |
-
-**Try it:**
-```
-Note: decided to use Postgres for the new project - better JSON support
-Bookmark https://www.ashpreetbedi.com/articles/lm-technical-design - great intro
-Research event sourcing patterns and save the key findings
-What notes do I have?
-What do I know about event sourcing?
-```
-
-**How it works:**
-- **DuckDB** stores your actual data (notes, bookmarks, people, etc.)
-- **Learning system** remembers schemas and research findings
-- **Exa search** powers web research, company lookup, and people search
-
-**Data persistence:** Pal stores structured data in DuckDB at `/data/pal.db`. This persists across container restarts.
-
-### Knowledge Agent
-
-Answers questions using a vector knowledge base (RAG pattern).
-
-**Try it:**
-```
-What is Agno?
-How do I create my first agent?
-What documents are in your knowledge base?
-```
-
-**Load documents:**
-```sh
-docker exec -it agentos-api python -m agents.knowledge_agent
-```
-
-### MCP Agent
-
-Connects to external tools via the Model Context Protocol.
-
-**Try it:**
-```
-What tools do you have access to?
-Search the docs for how to use LearningMachine
-Find examples of agents with memory
-```
-
-### Smart Discovery (Multi-Agent Team)
-
-Transforms raw content (Notion pages, interview transcripts, etc.) into evidence-grounded PowerPoint presentations.
-
-**Key Features:**
-- **Evidence Grounding**: Every bullet point must reference source evidence `[EVID-abc123]`
-- **Auto-Discovery**: Analyzes ANY content to find logical sections (no hardcoded templates)
-- **Open Questions**: Missing information becomes questions, never hallucinated content
-- **Slide Budget**: Configurable min/max slides with per-section limits
-
-**Try it:**
-```python
-from teams.smart_discovery import smart_discover
-from shared.evidence import CustomerConfig
-
-result = smart_discover(
-    raw_content="Your interview transcript or notes here...",
-    customer_name="Acme Corp",
-    config=CustomerConfig(
-        name="Acme Corp",
-        must_include=["Executive Summary", "Key Findings", "Recommendations"],
-        slide_budget={"min": 8, "max": 40, "per_section_max": 6}
-    )
-)
-
-print(f"Markdown: {result['markdown_path']}")
-print(f"PowerPoint: {result['powerpoint_path']}")
+Verify it works:
+```bash
+curl -s "https://api.notion.com/v1/pages/<PAGE_ID>" \
+  -H "Authorization: Bearer $NOTION_TOKEN" \
+  -H "Notion-Version: 2022-06-28" | python3 -c "
+import sys,json; d=json.load(sys.stdin)
+print('OK' if d.get('object')=='page' else d.get('message'))
+"
 ```
 
 ---
 
-## Smart Discovery: How It Works
+## Using the Streamlit UI
 
-### The 7-Step Pipeline
+### Step 1 — Choose mode
+
+| Mode | When to use |
+|---|---|
+| **Smart Discovery** | Full AI pipeline: evidence extraction, template slot filling, evidence grounding |
+| **Simple Mode** | Direct Notion → slides conversion, no LLM |
+
+### Step 2 — Customer config URL *(Smart Discovery only, optional)*
+
+Paste the URL of a [Customer Config page](#customer-config-page) to control:
+- Which sections appear (and in what order)
+- What each section should contain (description + keywords for evidence filtering)
+- Terminology substitutions
+- Slide budget (min/max slides)
+
+If left blank, defaults to: **Executive Summary, Key Findings, Recommendations**.
+
+### Step 3 — Add sources
+
+Click **+ Add source** for each input. Each source can be:
+
+| Type | Use for |
+|---|---|
+| **URL** | Notion page — read via API, sub-pages included automatically |
+| **Paste** | Interview notes, workshop output, copied text |
+
+Label each source (e.g. `Interview CEO`, `Workshop output`, `Desk research`). Labels appear in evidence citations.
+
+### Step 4 — Generate
+
+Hit **Generate PowerPoint**. Progress logs stream in real time. Download the `.pptx` and `.md` from the results panel.
+
+---
+
+## Customer Config page
+
+Create one Notion page per customer. Share it with your Notion integration. Paste its URL into the **Customer config URL** field.
+
+### Full format
 
 ```
-Raw Content → Extract Evidence → Analyze → Revise → Budget → Validate → Markdown → PowerPoint
-```
+# <Customer Name>
 
-| Step | Agent | What It Does |
-|------|-------|--------------|
-| 1. Extract | `extract_evidence_from_content()` | Parses content into EvidenceItems with unique IDs |
-| 2. Analyze | `ContentAnalyzer` | Discovers logical sections, maps evidence to bullets |
-| 3. Revise | `Revisor` | Removes ungrounded bullets, adds Open Questions |
-| 4. Budget | `enforce_slide_budget()` | Trims content to fit slide constraints |
-| 5. Validate | `validate_grounded_report()` | Ensures 100% evidence grounding |
-| 6. Markdown | Template generation | Creates `.md` with `[EVID-xxx]` references |
-| 7. PowerPoint | `python-pptx` | Generates `.pptx` with evidence in speaker notes |
+## Required Sections
+- Executive Summary
+- Key Findings
+- Recommendations
+- <add or remove sections — output follows this order>
 
-### Evidence Grounding
+## Template Slots
 
-Every factual claim must reference an `EvidenceItem`:
+### Executive Summary
+Concise overview of the customer situation, why this engagement was
+initiated, and the 2-3 most important numbers or facts at a glance.
+Keywords: company, revenue, employees, engagement, overview, commissioned
 
-```python
-class EvidenceItem:
-    id: str           # "EVID-abc123" (auto-generated MD5 hash)
-    page_title: str   # Source document title
-    page_id: str      # Source document ID
-    block_path: list  # Heading hierarchy ["Section", "Subsection"]
-    quote: str        # Verbatim text from source
-    text: str         # Cleaned/normalized text
-    block_type: str   # "bullet", "paragraph", "heading", etc.
-```
-
-**In Markdown:**
-```markdown
 ### Key Findings
+The 3-5 most critical discoveries from the assessment — structural
+problems, root causes, and the most important numbers.
+Keywords: finding, critical, structural, failure, conflict, adoption, zero
 
-- Platform uses Azure Cosmos DB for data storage [EVID-a1b2c3d4]
-- Mobile app built with Kotlin Multiplatform [EVID-e5f6g7h8] [EVID-i9j0k1l2]
+### Recommendations
+Specific actionable next steps with clear ownership and sequencing.
+Keywords: recommend, should, next step, action, implement, appoint, resolve
 
-**Open Questions:**
-- What is the expected user growth rate?
+### <Any other section name>
+Description of what this section should contain.
+Keywords: keyword1, keyword2, keyword3
+
+## Terminology
+- OldTerm → NewTerm
+- Customer → Client
+- CRM → Customer Data Platform
+
+## Slide Budget
+- Min slides: 8
+- Max slides: 20
+- Max per section: 3
 ```
 
-**In PowerPoint:**
-- Bullet text appears on slide (without evidence IDs)
-- Speaker notes contain full evidence citations:
-  ```
-  Evidence Sources:
-  [EVID-a1b2c3d4] Technical Interview > Architecture: "Uses Azure Cosmos DB for domain data"
-  ```
+### Field reference
 
-### Slide Budget Enforcement
+| Section | Required | What it does |
+|---|---|---|
+| `# Customer Name` (H1) | Yes | Sets the customer name in the report and output filenames |
+| `## Required Sections` | Yes | Which slots appear in the output, in this order |
+| `## Template Slots` | Recommended | Per-slot description + keywords improve evidence targeting |
+| `## Terminology` | Optional | Find-and-replace applied to all output text (`Old → New`) |
+| `## Slide Budget` | Optional | Defaults: min 8, max 30, max 4 per section |
 
-The `CustomerConfig.slide_budget` controls output size:
+### Why Template Slots matter
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `min` | 8 | Minimum total slides (warns if below) |
-| `max` | 40 | Maximum total slides (trims if exceeded) |
-| `per_section_max` | 6 | Max slides per section |
+Without slot descriptions, keywords are auto-derived from the section name words (e.g. "Key Findings" → `['findings']`). This works but is imprecise — especially for generic section names.
 
-**Budget calculation:**
-- Title slide: 1
-- Agenda slide: 1
-- Per section: 1 divider + ceil(bullets / 6) content slides
-
-**Enforcement rules:**
-1. Sections sorted by bullet count (descending)
-2. Longest sections trimmed first
-3. Each section keeps max `per_section_max × 6` bullets
-4. `must_include` sections are never removed (only trimmed)
-
-### CustomerConfig Options
-
-```python
-CustomerConfig(
-    name="Acme Corp",                    # Customer name for branding
-
-    must_include=[                       # Required sections (added as placeholders if missing)
-        "Executive Summary",
-        "Key Findings",
-        "Recommendations"
-    ],
-
-    terminology_map={                    # Find/replace for consistent naming
-        "client": "Acme Corp",
-        "the customer": "Acme Corp"
-    },
-
-    slide_budget={                       # Output constraints
-        "min": 8,
-        "max": 40,
-        "per_section_max": 6
-    },
-
-    emphasis_weights={                   # Content prioritization (future use)
-        "goals": 1.0,
-        "problems": 1.0,
-        "risks": 0.8
-    }
-)
-```
-
-### Output Files
-
-Smart Discovery generates:
-
-| File | Location | Contents |
-|------|----------|----------|
-| Markdown | `outputs/{customer}_{timestamp}.md` | Full report with `[EVID-xxx]` references |
-| PowerPoint | `outputs/{customer}_{timestamp}.pptx` | Presentation with evidence in speaker notes |
-
-**PowerPoint Structure:**
-1. **Title Slide**: Customer name + "Discovery Report"
-2. **Agenda Slide**: List of all sections
-3. **Section Slides**: Content with bullet points
-4. Evidence stored in speaker notes (not visible in presentation)
+With slot descriptions and keywords, each Claude call knows **what kind of content** to extract, and the evidence filter sends only the most relevant items. This produces sharper bullets and fewer irrelevant Open Questions.
 
 ---
 
-## Project Structure
+## How the pipeline works internally
+
 ```
-├── agents/
-│   ├── pal.py              # Personal second brain agent
-│   ├── knowledge_agent.py  # RAG agent
-│   ├── mcp_agent.py        # MCP tools agent
-│   ├── content_analyzer.py # Evidence-aware content analysis
-│   └── revisor.py          # Evidence grounding enforcement
+Step 1  Read all sources (Notion URLs + pasted blocks) → merge evidence
+Step 2  Build ReportTemplate from CustomerConfig (slots in order)
+Step 3  Controller: for each slot
+           → filter evidence by slot keywords
+           → call SlotFiller (one Claude call) → GroundedSection
+Step 4  Enforce slide budget (trim longest sections first)
+Step 5  Validate grounding (every bullet must have ≥1 EVID reference)
+Step 6  Generate Markdown report with evidence appendix
+Step 7  Generate PowerPoint (.pptx) with evidence in speaker notes
+```
+
+### Evidence grounding
+
+Every bullet must reference at least one source:
+
+```
+- Countroll has 1% external adoption from 4,500 customers [EVID-2bfa321a]
+```
+
+The Evidence Appendix maps every `EVID-xxx` to the exact quote and source path:
+
+```
+[EVID-2bfa321a] Report > 1.2 Key Findings: "Countroll has achieved approximately
+1% external adoption from 4,500 customers — 60–70 active users..."
+```
+
+Bullets with no valid evidence become Open Questions automatically — nothing is invented.
+
+---
+
+## Output files
+
+Saved to `./output/`:
+
+| File | Contents |
+|---|---|
+| `smart_discovery_<Customer>.pptx` | Sweetspot-styled PowerPoint |
+| `smart_discovery_<Customer>.md` | Full report with `[EVID-xxx]` citations |
+
+PowerPoint structure:
+1. **Title slide** — customer name, report title, date
+2. **Agenda slide** — numbered section list
+3. **Section divider** + **content slides** per slot
+4. Evidence citations in speaker notes (not visible in presentation)
+
+---
+
+## Project structure
+
+```
+agentos-docker/
+├── streamlit_app.py          # Web UI
 ├── teams/
-│   └── smart_discovery.py  # Multi-agent discovery pipeline
+│   └── smart_discovery.py    # Main 7-step pipeline
+├── agents/
+│   ├── notion_reader.py      # Reads Notion pages via API (recursive)
+│   ├── controller.py         # Orchestrates slot filling + title/summary
+│   ├── slot_filler.py        # One focused Claude call per slot
+│   └── revisor.py            # Enforces slide budget
 ├── shared/
-│   └── evidence.py         # Evidence models (EvidenceItem, CustomerConfig)
-├── tests/
-│   └── test_smart_discovery.py  # Production-grade tests
-├── outputs/                # Generated reports (.md, .pptx)
-├── app/
-│   ├── main.py             # AgentOS entry point
-│   └── config.yaml         # Quick prompts config
-├── db/
-│   ├── session.py          # Database session
-│   └── url.py              # Connection URL builder
-├── scripts/                # Helper scripts
-├── compose.yaml            # Docker Compose config
-├── Dockerfile
-└── pyproject.toml          # Dependencies
+│   ├── evidence.py           # EvidenceItem, EvidenceCollection, CustomerConfig
+│   ├── template.py           # TemplateSlot, ReportTemplate
+│   └── config_loader.py      # Parses CustomerConfig from Notion page
+├── templates/
+│   └── sweetspot_template.pptx
+├── output/                   # Generated reports (gitignored)
+├── NOTION_SETUP.md           # Notion integration setup guide
+├── .env                      # Secrets — never commit this
+└── requirements.txt
 ```
 
 ---
 
-## Common Tasks
+## Troubleshooting
 
-### Add your own agent
+**"No Notion client available. Set NOTION_TOKEN in .env"**
+→ `NOTION_TOKEN` is missing or `.env` wasn't loaded. Restart the app after editing `.env`.
 
-1. Create `agents/my_agent.py`:
-```python
-from agno.agent import Agent
-from agno.models.openai import OpenAIResponses
-from db.session import get_postgres_db
+**404 on a Notion page**
+→ Page not shared with integration. Open page → **···** → **Connections** → add your integration.
 
-my_agent = Agent(
-    id="my-agent",
-    name="My Agent",
-    model=OpenAIResponses(id="gpt-5.2"),
-    db=get_postgres_db(),
-    instructions="You are a helpful assistant.",
-)
-```
+**Slots with many Open Questions / few bullets**
+→ The evidence keywords for that slot are too narrow, or the source doesn't contain that content. Add a `## Template Slots` section to the config page with better-targeted keywords.
 
-2. Register in `app/main.py`:
-```python
-from agents.my_agent import my_agent
+**Content cut off / slides missing**
+→ Hit the slide budget. Increase `Max slides` in the config page or in Advanced options.
 
-agent_os = AgentOS(
-    name="AgentOS",
-    agents=[pal, knowledge_agent, mcp_agent, my_agent],
-    ...
-)
-```
-
-3. Restart: `docker compose restart`
-
-### Add tools to an agent
-
-Agno includes 100+ tool integrations. See the [full list](https://docs.agno.com/tools/toolkits).
-```python
-from agno.tools.slack import SlackTools
-from agno.tools.google_calendar import GoogleCalendarTools
-
-my_agent = Agent(
-    ...
-    tools=[
-        SlackTools(),
-        GoogleCalendarTools(),
-    ],
-)
-```
-
-### Add dependencies
-
-1. Edit `pyproject.toml`
-2. Regenerate requirements: `./scripts/generate_requirements.sh`
-3. Rebuild: `docker compose up -d --build`
-
-### Use a different model provider
-
-1. Add your API key to `.env` (e.g., `ANTHROPIC_API_KEY`)
-2. Update agents to use the new provider:
-```python
-from agno.models.anthropic import Claude
-
-model=Claude(id="claude-sonnet-4-5")
-```
-3. Add dependency: `anthropic` in `pyproject.toml`
-
----
-
-## Local Development
-
-For development without Docker:
-```sh
-# Install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Setup environment
-./scripts/venv_setup.sh
-source .venv/bin/activate
-
-# Start PostgreSQL (required)
-docker compose up -d agentos-db
-
-# Run the app
-python -m app.main
-```
-
----
-
-## Environment Variables
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `OPENAI_API_KEY` | Yes | - | OpenAI API key |
-| `ANTHROPIC_API_KEY` | For Discovery | - | Anthropic API key (Smart Discovery agents) |
-| `NOTION_API_KEY` | For Discovery | - | Notion API key (to read Notion pages) |
-| `EXA_API_KEY` | No | - | Exa API key for web research |
-| `DB_HOST` | No | `localhost` | Database host |
-| `DB_PORT` | No | `5432` | Database port |
-| `DB_USER` | No | `ai` | Database user |
-| `DB_PASS` | No | `ai` | Database password |
-| `DB_DATABASE` | No | `ai` | Database name |
-| `DATA_DIR` | No | `/data` | Directory for DuckDB storage |
-| `RUNTIME_ENV` | No | `prd` | Set to `dev` for auto-reload |
-
----
-
-## Extending Pal
-
-Pal is designed to be extended. Connect it to your existing tools:
-
-### Communication
-```python
-from agno.tools.slack import SlackTools
-from agno.tools.gmail import GmailTools
-
-tools=[
-    ...
-    SlackTools(),    # Capture decisions from Slack
-    GmailTools(),    # Track important emails
-]
-```
-
-### Productivity
-```python
-from agno.tools.google_calendar import GoogleCalendarTools
-from agno.tools.linear import LinearTools
-
-tools=[
-    ...
-    GoogleCalendarTools(),  # Meeting context
-    LinearTools(),          # Project tracking
-]
-```
-
-### Research
-```python
-from agno.tools.yfinance import YFinanceTools
-from agno.tools.github import GithubTools
-
-tools=[
-    ...
-    YFinanceTools(),  # Financial data
-    GithubTools(),    # Code and repos
-]
-```
-
-See the [Agno Tools documentation](https://docs.agno.com/tools/toolkits) for the full list of available integrations.
-
----
-
-## Learn More
-
-- [Agno Documentation](https://docs.agno.com)
-- [AgentOS Documentation](https://docs.agno.com/agent-os/introduction)
-- [Tools & Integrations](https://docs.agno.com/tools/toolkits)
-- [Discord Community](https://agno.com/discord)
+**"Key Findings" slot always gets few evidence items**
+→ Keywords like `finding`, `key`, `insight` are too common. Use more specific terms from your actual document: `adoption`, `conflict`, `structural`, `root cause`.
