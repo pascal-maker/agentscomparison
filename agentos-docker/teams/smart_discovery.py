@@ -71,27 +71,30 @@ LAYOUT_TEXT_RIGHT = 4 # Text on right
 def smart_discover(
     notion_url: str = None,
     raw_content: str = None,
+    notion_urls: List[str] = None,
+    raw_contents: List[str] = None,
+    source_labels: List[str] = None,
     customer_name: str = "Client",
     config: CustomerConfig = None,
 ) -> Dict[str, Any]:
     """
     Production-grade smart discovery with evidence grounding.
 
+    Accepts one or multiple sources (Notion URLs and/or pasted content).
+    All sources are merged into a single evidence collection before analysis.
+
     Args:
-        notion_url: Notion page URL to read (optional)
-        raw_content: Raw content string (alternative to notion_url)
+        notion_url: Single Notion page URL (backward compat)
+        raw_content: Single raw content string (backward compat)
+        notion_urls: List of Notion page URLs
+        raw_contents: List of raw content strings
+        source_labels: Optional labels for each source (shown in evidence)
         customer_name: Customer name for the report
         config: Optional CustomerConfig for constraints
 
     Returns:
-        Dict with:
-        - success: bool
-        - markdown_path: path to generated .md file
-        - powerpoint_path: path to generated .pptx file
-        - sections: list of section names
-        - evidence_count: number of evidence items
-        - validation: grounding validation results
-        - error: error message if failed
+        Dict with success, markdown_path, powerpoint_path, sections,
+        evidence_count, sources_read, validation, error
     """
     result = {
         "success": False,
@@ -99,9 +102,23 @@ def smart_discover(
         "powerpoint_path": None,
         "sections": [],
         "evidence_count": 0,
+        "sources_read": [],
         "validation": None,
         "error": None,
     }
+
+    # Normalise inputs — merge singular and plural forms into lists
+    urls = list(notion_urls or [])
+    if notion_url:
+        urls.insert(0, notion_url)
+
+    contents = list(raw_contents or [])
+    if raw_content:
+        contents.insert(0, raw_content)
+
+    if not urls and not contents:
+        result["error"] = "No content provided (need at least one notion_url or raw_content)"
+        return result
 
     # Create default config if not provided
     if not config:
@@ -111,42 +128,58 @@ def smart_discover(
     logger.info("SMART DISCOVERY WORKFLOW (Production)")
     logger.info("=" * 60)
     logger.info(f"Customer: {config.name}")
+    logger.info(f"Sources: {len(urls)} Notion URL(s), {len(contents)} pasted block(s)")
 
     # ========================================================================
-    # Step 1: Get content and extract evidence
+    # Step 1: Read all sources and merge into one evidence collection
     # ========================================================================
-    logger.info("\n[Step 1] Extracting evidence from input...")
+    logger.info("\n[Step 1] Extracting evidence from all sources...")
 
-    page_title = ""
-    page_id = ""
-    page_url = notion_url or ""
+    evidence = EvidenceCollection()
+    labels = list(source_labels or [])
 
-    if notion_url:
-        logger.info(f"Reading Notion page: {notion_url}")
-        notion_result = read_notion_page(notion_url)
+    # Read Notion URLs
+    for i, url in enumerate(urls):
+        label = labels[i] if i < len(labels) else f"Source {i + 1}"
+        logger.info(f"  Reading Notion page [{label}]: {url}")
+        notion_result = read_notion_page(url)
         if not notion_result["success"]:
-            result["error"] = f"Failed to read Notion: {notion_result['error']}"
-            return result
-        content = notion_result["content"]
-        page_title = notion_result.get("title", "")
+            logger.warning(f"  Failed to read {url}: {notion_result['error']} — skipping")
+            continue
+        page_title = notion_result.get("title", "") or label
         page_id = notion_result.get("metadata", {}).get("page_id", "")
-    elif raw_content:
-        content = raw_content
-        page_title = "Input Document"
-    else:
-        result["error"] = "No content provided (need notion_url or raw_content)"
+        source_evidence = extract_evidence_from_content(
+            content=notion_result["content"],
+            page_title=page_title,
+            page_id=page_id,
+            page_url=url,
+        )
+        evidence.merge(source_evidence)
+        result["sources_read"].append({"label": label, "title": page_title, "url": url})
+        logger.info(f"  → {len(source_evidence)} evidence items from [{label}]")
+
+    # Read pasted content blocks
+    url_offset = len(urls)
+    for i, content in enumerate(contents):
+        label_idx = url_offset + i
+        label = labels[label_idx] if label_idx < len(labels) else f"Source {url_offset + i + 1}"
+        logger.info(f"  Processing pasted content [{label}]")
+        source_evidence = extract_evidence_from_content(
+            content=content,
+            page_title=label,
+            page_id=f"paste-{i}",
+            page_url="",
+        )
+        evidence.merge(source_evidence)
+        result["sources_read"].append({"label": label, "title": label, "url": ""})
+        logger.info(f"  → {len(source_evidence)} evidence items from [{label}]")
+
+    if len(evidence) == 0:
+        result["error"] = "No evidence could be extracted from any source"
         return result
 
-    # Extract evidence items
-    evidence = extract_evidence_from_content(
-        content=content,
-        page_title=page_title,
-        page_id=page_id,
-        page_url=page_url
-    )
-
     result["evidence_count"] = len(evidence)
-    logger.info(f"Extracted {len(evidence)} evidence items")
+    logger.info(f"Total evidence items: {len(evidence)} across {len(result['sources_read'])} source(s)")
 
     # ========================================================================
     # Step 2: Analyze content and discover sections

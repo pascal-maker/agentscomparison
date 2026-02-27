@@ -1,7 +1,7 @@
 """
 Smart Discovery — Streamlit UI
 ================================
-Paste a Notion URL → get a Sweetspot PowerPoint.
+Multiple sources (Notion URLs + pasted content) → one Sweetspot PowerPoint.
 
 Run from project root:
     streamlit run streamlit_app.py
@@ -28,6 +28,22 @@ st.set_page_config(
 )
 
 # ============================================================================
+# Session state — source list
+# ============================================================================
+if "sources" not in st.session_state:
+    st.session_state.sources = [{"type": "url", "label": "Source 1", "value": ""}]
+
+
+def add_source():
+    n = len(st.session_state.sources) + 1
+    st.session_state.sources.append({"type": "url", "label": f"Source {n}", "value": ""})
+
+
+def remove_source(i: int):
+    st.session_state.sources.pop(i)
+
+
+# ============================================================================
 # Header
 # ============================================================================
 st.title("Smart Discovery")
@@ -35,23 +51,7 @@ st.caption("Notion → PowerPoint | Sweetspot")
 st.divider()
 
 # ============================================================================
-# Mode selector
-# ============================================================================
-mode = st.radio(
-    "Mode",
-    ["Smart Discovery", "Simple Mode"],
-    horizontal=True,
-    help=(
-        "**Smart Discovery** — Claude analyzes your Notion page, grounds every bullet "
-        "to an evidence item, and flags gaps as Open Questions.\n\n"
-        "**Simple Mode** — Converts the Notion structure directly to slides. No LLM, no grounding."
-    ),
-)
-
-st.divider()
-
-# ============================================================================
-# Inputs — initialize all variables with defaults first
+# Mode + customer name
 # ============================================================================
 customer_name = "Client"
 presentation_title = ""
@@ -60,36 +60,82 @@ slide_min = 8
 slide_max = 30
 per_section_max = 4
 
-col_url, col_name = st.columns([3, 1])
+col_mode, col_name = st.columns([3, 1])
 
-with col_url:
-    input_mode = st.radio("Input", ["Notion URL", "Paste content"], horizontal=True)
+with col_mode:
+    mode = st.radio(
+        "Mode",
+        ["Smart Discovery", "Simple Mode"],
+        horizontal=True,
+        help=(
+            "**Smart Discovery** — Claude analyzes all sources, grounds every bullet "
+            "to evidence, and flags gaps as Open Questions.\n\n"
+            "**Simple Mode** — Converts structure directly to slides. No LLM."
+        ),
+    )
 
 with col_name:
     if mode == "Smart Discovery":
         customer_name = st.text_input("Customer name", value="Client")
     else:
-        presentation_title = st.text_input(
-            "Presentation title",
-            placeholder="Optional",
+        presentation_title = st.text_input("Presentation title", placeholder="Optional")
+
+st.divider()
+
+# ============================================================================
+# Sources
+# ============================================================================
+st.subheader("Sources")
+st.caption("Add as many sources as you need — interviews, workshops, desk research, …")
+
+for i, source in enumerate(st.session_state.sources):
+    col_type, col_label, col_remove = st.columns([1.2, 3, 0.4])
+
+    with col_type:
+        source["type"] = st.selectbox(
+            "Type",
+            ["url", "paste"],
+            index=0 if source["type"] == "url" else 1,
+            key=f"type_{i}",
+            label_visibility="collapsed",
         )
 
-notion_url = ""
-raw_content_input = ""
+    with col_label:
+        source["label"] = st.text_input(
+            "Label",
+            value=source["label"],
+            key=f"label_{i}",
+            label_visibility="collapsed",
+            placeholder="Label (e.g. Interview CEO, Workshop output, Desk research)",
+        )
 
-if input_mode == "Notion URL":
-    notion_url = st.text_input(
-        "Notion URL",
-        placeholder="https://www.notion.so/your-page-id",
-    )
-else:
-    raw_content_input = st.text_area(
-        "Paste your content here",
-        placeholder="Copy and paste from Notion, Word, email — anything works.",
-        height=250,
-    )
+    with col_remove:
+        if len(st.session_state.sources) > 1:
+            st.button("✕", key=f"remove_{i}", on_click=remove_source, args=(i,))
 
+    if source["type"] == "url":
+        source["value"] = st.text_input(
+            "Notion URL",
+            value=source["value"],
+            key=f"value_{i}",
+            placeholder="https://www.notion.so/your-page-id",
+            label_visibility="collapsed",
+        )
+    else:
+        source["value"] = st.text_area(
+            "Content",
+            value=source["value"],
+            key=f"value_{i}",
+            placeholder="Paste content from Notion, Word, email — anything works.",
+            height=150,
+            label_visibility="collapsed",
+        )
+
+st.button("+ Add source", on_click=add_source)
+
+# ============================================================================
 # Advanced options (Smart Discovery only)
+# ============================================================================
 if mode == "Smart Discovery":
     with st.expander("Advanced options"):
         must_include_raw = st.text_input(
@@ -110,20 +156,20 @@ if mode == "Smart Discovery":
 # ============================================================================
 # Run button
 # ============================================================================
-has_input = bool(notion_url.strip() or raw_content_input.strip())
+st.divider()
+has_input = any(s["value"].strip() for s in st.session_state.sources)
 run = st.button("Generate PowerPoint", type="primary", disabled=not has_input)
 
 if not has_input:
-    st.caption("Add a Notion URL or paste content to get started.")
+    st.caption("Fill in at least one source to get started.")
 
 # ============================================================================
 # Pipeline execution
 # ============================================================================
-if run and notion_url.strip():
+if run and has_input:
     log_placeholder = st.empty()
     log_lines: list[str] = []
 
-    # Custom logging handler that streams into the UI
     class StreamlitLogHandler(logging.Handler):
         def emit(self, record: logging.LogRecord) -> None:
             msg = self.format(record)
@@ -144,8 +190,20 @@ if run and notion_url.strip():
 
     with st.spinner("Running pipeline…"):
         try:
-            url = notion_url.strip() or None
-            content = raw_content_input.strip() or None
+            # Split sources into URLs and pasted content
+            notion_urls, raw_contents, source_labels = [], [], []
+            simple_url, simple_content = None, None
+
+            for source in st.session_state.sources:
+                val = source["value"].strip()
+                if not val:
+                    continue
+                label = source["label"].strip() or f"Source {len(source_labels) + 1}"
+                if source["type"] == "url":
+                    notion_urls.append(val)
+                else:
+                    raw_contents.append(val)
+                source_labels.append(label)
 
             if mode == "Smart Discovery":
                 from teams.smart_discovery import smart_discover
@@ -166,8 +224,9 @@ if run and notion_url.strip():
                     },
                 )
                 result = smart_discover(
-                    notion_url=url,
-                    raw_content=content,
+                    notion_urls=notion_urls or None,
+                    raw_contents=raw_contents or None,
+                    source_labels=source_labels or None,
                     customer_name=customer_name,
                     config=config,
                 )
@@ -175,16 +234,19 @@ if run and notion_url.strip():
             else:
                 from teams.notion_to_pptx import notion_to_pptx
 
+                # Simple mode: use first source only
+                first = next(
+                    (s for s in st.session_state.sources if s["value"].strip()), None
+                )
                 result = notion_to_pptx(
-                    notion_url=url,
-                    raw_content=content,
+                    notion_url=first["value"].strip() if first and first["type"] == "url" else None,
+                    raw_content=first["value"].strip() if first and first["type"] == "paste" else None,
                     title=presentation_title.strip() or None,
                 )
 
         except Exception as exc:
             result = {"success": False, "error": str(exc)}
 
-    # Remove handlers
     for name in logger_names:
         logging.getLogger(name).removeHandler(handler)
 
@@ -196,17 +258,25 @@ if run and notion_url.strip():
     if result.get("success"):
         st.success("Done!")
 
-        # Metrics row
         if mode == "Smart Discovery":
             validation = result.get("validation") or {}
             grounded = validation.get("grounded_bullets", 0)
             total = validation.get("total_bullets", 1)
             pct = f"{int(grounded / total * 100)}%" if total else "—"
 
-            m1, m2, m3 = st.columns(3)
-            m1.metric("Evidence items", result.get("evidence_count", 0))
-            m2.metric("Sections", len(result.get("sections", [])))
-            m3.metric("Grounding", pct)
+            m1, m2, m3, m4 = st.columns(4)
+            m1.metric("Sources read", len(result.get("sources_read", [])))
+            m2.metric("Evidence items", result.get("evidence_count", 0))
+            m3.metric("Sections", len(result.get("sections", [])))
+            m4.metric("Grounding", pct)
+
+            # Sources summary
+            sources_read = result.get("sources_read", [])
+            if sources_read:
+                with st.expander(f"Sources read ({len(sources_read)})"):
+                    for s in sources_read:
+                        url_part = f" — {s['url']}" if s.get("url") else ""
+                        st.write(f"**{s['label']}**: {s['title']}{url_part}")
         else:
             m1, m2 = st.columns(2)
             m1.metric("Sections", len(result.get("sections", [])))

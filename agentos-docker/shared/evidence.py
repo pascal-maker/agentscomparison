@@ -89,6 +89,10 @@ class EvidenceCollection(BaseModel):
         items_to_cite = self.get_by_ids(ids) if ids else list(self.items.values())
         return "\n".join(item.format_citation() for item in items_to_cite)
 
+    def merge(self, other: "EvidenceCollection") -> None:
+        """Merge another EvidenceCollection into this one."""
+        self.items.update(other.items)
+
     def __len__(self) -> int:
         return len(self.items)
 
