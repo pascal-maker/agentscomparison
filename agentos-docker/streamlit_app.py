@@ -80,6 +80,31 @@ with col_name:
     else:
         presentation_title = st.text_input("Presentation title", placeholder="Optional")
 
+if mode == "Smart Discovery":
+    config_url = st.text_input(
+        "Customer config URL (optional)",
+        placeholder="https://www.notion.so/your-config-page-id",
+        help=(
+            "Notion page that defines required sections, terminology, and slide budget "
+            "for this customer. Expected format:\n\n"
+            "```\n"
+            "# <Customer Name>\n\n"
+            "## Required Sections\n"
+            "- Executive Summary\n"
+            "- Key Findings\n"
+            "- Recommendations\n\n"
+            "## Terminology\n"
+            "- Old Term → New Term\n\n"
+            "## Slide Budget\n"
+            "- Min slides: 8\n"
+            "- Max slides: 25\n"
+            "- Max per section: 4\n"
+            "```"
+        ),
+    )
+else:
+    config_url = ""
+
 st.divider()
 
 # ============================================================================
@@ -209,20 +234,38 @@ if run and has_input:
                 from teams.smart_discovery import smart_discover
                 from shared.evidence import CustomerConfig
 
-                must_include = (
-                    [s.strip() for s in must_include_raw.split(",") if s.strip()]
-                    if must_include_raw
-                    else ["Executive Summary", "Key Findings", "Recommendations"]
-                )
-                config = CustomerConfig(
-                    name=customer_name,
-                    must_include=must_include,
-                    slide_budget={
-                        "min": slide_min,
-                        "max": slide_max,
-                        "per_section_max": per_section_max,
-                    },
-                )
+                # Load config from Notion page if URL provided
+                if config_url.strip():
+                    from shared.config_loader import load_customer_config_from_notion
+                    config, config_warnings = load_customer_config_from_notion(
+                        config_url.strip(), fallback_name=customer_name
+                    )
+                    for w in config_warnings:
+                        st.warning(w)
+                    if not config_warnings:
+                        st.info(
+                            f"Config loaded: **{config.name}** — "
+                            f"{len(config.must_include)} required sections, "
+                            f"{len(config.terminology_map)} terminology mappings"
+                        )
+                    # Sync customer_name widget to loaded name
+                    customer_name = config.name
+                else:
+                    must_include = (
+                        [s.strip() for s in must_include_raw.split(",") if s.strip()]
+                        if must_include_raw
+                        else ["Executive Summary", "Key Findings", "Recommendations"]
+                    )
+                    config = CustomerConfig(
+                        name=customer_name,
+                        must_include=must_include,
+                        slide_budget={
+                            "min": slide_min,
+                            "max": slide_max,
+                            "per_section_max": per_section_max,
+                        },
+                    )
+
                 result = smart_discover(
                     notion_urls=notion_urls or None,
                     raw_contents=raw_contents or None,
