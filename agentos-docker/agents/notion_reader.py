@@ -163,6 +163,64 @@ except Exception as e:
     NOTION_CLIENT = None
 
 
+def _read_block_children(block_id: str, depth: int = 0, max_depth: int = 3) -> list[str]:
+    """
+    Fetch and render child blocks of a non-page block (toggle, callout, synced block, etc.).
+    Uses blocks.children.list — does NOT call pages.retrieve.
+    Returns a list of markdown lines.
+    """
+    lines = []
+    if not NOTION_CLIENT or depth > max_depth:
+        return lines
+    try:
+        all_blocks = []
+        cursor = None
+        while True:
+            kwargs = {"block_id": block_id, "page_size": 100}
+            if cursor:
+                kwargs["start_cursor"] = cursor
+            response = NOTION_CLIENT.blocks.children.list(**kwargs)
+            all_blocks.extend(response.get("results", []))
+            if not response.get("has_more"):
+                break
+            cursor = response.get("next_cursor")
+
+        for block in all_blocks:
+            block_type = block.get("type")
+            block_data = block.get(block_type, {})
+            text = ""
+            if "rich_text" in block_data:
+                text = "".join([t.get("plain_text", "") for t in block_data["rich_text"]])
+
+            if block_type == "heading_1":
+                lines.append(f"\n# {text}")
+            elif block_type == "heading_2":
+                lines.append(f"\n## {text}")
+            elif block_type == "heading_3":
+                lines.append(f"\n### {text}")
+            elif block_type == "paragraph" and text:
+                lines.append(text)
+            elif block_type == "bulleted_list_item":
+                lines.append(f"- {text}")
+            elif block_type == "numbered_list_item":
+                lines.append(f"1. {text}")
+            elif block_type in ("quote", "callout") and text:
+                lines.append(f"> {text}")
+            elif block_type == "toggle" and text:
+                lines.append(f"\n### {text}")
+            elif block_type == "divider":
+                lines.append("\n---\n")
+
+            # Recurse further if needed
+            if block.get("has_children") and block_type not in ("child_page",) and depth < max_depth:
+                child_id = block.get("id", "").replace("-", "")
+                if child_id:
+                    lines.extend(_read_block_children(child_id, depth=depth + 1, max_depth=max_depth))
+    except Exception as e:
+        logger.debug(f"Could not read block children {block_id}: {e}")
+    return lines
+
+
 def get_page_content_direct(page_id: str, depth: int = 0, max_depth: int = 3) -> dict:
     """
     Read a Notion page directly using the Notion API client.
@@ -279,17 +337,12 @@ def get_page_content_direct(page_id: str, depth: int = 0, max_depth: int = 3) ->
                 continue
 
             # Recurse into blocks that have children (e.g. toggles, synced blocks)
+            # These are block IDs, NOT page IDs — use _read_block_children, not get_page_content_direct
             if block.get("has_children") and block_type not in ("child_page", "link_to_page") and depth < max_depth:
                 child_block_id = block.get("id", "").replace("-", "")
                 if child_block_id:
-                    child_result = get_page_content_direct(child_block_id, depth=depth + 1, max_depth=max_depth)
-                    if child_result["success"] and child_result["content"]:
-                        # Append child content without the H1 title line
-                        child_lines = [
-                            l for l in child_result["content"].split("\n")
-                            if not l.startswith("# ")
-                        ]
-                        content_lines.extend(child_lines)
+                    child_lines = _read_block_children(child_block_id, depth=depth + 1, max_depth=max_depth)
+                    content_lines.extend(child_lines)
 
         result["content"] = "\n".join(content_lines)
         result["success"] = True
@@ -423,26 +476,12 @@ def read_notion_page(url_or_id: str, use_fallback: bool = True, bypass_safety: b
             logger.info(f"✅ Successfully read page: {direct_result['title']}")
             return result
         else:
-            logger.warning(f"Direct API failed: {direct_result['error']}, trying MCP...")
-
-    # Fallback to MCP if direct client fails
-    if notion_mcp:
-        try:
-            logger.info(f"📖 Reading Notion page via MCP: {page_id}")
-            response = notion_reader_agent.run(
-                f"Read the Notion page with ID: {page_id}. "
-                f"Return the full content as markdown."
-            )
-            result["content"] = response.content if hasattr(response, 'content') else str(response)
-            result["success"] = True
-            logger.info(f"✅ Successfully read page via MCP: {page_id}")
+            logger.error(f"Direct API failed: {direct_result['error']}")
+            result["error"] = direct_result["error"]
             return result
-        except Exception as e:
-            logger.error(f"❌ MCP failed: {e}")
-            result["error"] = str(e)
 
-    # Neither worked
-    if not NOTION_CLIENT and not notion_mcp:
+    # No Notion client configured
+    if not NOTION_CLIENT:
         result["error"] = "No Notion client available. Set NOTION_TOKEN in .env"
 
     if use_fallback and not result["success"]:
