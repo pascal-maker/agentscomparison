@@ -178,6 +178,8 @@ class CustomerConfig(BaseModel):
     Customer-specific configuration for report generation.
 
     Controls what must be included, terminology, and output constraints.
+    slot_definitions is populated by config_loader when a Notion config
+    page provides per-slot descriptions and evidence keywords.
     """
     name: str
 
@@ -187,6 +189,11 @@ class CustomerConfig(BaseModel):
         "Key Findings",
         "Recommendations"
     ])
+
+    # Optional slot metadata keyed by section name.
+    # Values are dicts with keys: description, evidence_keywords, slide_count_target.
+    # Populated by config_loader; ignored when building config manually.
+    slot_definitions: Dict[str, Any] = Field(default_factory=dict)
 
     # Terminology mapping (input term -> output term)
     terminology_map: Dict[str, str] = Field(default_factory=dict)

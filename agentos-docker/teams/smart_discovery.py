@@ -28,8 +28,9 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 
 from agents.notion_reader import read_notion_page
-from agents.content_analyzer import analyze_with_evidence
-from agents.revisor import revise_sections, enforce_slide_budget
+from agents.controller import fill_template
+from agents.revisor import enforce_slide_budget
+from shared.template import ReportTemplate
 from shared.evidence import (
     EvidenceItem,
     EvidenceCollection,
@@ -182,30 +183,26 @@ def smart_discover(
     logger.info(f"Total evidence items: {len(evidence)} across {len(result['sources_read'])} source(s)")
 
     # ========================================================================
-    # Step 2: Analyze content and discover sections
+    # Step 2: Build template and fill slots (one Claude call per slot)
     # ========================================================================
-    logger.info("\n[Step 2] Analyzing content to discover sections...")
+    logger.info("\n[Step 2] Building report template from customer config...")
 
-    sections, title, summary = analyze_with_evidence(evidence, config)
+    template = ReportTemplate.from_customer_config(config)
+    logger.info(
+        f"Template: {len(template.slots)} slots — "
+        + ", ".join(s.name for s in template.slots)
+    )
 
-    logger.info(f"Discovered title: {title}")
-    logger.info(f"Discovered {len(sections)} sections")
+    logger.info("\n[Step 3] Controller: filling slots with targeted evidence...")
 
-    # ========================================================================
-    # Step 3: Revisor pass - enforce grounding rules
-    # ========================================================================
-    logger.info("\n[Step 3] Revisor pass - enforcing grounding rules...")
-
-    revised_sections, revision_result = revise_sections(sections, evidence, config)
-
-    logger.info(revision_result.summary())
+    sections, title, summary = fill_template(template, evidence, config)
 
     # ========================================================================
     # Step 4: Enforce slide budget
     # ========================================================================
     logger.info("\n[Step 4] Enforcing slide budget...")
 
-    final_sections = enforce_slide_budget(revised_sections, config)
+    final_sections = enforce_slide_budget(sections, config)
 
     # ========================================================================
     # Step 5: Validate grounding

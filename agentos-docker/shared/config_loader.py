@@ -112,6 +112,9 @@ _SECTION_NAMES = {
     "slide_budget": {
         "slide budget", "budget", "slides",
     },
+    "template_slots": {
+        "template slot", "slot", "output structure", "report structure",
+    },
 }
 
 
@@ -174,8 +177,33 @@ def _parse_config_content(
     must_include: list[str] = []
     terminology_map: dict[str, str] = {}
     slide_budget: dict[str, int] = {"min": 8, "max": 30, "per_section_max": 4}
+    # slot_definitions: slot_name → {description, evidence_keywords, slide_count_target}
+    slot_definitions: dict[str, dict] = {}
 
     current_section: Optional[str] = None
+    current_slot_name: Optional[str] = None   # active H3 slot inside template_slots
+    current_slot_desc_lines: list[str] = []   # paragraph lines for the current slot
+
+    def _flush_slot():
+        """Save accumulated slot description buffer."""
+        nonlocal current_slot_name, current_slot_desc_lines
+        if not current_slot_name:
+            return
+        desc = " ".join(current_slot_desc_lines).strip()
+        # Extract keywords line: "Keywords: a, b, c"
+        keywords: list[str] = []
+        m = re.search(r'keywords?\s*[:=]\s*(.+)', desc, re.IGNORECASE)
+        if m:
+            keywords = [k.strip().lower() for k in re.split(r'[,;]', m.group(1)) if k.strip()]
+            # Remove the keywords line from description
+            desc = re.sub(r'keywords?\s*[:=]\s*.+', '', desc, flags=re.IGNORECASE).strip()
+        slot_definitions[current_slot_name] = {
+            "description": desc,
+            "evidence_keywords": keywords,
+            "slide_count_target": slide_budget.get("per_section_max", 2),
+        }
+        current_slot_name = None
+        current_slot_desc_lines = []
 
     for line in lines:
         stripped = line.strip()
@@ -189,10 +217,26 @@ def _parse_config_content(
             heading_text = heading_match.group(2).strip()
 
             if level == 1:
-                # Already captured as name above; reset context
                 current_section = None
-            else:
+                _flush_slot()
+            elif level == 2:
+                _flush_slot()
                 current_section = _detect_section(heading_text)
+                current_slot_name = None
+            elif level == 3 and current_section == "template_slots":
+                # Each H3 under Template Slots is a slot definition
+                _flush_slot()
+                current_slot_name = heading_text
+                current_slot_desc_lines = []
+            else:
+                _flush_slot()
+                current_section = None
+            continue
+
+        # Inside a template slot — collect description lines
+        if current_section == "template_slots" and current_slot_name:
+            # Could be a paragraph or a "Keywords: ..." line
+            current_slot_desc_lines.append(stripped)
             continue
 
         # Parse bullets
@@ -243,6 +287,9 @@ def _parse_config_content(
                 slide_budget["min"] = int(m.group(1))
                 continue
 
+    # Flush any trailing slot
+    _flush_slot()
+
     # -------------------------------------------------------------------------
     # Defaults + warnings
     # -------------------------------------------------------------------------
@@ -253,10 +300,29 @@ def _parse_config_content(
             "using defaults: Executive Summary, Key Findings, Recommendations."
         )
 
+    # Backfill slot_definitions from must_include for any slots not explicitly defined
+    for section_name in must_include:
+        if section_name not in slot_definitions:
+            keywords = [w.lower() for w in re.split(r'\W+', section_name) if len(w) > 3]
+            slot_definitions[section_name] = {
+                "description": "",
+                "evidence_keywords": keywords,
+                "slide_count_target": slide_budget.get("per_section_max", 2),
+            }
+
     config = CustomerConfig(
         name=name,
         must_include=must_include,
         terminology_map=terminology_map,
         slide_budget=slide_budget,
+        slot_definitions=slot_definitions,
     )
+
+    if slot_definitions:
+        explicit = sum(1 for v in slot_definitions.values() if v.get("description"))
+        logger.info(
+            f"Slot definitions: {len(slot_definitions)} total, "
+            f"{explicit} with explicit descriptions"
+        )
+
     return config, warnings
