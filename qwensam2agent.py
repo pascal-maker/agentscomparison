@@ -15,22 +15,18 @@ Combined Medical-VLM, **SAM-2 automatic masking**, and CheXagent demo.
 # ---------------------------------------------------------------------
 # Standard libs
 # ---------------------------------------------------------------------
-# ---------------------------------------------------------------------
-import os, warnings
-os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"          # CPU fallback for missing MPS ops
-warnings.filterwarnings("ignore", message=r".*upsample_bicubic2d.*")  # hide one-line notice
-
 import os
 import sys
-import uuid
 import tempfile
 from threading import Thread
+import warnings
 
 # ---------------------------------------------------------------------
 # Third-party libs
-
-
 # ---------------------------------------------------------------------
+os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"          # CPU fallback for missing MPS ops
+warnings.filterwarnings("ignore", message=r".*upsample_bicubic2d.*")  # hide one-line notice
+
 import torch
 import numpy as np
 from PIL import Image, ImageDraw
@@ -51,13 +47,6 @@ from qwen_vl_utils import process_vision_info
 # =============================================================================
 from sam2.build_sam import build_sam2
 from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
-
-# Alternative: try direct model loading if build_sam2 continues to fail
-try:
-    from sam2.modeling.sam2_base import SAM2Base
-    from sam2.utils.misc import get_device_index
-except ImportError:
-    print("Could not import additional SAM2 components")
 
 
 # =============================================================================
@@ -127,8 +116,9 @@ class MedicalVLMAgent:
         ]
         user_content = []
         if image is not None:
-            tmp = f"/tmp/{uuid.uuid4()}.png"
-            image.save(tmp)
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tfile:
+                image.save(tfile.name)
+                tmp = tfile.name
             user_content.append({"type": "image", "image": tmp})
         user_content.append({"type": "text", "text": user_text or "Please describe the image."})
         messages.append({"role": "user", "content": user_content})
@@ -152,33 +142,29 @@ class MedicalVLMAgent:
 
 
 # =============================================================================
-# SAM-2 model + AutomaticMaskGenerator
-# =============================================================================
-
-# =============================================================================
-# SAM-2.1 model + AutomaticMaskGenerator (concise version)
+# SAM-2 model + AutomaticMaskGenerator (concise version)
 # =============================================================================
 # =============================================================================
 # SAM-2.1 model + AutomaticMaskGenerator  (final minimal version)
 # =============================================================================
-import os
+
 from sam2.build_sam import build_sam2
 from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
 
-def initialize_sam2():
-    # These two files are already in your repo
-    CKPT = "checkpoints/sam2.1_hiera_large.pt"   # ≈2.7 GB
-    CFG  = "configs/sam2.1/sam2.1_hiera_l.yaml"
 
-    # One chdir so Hydra's search path starts inside sam2/sam2/
-    os.chdir("sam2/sam2")
+_REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+
+def initialize_sam2():
+    ckpt = os.path.join(_REPO_ROOT, "checkpoints", "sam2.1_hiera_large.pt")   # ≈2.7 GB
+    cfg  = os.path.join(_REPO_ROOT, "configs", "sam2.1", "sam2.1_hiera_l.yaml")
 
     device = get_device()
     print(f"[SAM-2] building model on {device}")
 
     sam2_model = build_sam2(
-        CFG,        # relative to sam2/sam2/
-        CKPT,       # relative after chdir
+        cfg,            # full path to config
+        ckpt,           # full path to checkpoint
         device=device,
         apply_postprocessing=False,
     )
@@ -199,7 +185,6 @@ try:
     print("[SAM-2] Successfully initialized!")
 except Exception as e:
     print(f"[SAM-2] Failed to initialize: {e}")
-    _sam2_model, _mask_generator = None, None
 
 def automatic_mask_overlay(image_np: np.ndarray) -> np.ndarray:
     """Generate masks and alpha-blend them on top of the original image."""
@@ -262,13 +247,13 @@ def clean_text(text):
 def response_report_generation(pil_image_1, pil_image_2):
     """Structured chest-X-ray report (streaming)."""
     streamer = TextIteratorStreamer(chex_tok, skip_prompt=True, skip_special_tokens=True)
-    paths = []
+    tmp_files = []
     for im in [pil_image_1, pil_image_2]:
         if im is None:
             continue
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tfile:
             im.save(tfile.name)
-            paths.append(tfile.name)
+            tmp_files.append(tfile.name)
 
     device = get_model_device(chex_model)
     anatomies = [
@@ -291,7 +276,7 @@ def response_report_generation(pil_image_1, pil_image_2):
     partial = "## Generating Findings (step-by-step):\n\n"
     for idx, (anat, prompt) in enumerate(zip(anatomies, prompts)):
         query = chex_tok.from_list_format(
-            [*[{"image": p} for p in paths], {"text": prompt}]
+            [*[{"image": p} for p in tmp_files], {"text": prompt}]
         )
         conv = [
             {"from": "system", "value": "You are a helpful assistant."},
@@ -350,9 +335,12 @@ def response_phrase_grounding(pil_image, prompt_text):
     if pil_image is None:
         return "Please upload an image.", None
 
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tfile:
-        pil_image.save(tfile.name)
-        img_path = tfile.name
+    _tmp_file = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    try:
+        pil_image.save(_tmp_file.name)
+        img_path = _tmp_file.name
+    finally:
+        _tmp_file.close()
 
     device = get_model_device(chex_model)
     query = chex_tok.from_list_format([{"image": img_path}, {"text": prompt_text}])
@@ -432,4 +420,8 @@ with gr.Blocks() as demo:
         ).render()
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860, share=True)
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=int(os.environ.get("SERVER_PORT", "7860")),
+        share=False,  # set to True for public sharing (requires ngrok)
+    )

@@ -66,3 +66,5 @@ countroll_report/
 
 # Optional: local PyPI creds (uncomment if you ever create it)
 # .pypirc
+output/
+*.pptx
