@@ -1,93 +1,173 @@
----
-title: medical-imaging-analysis
-emoji: 🏥
-colorFrom: blue
-colorTo: purple
-sdk: gradio
-sdk_version: 4.19.2
-app_file: qwensam2agent.py
-pinned: false
----
+# Agents Comparison
 
-# Medical Imaging Analysis
+A hands-on comparison of AI agent frameworks, all built around the same use case: a **Luminus energy customer support assistant**. Each framework tackles billing queries, energy-saving advice, appointment booking, and multi-agent orchestration in its own way.
 
-This application combines multiple AI models for medical image analysis:
-- Qwen-VLM for medical Q&A
-- SAM-2 for automatic image segmentation
-- CheXagent for structured medical reports
+## Frameworks
 
-## Features
-- Medical Q&A with image support
-- Automatic image segmentation
-- Structured medical report generation
-- Visual grounding capabilities
+### OpenAI Agents SDK (`openai/demo.py`)
 
----
+The most comprehensive demo with 12 patterns covering the full SDK surface:
 
-**AutoGen**  
-We built a robust multi-agent system by subclassing `AssistantAgent` to create specialized agents for billing, energy insights, and energy advice. These agents were orchestrated using a `RoundRobinGroupChat` to simulate a team conversation that answers a multi-part customer query—ensuring the customer is addressed by name and data privacy is maintained.
+| # | Pattern | Description |
+|---|---------|-------------|
+| 1 | Basic Agent | Simple one-shot Q&A |
+| 2 | Function Tools | Agent calls billing and energy-saving tools |
+| 3 | Multi-Agent Handoffs | Routes to appointment booking specialist |
+| 4 | Streaming | Real-time event-by-event response streaming |
+| 5 | Multi-Turn Conversation | Stateful history via `to_input_list()` |
+| 6 | Persistent Session | SQLiteSession for durable cross-run memory |
+| 7 | LLM-as-a-Judge | Evaluator loop that critiques and improves responses |
+| 8 | Agents as Tools | Manager orchestrates billing analyst + energy advisor as sub-agents |
+| 9 | Guardrails | Input guardrail blocks competitor energy provider questions |
+| 10 | Human in the Loop | Approval gate for plan switches and meter replacements |
+| 11 | Interactive Chat | Full-featured conversational loop combining all patterns |
+| 12 | Voice Agent | Microphone input, speech-to-text, agent, text-to-speech, speaker output |
 
----
+```bash
+pip install openai-agents 'openai-agents[voice]' sounddevice
 
-**smolagents**  
-Using the lightweight `CodeAgent`, we defined agents with custom system prompts for billing, insights, and advice. Each agent processes the customer query individually, and their outputs are later aggregated by an aggregator agent. This approach demonstrated how a minimal, fast, and LLM-agnostic solution can be implemented in pure Python.
+# Run a specific demo
+python openai/demo.py --demo 8
 
----
+# Interactive chat (type your own questions)
+python openai/demo.py --chat
 
-**Swarm (Experimental)**  
-We explored Swarm to understand ergonomic multi-agent handoffs and routines. In this educational framework, agents are designed to transfer conversation control among themselves based on the task at hand. Although not production-ready, it showcased how to model multi-step interactions and agent collaboration in a lightweight, client-side system.
+# Voice agent (speak into your mic)
+python openai/demo.py --demo 12
 
----
-
-**PydanticAI (Beta)**  
-PydanticAI was used to prototype a type-safe support agent that leverages dependency injection and Pydantic models for structured, validated responses. This approach ensures that responses adhere to a predefined schema, adding a layer of data integrity and security to the solution.
+# Run all scripted demos
+python openai/demo.py
+```
 
 ---
 
-**ai-gradio**  
-We deployed an interactive multi-modal interface using ai-gradio, which is built on Gradio. This framework allowed us to quickly create and launch web interfaces for text (and potentially voice or video) interactions with the AI models, demonstrating a user-friendly way to interact with our agents across different channels.
+### Microsoft AutoGen (`medicautogenapp.py`, `luminusagents.py`)
+
+Multi-agent system using `AssistantAgent` subclasses for billing, energy insights, and energy advice. Orchestrated with `RoundRobinGroupChat` to simulate a team conversation answering multi-part customer queries.
+
+```bash
+pip install autogen-agentchat autogen-ext
+python medicautogenapp.py
+```
 
 ---
 
-Each framework brought its unique strengths—from AutoGen's robust orchestration to smolagents' simplicity, Swarm's educational handoff patterns, PydanticAI's structured responses, and ai-gradio's interactive deployment—illustrating diverse approaches to building a comprehensive, multimodal energy assistant for Luminus. Personally speaking Microsoft Autogen was the best in this simple case it provided the user with input questions and it asnwered queries perfectly even when mispelling sentences.
+### HuggingFace smolagents (`agentsfromhuggingface.py`)
 
-# Energy Assistant with Gemini AI
+Lightweight `CodeAgent` with custom system prompts for billing, insights, and advice. Each agent processes the query individually, then an aggregator agent combines outputs. Minimal, fast, and LLM-agnostic.
 
-A command-line energy advisor powered by Google's Gemini AI that helps users with:
-- Energy usage analysis
-- Billing explanations
-- Energy-saving tips
-- Cost estimates
+```bash
+pip install smolagents
+python agentsfromhuggingface.py
+```
 
-## Setup
+---
 
-1. Install dependencies:
+### Swarm (`luminusswarmagent.py`)
+
+Experimental framework for ergonomic multi-agent handoffs and routines. Agents transfer conversation control based on the task at hand. Educational, not production-ready.
+
+```bash
+python luminusswarmagent.py
+```
+
+---
+
+### PydanticAI (`pydanticenegryassistant.py`)
+
+Type-safe support agent with dependency injection and Pydantic models for structured, validated responses. Ensures responses adhere to a predefined schema.
+
+```bash
+pip install pydantic-ai
+python pydanticenegryassistant.py
+```
+
+---
+
+### Agno (`agnoagents.py`)
+
+Agent framework demo for energy assistant use case.
+
+```bash
+pip install agno
+python agnoagents.py
+```
+
+---
+
+### Mem0 (`mem0agents.py`, `mem0Energyassistant.py`)
+
+Agents with persistent memory for energy assistant interactions.
+
+```bash
+pip install mem0ai
+python mem0Energyassistant.py
+```
+
+---
+
+### Google Gemini (`geminiagents.py`, `gemini_mcp_agent.py`)
+
+Command-line energy advisor powered by Gemini AI. Also includes an MCP-enabled Gemini agent.
+
 ```bash
 pip install google-generativeai
-```
-
-2. Set up your Google API key:
-```bash
-export GOOGLE_API_KEY='your-api-key-here'
-```
-
-## Usage
-
-Run the script:
-```bash
 python geminiagents.py
 ```
 
-Type your energy-related questions and get AI-powered advice. Type 'exit' to quit.
+---
 
-## Features
+### DeepSeek (`deepseekenergyagent.py`)
 
-- Real-time energy advice
-- Personalized recommendations
-- Cost calculations
-- Usage analysis
-- Energy-saving tips
+Energy assistant using the DeepSeek model.
 
-## Security Note
+```bash
+python deepseekenergyagent.py
+```
 
-Never commit your API key to version control. Always use environment variables to store sensitive information.
+---
+
+### Qwen (`qwenagent.py`, `qwensam2agent.py`)
+
+Qwen-VLM for medical Q&A combined with SAM-2 for image segmentation. Includes a Gradio web interface.
+
+```bash
+python qwensam2agent.py
+```
+
+---
+
+## Setup
+
+1. Clone the repo:
+```bash
+git clone https://github.com/pascal-maker/agentscomparison.git
+cd agentscomparison
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Set your API keys:
+```bash
+export OPENAI_API_KEY="your-key"
+export GOOGLE_API_KEY="your-key"
+```
+
+## Key Takeaways
+
+Each framework brings unique strengths:
+
+- **OpenAI Agents SDK** — most complete: tools, handoffs, guardrails, human-in-the-loop, voice, sessions, all in one SDK
+- **AutoGen** — best for structured multi-agent team conversations with robust orchestration
+- **smolagents** — simplest and fastest to get started, pure Python
+- **Swarm** — great for learning handoff patterns
+- **PydanticAI** — best for type safety and structured/validated outputs
+- **Gemini** — strong multimodal capabilities
+- **Mem0** — unique persistent memory across conversations
+
+## Security
+
+Never commit API keys to version control. Always use environment variables.
