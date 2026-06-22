@@ -11,6 +11,9 @@ Luminus customer support:
   5. Multi-turn conversation     — stateful history via to_input_list()
   6. Persistent session          — SQLiteSession across turns
   7. LLM-as-a-judge              — response quality evaluation loop
+  8. Agents as tools             — manager orchestrates specialist sub-agents
+  9. Guardrails                  — input guardrail blocks competitor questions
+ 10. Human in the loop           — approval gate for sensitive energy actions
 
 Run a specific demo by commenting/uncommenting the call at the bottom, or
 pass `--demo <number>` from the command line.
@@ -26,12 +29,16 @@ from typing import Literal
 
 from agents import (
     Agent,
+    GuardrailFunctionOutput,
+    InputGuardrailTripwireTriggered,
     ItemHelpers,
     ModelSettings,
     Runner,
+    RunContextWrapper,
     SQLiteSession,
     TResponseInputItem,
     function_tool,
+    input_guardrail,
     trace,
 )
 
@@ -359,6 +366,434 @@ async def demo_llm_as_judge() -> None:
 
 
 # ===========================================================================
+# 8. Agents as Tools
+# ===========================================================================
+
+async def demo_agents_as_tools() -> None:
+    """
+    A manager agent keeps control of the conversation and calls specialist
+    energy agents as tools for bounded subtasks — unlike handoffs, the manager
+    always owns the final response.
+    """
+    print("\n" + "=" * 60)
+    print("DEMO 8 — Agents as Tools")
+    print("=" * 60)
+
+    billing_analyst = Agent(
+        name="Billing Analyst",
+        instructions=(
+            "You are an expert Luminus billing analyst. "
+            "Given a customer question, analyse their billing data and provide "
+            "a detailed breakdown of charges, tariff components, and any anomalies."
+        ),
+        tools=[get_average_bill],
+    )
+
+    energy_advisor = Agent(
+        name="Energy Efficiency Advisor",
+        instructions=(
+            "You are a Luminus energy efficiency specialist. "
+            "Provide personalised tips to reduce energy consumption based on "
+            "the customer's situation. Include estimated savings in euros."
+        ),
+        tools=[luminus_billing_fun_fact],
+    )
+
+    manager_agent = Agent(
+        name="Luminus Energy Manager",
+        instructions=(
+            "You are the main Luminus customer support manager. "
+            "You coordinate specialist agents to give customers the best answer. "
+            "Use the billing analyst for billing questions and the energy advisor "
+            "for efficiency tips. Synthesise their answers into one clear response."
+        ),
+        tools=[
+            billing_analyst.as_tool(
+                tool_name="billing_analyst",
+                tool_description="Analyses billing data, tariff breakdowns, and charge anomalies.",
+            ),
+            energy_advisor.as_tool(
+                tool_name="energy_advisor",
+                tool_description="Provides energy-saving tips with estimated euro savings.",
+            ),
+        ],
+    )
+
+    result = await Runner.run(
+        manager_agent,
+        "Hi, I'm Sophie. My bill went up last month and I'd like to understand "
+        "why AND get tips to bring it down.",
+    )
+    print(result.final_output)
+
+
+# ===========================================================================
+# 9. Guardrails
+# ===========================================================================
+
+COMPETITOR_NAMES = {"engie", "totalenergies", "eneco", "essent", "vattenfall", "mega", "octa+", "bolt", "elegant"}
+
+
+@input_guardrail
+async def block_competitor_questions(
+    ctx: RunContextWrapper[None],
+    agent: Agent,
+    input: str | list[TResponseInputItem],
+) -> GuardrailFunctionOutput:
+    """Block questions that explicitly mention competitor energy providers by name."""
+    # Extract text from input
+    if isinstance(input, str):
+        text = input.lower()
+    else:
+        text = " ".join(
+            item.get("content", "").lower()
+            for item in input
+            if isinstance(item, dict) and isinstance(item.get("content"), str)
+        )
+    # Only trigger if a competitor name is explicitly mentioned
+    found = any(name in text for name in COMPETITOR_NAMES)
+    return GuardrailFunctionOutput(
+        output_info={"competitor_detected": found},
+        tripwire_triggered=found,
+    )
+
+
+async def demo_guardrails() -> None:
+    """
+    Input guardrail that blocks questions about competitor energy providers.
+    The agent only answers Luminus-related queries.
+    """
+    print("\n" + "=" * 60)
+    print("DEMO 9 — Guardrails")
+    print("=" * 60)
+
+    guarded_agent = Agent(
+        name="Luminus Support (Guarded)",
+        instructions=(
+            LUMINUS_INSTRUCTIONS
+            + " You only answer questions related to Luminus services."
+        ),
+        tools=[luminus_billing_fun_fact, get_average_bill],
+        input_guardrails=[block_competitor_questions],
+    )
+
+    # Safe question — should pass
+    print("\n--- Safe question ---")
+    result = await Runner.run(
+        guarded_agent,
+        "Hi, I'm Tom. What solar panel options does Luminus offer?",
+    )
+    print(result.final_output)
+
+    # Competitor question — should be blocked
+    print("\n--- Competitor question ---")
+    try:
+        await Runner.run(
+            guarded_agent,
+            "Can you compare Luminus prices with Engie and TotalEnergies?",
+        )
+    except InputGuardrailTripwireTriggered:
+        print("⚠ Guardrail triggered: competitor question blocked.")
+
+
+# ===========================================================================
+# 10. Human in the Loop
+# ===========================================================================
+
+@function_tool(needs_approval=True)
+def switch_energy_plan(customer_name: str, new_plan: str) -> str:
+    """Switch a customer to a different Luminus energy plan. Requires approval."""
+    return (
+        f"Plan switch confirmed: {customer_name} has been moved to the "
+        f"'{new_plan}' plan. Changes take effect on the next billing cycle."
+    )
+
+
+@function_tool(needs_approval=True)
+def schedule_meter_replacement(customer_name: str, meter_type: str) -> str:
+    """Schedule a smart meter replacement. Requires approval."""
+    return (
+        f"Smart meter replacement scheduled for {customer_name}. "
+        f"A {meter_type} meter will be installed within 10 business days."
+    )
+
+
+async def demo_human_in_the_loop() -> None:
+    """
+    Sensitive actions (plan switch, meter replacement) require human approval
+    before execution. The run pauses and we simulate approving or rejecting.
+    """
+    print("\n" + "=" * 60)
+    print("DEMO 10 — Human in the Loop")
+    print("=" * 60)
+
+    agent = Agent(
+        name="Luminus Account Manager",
+        instructions=(
+            "You are a Luminus account manager who can switch energy plans and "
+            "schedule smart meter replacements. When a customer requests an action, "
+            "use the appropriate tool immediately — do not ask for extra confirmation."
+        ),
+        tools=[switch_energy_plan, schedule_meter_replacement],
+    )
+
+    # First run — agent will try to call the tool, which pauses for approval
+    result = await Runner.run(
+        agent,
+        "Hi, I'm Clara. Please switch me to the Luminus Green Energy plan right now.",
+    )
+
+    if result.interruptions:
+        print(f"\n⏸  Execution paused — {len(result.interruptions)} action(s) need approval:")
+        state = result.to_state()
+
+        for interruption in result.interruptions:
+            print(f"   Tool: {interruption.name}")
+            print(f"   Args: {interruption.arguments}")
+
+            # Simulate human approval
+            print("   → Approving...")
+            state.approve(interruption)
+
+        # Resume execution after approval
+        result = await Runner.run(agent, state)
+        print(f"\n✓ Final response:\n{result.final_output}")
+    else:
+        print(result.final_output)
+
+
+# ===========================================================================
+# 11. Interactive chat — full-featured conversational agent
+# ===========================================================================
+
+async def demo_interactive_chat() -> None:
+    """
+    Interactive conversation loop combining all patterns:
+    - Function tools (billing, energy tips)
+    - Agents as tools (billing analyst, energy advisor)
+    - Handoffs (appointment booking)
+    - Guardrails (blocks competitor questions)
+    - Human in the loop (approval for plan switches & meter replacements)
+    - Multi-turn memory via session
+    """
+    print("\n" + "=" * 60)
+    print("  Luminus Energy Assistant — Interactive Chat")
+    print("=" * 60)
+    print("Type your questions below. Type 'quit' or 'exit' to stop.\n")
+
+    # --- Specialist agents (used as tools) ---
+    billing_analyst = Agent(
+        name="Billing Analyst",
+        instructions=(
+            "You are an expert Luminus billing analyst. "
+            "Analyse billing data and provide a detailed breakdown of "
+            "charges, tariff components, and any anomalies."
+        ),
+        tools=[get_average_bill],
+    )
+
+    energy_advisor = Agent(
+        name="Energy Efficiency Advisor",
+        instructions=(
+            "You are a Luminus energy efficiency specialist. "
+            "Provide personalised tips to reduce energy consumption. "
+            "Include estimated savings in euros."
+        ),
+        tools=[luminus_billing_fun_fact],
+    )
+
+    # --- Appointment agent (handoff target) ---
+    appointment_agent = Agent(
+        name="appointment_agent",
+        handoff_description="Specialist for booking technician visits at customer premises.",
+        instructions=APPOINTMENT_INSTRUCTIONS,
+        tools=[book_appointment],
+    )
+
+    # --- Main conversational agent ---
+    agent = Agent(
+        name="Luminus Energy Assistant",
+        instructions=(
+            "You are the Luminus Energy Assistant — the main customer support agent. "
+            "You help customers with billing questions, energy-saving advice, "
+            "appointment booking, plan switches, and meter replacements.\n\n"
+            "Rules:\n"
+            "- Use the billing_analyst tool for detailed billing analysis.\n"
+            "- Use the energy_advisor tool for energy-saving tips.\n"
+            "- Hand off to the Appointment Agent for technician bookings.\n"
+            "- Use switch_energy_plan or schedule_meter_replacement when requested "
+            "  (these require human approval).\n"
+            "- Be friendly, concise, and always address the customer by name.\n"
+            "- You only answer questions related to Luminus services."
+        ),
+        tools=[
+            luminus_billing_fun_fact,
+            get_average_bill,
+            switch_energy_plan,
+            schedule_meter_replacement,
+            billing_analyst.as_tool(
+                tool_name="billing_analyst",
+                tool_description="Deep billing analysis with tariff breakdowns and anomaly detection.",
+            ),
+            energy_advisor.as_tool(
+                tool_name="energy_advisor",
+                tool_description="Personalised energy-saving tips with estimated euro savings.",
+            ),
+        ],
+        handoffs=[appointment_agent],
+        input_guardrails=[block_competitor_questions],
+    )
+
+    # Use to_input_list() for history — no session to avoid duplicate IDs
+    input_items: list[TResponseInputItem] = []
+
+    while True:
+        try:
+            user_input = input("\n🟢 You: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nGoodbye!")
+            break
+
+        if not user_input:
+            continue
+        if user_input.lower() in ("quit", "exit", "bye"):
+            print("👋 Thanks for chatting with Luminus! Goodbye.")
+            break
+
+        input_items.append({"role": "user", "content": user_input})
+
+        try:
+            result = await Runner.run(agent, input_items)
+
+            # Handle human-in-the-loop approvals
+            if result.interruptions:
+                state = result.to_state()
+                for interruption in result.interruptions:
+                    print(f"\n⏸  Approval needed — {interruption.name}")
+                    print(f"   Details: {interruption.arguments}")
+                    answer = input("   Approve? (y/n): ").strip().lower()
+                    if answer in ("y", "yes"):
+                        state.approve(interruption)
+                        print("   ✅ Approved.")
+                    else:
+                        state.reject(interruption, rejection_message="Customer declined this action.")
+                        print("   ❌ Rejected.")
+
+                result = await Runner.run(agent, state)
+
+            input_items = result.to_input_list()
+            print(f"\n🔵 Luminus: {result.final_output}")
+
+        except InputGuardrailTripwireTriggered:
+            print("\n🔴 Luminus: Sorry, I can only help with Luminus-related questions. "
+                  "I'm not able to discuss competitor services.")
+            # Remove the blocked message from history so conversation continues
+            input_items.pop()
+
+
+# ===========================================================================
+# 12. Voice / Realtime agent
+# ===========================================================================
+
+async def demo_voice_agent() -> None:
+    """
+    Voice-powered Luminus energy assistant. Speak into your microphone and
+    hear the agent respond through your speakers.
+
+    Uses VoicePipeline: microphone → speech-to-text → agent → text-to-speech → speaker.
+    Press Ctrl+C to stop.
+    """
+    try:
+        import numpy as np
+        import sounddevice as sd
+        from agents.voice import AudioInput, SingleAgentVoiceWorkflow, VoicePipeline
+    except ImportError:
+        print("Voice dependencies missing. Install with:")
+        print("  pip install 'openai-agents[voice]' sounddevice")
+        return
+
+    print("\n" + "=" * 60)
+    print("  Luminus Energy Assistant — Voice Agent")
+    print("=" * 60)
+
+    agent = Agent(
+        name="Luminus Voice Assistant",
+        instructions=(
+            "You are a Luminus voice assistant for energy customers. "
+            "You help with billing questions, energy-saving tips, and appointment booking. "
+            "Keep your answers short and conversational — you are speaking out loud, "
+            "not writing. Use simple sentences. Avoid lists and bullet points."
+        ),
+        tools=[luminus_billing_fun_fact, get_average_bill, book_appointment],
+    )
+
+    pipeline = VoicePipeline(workflow=SingleAgentVoiceWorkflow(agent))
+
+    # --- Recording settings ---
+    SAMPLE_RATE = 24000
+    CHANNELS = 1
+    DTYPE = np.int16
+
+    print("\n🎙  Listening... Speak into your microphone.")
+    print("   Press ENTER when you're done speaking. Ctrl+C to quit.\n")
+
+    while True:
+        try:
+            # Record audio until user presses Enter
+            frames: list[np.ndarray] = []
+            recording = True
+
+            def callback(indata, frame_count, time_info, status):
+                if recording:
+                    frames.append(indata.copy())
+
+            stream = sd.InputStream(
+                samplerate=SAMPLE_RATE,
+                channels=CHANNELS,
+                dtype=DTYPE,
+                callback=callback,
+            )
+            stream.start()
+
+            input("   🔴 Recording... Press ENTER to send → ")
+            recording = False
+            stream.stop()
+            stream.close()
+
+            if not frames:
+                print("   No audio captured, try again.")
+                continue
+
+            audio_buffer = np.concatenate(frames, axis=0).flatten()
+            print("   🔄 Processing...")
+
+            # Run through the voice pipeline
+            audio_input = AudioInput(buffer=audio_buffer)
+            result = await pipeline.run(audio_input)
+
+            # Play the response through speakers
+            player = sd.OutputStream(
+                samplerate=SAMPLE_RATE,
+                channels=CHANNELS,
+                dtype=DTYPE,
+            )
+            player.start()
+            print("   🔊 Speaking...")
+
+            async for event in result.stream():
+                if event.type == "voice_stream_event_audio":
+                    player.write(event.data)
+
+            player.stop()
+            player.close()
+            print()
+
+        except KeyboardInterrupt:
+            print("\n👋 Voice session ended. Goodbye!")
+            break
+
+
+# ===========================================================================
 # Entry point
 # ===========================================================================
 
@@ -370,11 +805,18 @@ DEMOS = {
     5: ("Multi-Turn Conversation", demo_multi_turn),
     6: ("Persistent SQLite Session", demo_session),
     7: ("LLM-as-a-Judge", demo_llm_as_judge),
+    8: ("Agents as Tools", demo_agents_as_tools),
+    9: ("Guardrails", demo_guardrails),
+    10: ("Human in the Loop", demo_human_in_the_loop),
+    11: ("Interactive Chat", demo_interactive_chat),
+    12: ("Voice Agent", demo_voice_agent),
 }
 
 
 async def run_all() -> None:
     for num, (name, fn) in DEMOS.items():
+        if num in (11, 12):
+            continue  # Skip interactive/voice modes in run-all
         print(f"\n{'#' * 60}")
         print(f"  Running Demo {num}: {name}")
         print(f"{'#' * 60}")
@@ -396,11 +838,18 @@ if __name__ == "__main__":
         "--demo",
         type=int,
         default=None,
-        help="Demo number to run (1–7). Omit to run all demos sequentially.",
+        help="Demo number to run (1–12). Omit to run all demos sequentially.",
+    )
+    parser.add_argument(
+        "--chat",
+        action="store_true",
+        help="Launch the interactive Luminus Energy Assistant chat.",
     )
     args = parser.parse_args()
 
-    if args.demo is not None:
+    if args.chat:
+        asyncio.run(run_demo(11))
+    elif args.demo is not None:
         asyncio.run(run_demo(args.demo))
     else:
         asyncio.run(run_all())
