@@ -1,0 +1,16 @@
+node_modules
+.env*
+.eve
+.vercel
+.workflow-data
+.next
+.output
+.nitro
+dist
+.DS_Store
+*.tsbuildinfo
+
+# Re-include the agent source lib/ — the repo-root .gitignore ignores `lib/`
+# for Python builds, which would otherwise drop agent/lib/energy_db.ts.
+!agent/lib/
+!agent/lib/**
