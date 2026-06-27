@@ -137,6 +137,43 @@ python qwensam2agent.py
 
 ---
 
+### Vercel / eve (`my-agent/`)
+
+A [Vercel-deployable eve agent](https://eve.dev) for the Luminus use case. Each capability is a typed tool auto-discovered from `agent/tools/` (`get_billing`, `energy_saving_tips`, `book_appointment`), backed by a shared `agent/lib/energy_db.ts`. The appointment tool is gated with `approval: always()` to demonstrate durable human-in-the-loop. The persona lives in `agent/instructions.md`.
+
+```bash
+cd my-agent
+npm install
+npm run dev   # opens the eve dev TUI; ask "My account is LUM-1001, why is my bill high?"
+```
+
+---
+
+### Agent Laboratory (`agentlaboratory_energy.py`)
+
+Reuses [Agent Laboratory](https://github.com/SamuelSchmidgall/AgentLaboratory)'s unified `query_model()` interface to drive a small team of specialized support agents — a `SupportManager` routes the query to a `BillingAnalyst`, `EnergyAdvisor`, and/or `AppointmentAgent`. Multi-agent orchestration in Agent Laboratory's own agent style, applied to customer support instead of research.
+
+```bash
+export OPENAI_API_KEY="your-key"
+python agentlaboratory_energy.py
+python agentlaboratory_energy.py --query "Why was my bill so high?" --customer LUM-1002
+```
+
+---
+
+### TinyAGI (`tinyagi_energy/`)
+
+A drop-in [TinyAGI](https://github.com/TinyAGI/tinyagi) team configuration (config + skills, not a single script). A `support` front-desk agent fans work out to `billing`, `advisor`, and `scheduler` teammates via `[@agent_id: ...]`, using the `luminus-energy` skill whose `energy.sh` script simulates the billing backend. Runs as a 24/7 multi-channel daemon.
+
+```bash
+# Try the tool layer directly — no daemon required:
+tinyagi_energy/skills/luminus-energy/scripts/energy.sh billing LUM-1001
+tinyagi_energy/skills/luminus-energy/scripts/energy.sh advice LUM-1002 heating
+# Full setup: see tinyagi_energy/README.md
+```
+
+---
+
 ## Setup
 
 1. Clone the repo:
@@ -167,6 +204,9 @@ Each framework brings unique strengths:
 - **PydanticAI** — best for type safety and structured/validated outputs
 - **Gemini** — strong multimodal capabilities
 - **Mem0** — unique persistent memory across conversations
+- **Vercel / eve** — typed tools, durable human-in-the-loop approvals, one-command deploy to Vercel
+- **Agent Laboratory** — research-grade multi-agent orchestration with a unified multi-provider model interface
+- **TinyAGI** — config-driven 24/7 multi-agent teams across Discord/Telegram/WhatsApp
 
 ## Security
 
