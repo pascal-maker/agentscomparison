@@ -1,5 +1,5 @@
 import { eveChannel } from "eve/channels/eve";
-import { localDev, placeholderAuth, vercelOidc } from "eve/channels/auth";
+import { localDev, none, vercelOidc } from "eve/channels/auth";
 
 export default eveChannel({
   auth: [
@@ -7,9 +7,8 @@ export default eveChannel({
     localDev(),
     // Lets the eve TUI and your Vercel deployments reach the deployed agent.
     vercelOidc(),
-    // This placeholder will not allow browser requests in production.
-    // Replace it with your app's auth provider, like Auth.js or Clerk,
-    // or use none() for a public demo.
-    placeholderAuth(),
+    // PUBLIC DEMO: anyone with the URL can chat with the agent (and spend the
+    // configured OpenAI key). Replace with real auth before any real use.
+    none(),
   ],
 });

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Luminus Energy Support</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --panel-2: #1c2430;
+    --accent: #2ea043; --accent-2: #58a6ff; --danger: #f85149;
+    --text: #e6edf3; --muted: #8b949e; --border: #30363d;
+    --user: #1f6feb; --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  header {
+    width: 100%; max-width: 760px; padding: 18px 20px 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  header .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header .sub { color: var(--muted); font-size: 13px; margin-left: auto; }
+  #chat {
+    width: 100%; max-width: 760px; flex: 1; overflow-y: auto;
+    padding: 12px 20px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .msg { display: flex; flex-direction: column; max-width: 86%; }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.assistant { align-self: flex-start; align-items: flex-start; }
+  .bubble {
+    padding: 10px 14px; border-radius: var(--radius); white-space: pre-wrap; word-wrap: break-word;
+  }
+  .user .bubble { background: var(--user); color: #fff; border-bottom-right-radius: 4px; }
+  .assistant .bubble { background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .role { font-size: 11px; color: var(--muted); margin: 0 6px 3px; text-transform: uppercase; letter-spacing: .04em; }
+  .tool { align-self: flex-start; font-size: 12px; color: var(--muted); background: var(--panel-2);
+          border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
+  .approval {
+    align-self: flex-start; background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px; max-width: 86%;
+  }
+  .approval p { margin: 0 0 10px; }
+  .approval .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .approval button {
+    border: 1px solid var(--border); background: var(--panel); color: var(--text);
+    padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 14px;
+  }
+  .approval button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .approval button.danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+  .approval button:disabled { opacity: .5; cursor: default; }
+  .err { align-self: center; color: var(--danger); font-size: 13px; }
+  form {
+    width: 100%; max-width: 760px; display: flex; gap: 10px; padding: 12px 20px 20px;
+  }
+  #input {
+    flex: 1; resize: none; background: var(--panel); color: var(--text);
+    border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font: inherit; min-height: 48px; max-height: 160px;
+  }
+  #input:focus { outline: none; border-color: var(--accent-2); }
+  #send {
+    background: var(--accent); color: #fff; border: none; border-radius: 12px;
+    padding: 0 20px; font-weight: 600; cursor: pointer;
+  }
+  #send:disabled { opacity: .5; cursor: default; }
+  .hint { color: var(--muted); font-size: 12px; max-width: 760px; width: 100%; padding: 0 20px; margin: -6px auto 0; }
+  .typing { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
+  @keyframes blink { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+</style>
+</head>
+<body>
+  <header>
+    <span class="dot"></span>
+    <h1>Luminus Energy Support</h1>
+    <span class="sub">eve · openai/gpt-5</span>
+  </header>
+  <div id="chat"></div>
+  <p class="hint">Try: <em>“My account is LUM-1001, why was my bill so high?”</em> · accounts: LUM-1001, LUM-1002, LUM-1003</p>
+  <form id="composer">
+    <textarea id="input" placeholder="Message the Luminus assistant…" autocomplete="off"></textarea>
+    <button id="send" type="submit">Send</button>
+  </form>
+
+<script>
+const BASE = "/eve/v1";
+const chat = document.getElementById("chat");
+const form = document.getElementById("composer");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("send");
+
+let sessionId = null;
+let continuationToken = null;  // resume handle; required on every follow-up POST
+let streamIndex = 0;   // total events consumed, used as the stream cursor
+let busy = false;
+
+function el(cls, html) {
+  const d = document.createElement("div");
+  d.className = cls;
+  if (html !== undefined) d.innerHTML = html;
+  return d;
+}
+function scrollDown() { chat.scrollTop = chat.scrollHeight; }
+
+function addMessage(role, text) {
+  const wrap = el("msg " + role);
+  wrap.appendChild(el("role", role));
+  const bubble = el("bubble");
+  bubble.textContent = text || "";
+  wrap.appendChild(bubble);
+  chat.appendChild(wrap);
+  scrollDown();
+  return bubble;
+}
+function addTool(name) {
+  const t = el("tool");
+  t.textContent = "🔧 " + name;
+  chat.appendChild(t);
+  scrollDown();
+}
+function addError(msg) {
+  chat.appendChild(el("err", "⚠ " + msg));
+  scrollDown();
+}
+
+function setBusy(state) {
+  busy = state;
+  sendBtn.disabled = state;
+  input.disabled = state;
+  if (!state) input.focus();
+}
+
+// Render an approval / question request with option buttons.
+function addApproval(req) {
+  const box = el("approval");
+  box.appendChild(el("", `<p>${escapeHtml(req.prompt)}</p>`));
+  const btns = el("btns");
+  const options = req.options && req.options.length
+    ? req.options
+    : [{ id: "approve", label: "Approve", style: "primary" }, { id: "deny", label: "Deny", style: "danger" }];
+  for (const opt of options) {
+    const b = document.createElement("button");
+    b.textContent = opt.label;
+    // Approvals come back without an explicit style, so fall back to the option id.
+    if (opt.style === "primary" || opt.id === "approve") b.className = "primary";
+    else if (opt.style === "danger" || opt.id === "deny") b.className = "danger";
+    b.onclick = () => {
+      [...btns.querySelectorAll("button")].forEach(x => x.disabled = true);
+      respond(req.requestId, opt.id, opt.label);
+    };
+    btns.appendChild(b);
+  }
+  box.appendChild(btns);
+  chat.appendChild(box);
+  scrollDown();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// POST a turn (first message creates the session) then consume the stream.
+async function sendTurn(body) {
+  setBusy(true);
+  try {
+    let res;
+    if (!sessionId) {
+      res = await fetch(`${BASE}/session`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`session start failed (${res.status})`);
+      const data = await res.json();
+      sessionId = data.sessionId;
+      continuationToken = data.continuationToken;
+      streamIndex = 0;
+    } else {
+      // Follow-ups (messages and HITL responses) must carry the continuation token.
+      res = await fetch(`${BASE}/session/${sessionId}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ continuationToken, ...body }),
+      });
+      if (!res.ok) throw new Error(`follow-up failed (${res.status})`);
+    }
+    await consumeStream();
+  } catch (e) {
+    addError(e.message || String(e));
+  } finally {
+    setBusy(false);
+  }
+}
+
+async function respond(requestId, optionId, label) {
+  addMessage("user", label);
+  await sendTurn({ inputResponses: [{ requestId, optionId }] });
+}
+
+// Read the NDJSON stream from the current cursor until the turn settles.
+async function consumeStream() {
+  const res = await fetch(`${BASE}/session/${sessionId}/stream?startIndex=${streamIndex}`);
+  if (!res.ok || !res.body) throw new Error(`stream failed (${res.status})`);
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let assistantBubble = null;
+
+  const handle = (evt) => {
+    streamIndex++;
+    const t = evt.type;
+    const d = evt.data || {};
+    if (t === "message.appended" && d.messageDelta) {
+      if (!assistantBubble) assistantBubble = addMessage("assistant", "");
+      assistantBubble.textContent += d.messageDelta;
+      scrollDown();
+    } else if (t === "message.completed") {
+      if (!assistantBubble && d.message) {
+        const text = typeof d.message === "string"
+          ? d.message
+          : (d.message.parts || []).filter(p => p.type === "text").map(p => p.text).join("");
+        if (text) addMessage("assistant", text);
+      }
+      assistantBubble = null;
+    } else if (t === "actions.requested") {
+      const acts = d.actions || d.toolCalls || [];
+      for (const a of acts) addTool(a.toolName || a.name || "tool");
+    } else if (t === "input.requested") {
+      // Render the approval/question UI, but keep consuming: the park still
+      // emits turn.completed + session.waiting, and stopping here would leave
+      // the cursor before them, so the resumed turn would re-hit a stale boundary.
+      const reqs = d.requests || d.inputRequests || [];
+      for (const r of reqs) addApproval(r);
+    } else if (t === "session.completed" || t === "session.failed") {
+      if (t === "session.failed")
+        addError(d.error?.message || d.reason || "The agent run failed (is OPENAI_API_KEY set on Vercel?).");
+      // Conversation ended — next message starts a fresh durable session.
+      sessionId = null; continuationToken = null; streamIndex = 0;
+    }
+    // Only true turn boundaries end this read; composer re-enables in finally.
+    return (t === "session.waiting" || t === "session.completed" || t === "session.failed");
+  };
+
+  let done = false;
+  while (!done) {
+    const { value, done: streamDone } = await reader.read();
+    if (streamDone) break;
+    buffer += decoder.decode(value, { stream: true });
+    let nl;
+    while ((nl = buffer.indexOf("\n")) >= 0) {
+      const line = buffer.slice(0, nl).trim();
+      buffer = buffer.slice(nl + 1);
+      if (!line) continue;
+      let evt;
+      try { evt = JSON.parse(line); } catch { continue; }
+      if (handle(evt)) { done = true; break; }
+    }
+  }
+  try { await reader.cancel(); } catch {}
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text || busy) return;
+  addMessage("user", text);
+  input.value = "";
+  sendTurn({ message: text });
+});
+
+// Enter to send, Shift+Enter for newline.
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+});
+input.focus();
+</script>
+</body>
+</html>
