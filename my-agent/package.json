@@ -7,7 +7,8 @@
     "#evals/*": "./evals/*"
   },
   "scripts": {
-    "build": "eve build",
+    "patch-vercel-root": "node scripts/patch-vercel-root.mjs",
+    "build": "eve build && pnpm run patch-vercel-root",
     "dev": "eve dev",
     "start": "eve start",
     "typecheck": "tsc"
