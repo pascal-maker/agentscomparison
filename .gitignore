@@ -33,3 +33,4 @@ ENV/
 .vscode/
 *.swp
 *.swo
+.vercel

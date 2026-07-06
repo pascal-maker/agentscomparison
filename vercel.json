@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "cd my-agent && pnpm install --frozen-lockfile",
-  "buildCommand": "cd my-agent && VERCEL=1 pnpm run build && mkdir -p ../.vercel && cp -R .vercel/output ../.vercel/output",
+  "installCommand": "cd my-agent && npx --yes pnpm@10.12.1 install --frozen-lockfile",
+  "buildCommand": "cd my-agent && VERCEL=1 npx --yes pnpm@10.12.1 run build && mkdir -p ../.vercel && cp -R .vercel/output ../.vercel/output",
   "outputDirectory": ".vercel/output"
 }
