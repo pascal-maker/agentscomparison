@@ -1,241 +1,161 @@
 # Agents Comparison
 
-A hands-on comparison of AI agent frameworks, all built around the same use case: a **Luminus energy customer support assistant**. Each framework tackles billing queries, energy-saving advice, appointment booking, and multi-agent orchestration in its own way.
+Compare AI agent frameworks on the same customer-support task.
 
-## Shared Harness
+This repo uses a fictional **Luminus energy customer support assistant** as the shared benchmark. Every serious demo should answer the same kinds of questions: why a bill changed, how a customer can reduce usage, and when a technician appointment should be proposed.
 
-The canonical Luminus fixtures, instructions, billing explanation, advice text, and appointment proposal behavior live in `luminus_harness/`. Framework demos should adapt to that module instead of redefining their own customer data. This keeps the comparison stable: when `LUM-1001` changes, every demo sees the same scenario.
+The current direction of the repo is: one shared scenario harness, many framework adapters.
 
-The harness also has a small CLI for non-Python adapters:
+## Quick Start
 
-```bash
-python -m luminus_harness billing LUM-1001
-python -m luminus_harness advice LUM-1002 heating
-python -m luminus_harness appointment LUM-1003 inspection 2026-08-12
-```
+Run the deterministic comparison first. It does not require API keys or paid model calls.
 
-Use `compare.py` to run deterministic local adapters against the same scenario:
-
-```bash
-python compare.py --scenario high_bill
-python compare.py --scenario appliance_savings --adapter harness --adapter tinyagi
-```
-
-## Frameworks
-
-### OpenAI Agents SDK (`openai/demo.py`)
-
-The most comprehensive demo with 12 patterns covering the full SDK surface:
-
-| # | Pattern | Description |
-|---|---------|-------------|
-| 1 | Basic Agent | Simple one-shot Q&A |
-| 2 | Function Tools | Agent calls billing and energy-saving tools |
-| 3 | Multi-Agent Handoffs | Routes to appointment booking specialist |
-| 4 | Streaming | Real-time event-by-event response streaming |
-| 5 | Multi-Turn Conversation | Stateful history via `to_input_list()` |
-| 6 | Persistent Session | SQLiteSession for durable cross-run memory |
-| 7 | LLM-as-a-Judge | Evaluator loop that critiques and improves responses |
-| 8 | Agents as Tools | Manager orchestrates billing analyst + energy advisor as sub-agents |
-| 9 | Guardrails | Input guardrail blocks competitor energy provider questions |
-| 10 | Human in the Loop | Approval gate for plan switches and meter replacements |
-| 11 | Interactive Chat | Full-featured conversational loop combining all patterns |
-| 12 | Voice Agent | Microphone input, speech-to-text, agent, text-to-speech, speaker output |
-
-```bash
-pip install -r requirements/openai-agents.txt
-
-# Run a specific demo
-python openai/demo.py --demo 8
-
-# Interactive chat (type your own questions)
-python openai/demo.py --chat
-
-# Voice agent (speak into your mic)
-python openai/demo.py --demo 12
-
-# Run all scripted demos
-python openai/demo.py
-```
-
----
-
-### Microsoft AutoGen (`medicautogenapp.py`, `luminusagents.py`)
-
-Multi-agent system using `AssistantAgent` subclasses for billing, energy insights, and energy advice. Orchestrated with `RoundRobinGroupChat` to simulate a team conversation answering multi-part customer queries.
-
-```bash
-pip install -r requirements/autogen.txt
-python medicautogenapp.py
-```
-
----
-
-### HuggingFace smolagents (`agentsfromhuggingface.py`)
-
-Lightweight `CodeAgent` with custom system prompts for billing, insights, and advice. Each agent processes the query individually, then an aggregator agent combines outputs. Minimal, fast, and LLM-agnostic.
-
-```bash
-pip install -r requirements/smolagents.txt
-python agentsfromhuggingface.py
-```
-
----
-
-### Swarm (`luminusswarmagent.py`)
-
-Experimental framework for ergonomic multi-agent handoffs and routines. Agents transfer conversation control based on the task at hand. Educational, not production-ready.
-
-```bash
-pip install -r requirements/swarm.txt
-python luminusswarmagent.py
-```
-
----
-
-### PydanticAI (`pydanticenegryassistant.py`)
-
-Type-safe support agent with dependency injection and Pydantic models for structured, validated responses. Ensures responses adhere to a predefined schema.
-
-```bash
-pip install -r requirements/pydantic-ai.txt
-python pydanticenegryassistant.py
-```
-
----
-
-### Agno (`agnoagents.py`)
-
-Agent framework demo for energy assistant use case.
-
-```bash
-pip install -r requirements/agno.txt
-python agnoagents.py
-```
-
----
-
-### Mem0 (`mem0agents.py`, `mem0Energyassistant.py`)
-
-Agents with persistent memory for energy assistant interactions.
-
-```bash
-pip install -r requirements/mem0.txt
-python mem0Energyassistant.py
-```
-
----
-
-### Google Gemini (`geminiagents.py`, `gemini_mcp_agent.py`)
-
-Command-line energy advisor powered by Gemini AI. Also includes an MCP-enabled Gemini agent.
-
-```bash
-pip install -r requirements/gemini.txt
-python geminiagents.py
-```
-
----
-
-### DeepSeek (`deepseekenergyagent.py`)
-
-Energy assistant using the DeepSeek model.
-
-```bash
-pip install -r requirements/text-models.txt
-python deepseekenergyagent.py
-```
-
----
-
-### Qwen (`qwenagent.py`, `qwensam2agent.py`)
-
-Qwen-VLM for medical Q&A combined with SAM-2 for image segmentation. Includes a Gradio web interface.
-
-```bash
-pip install -r requirements/vision-medical.txt
-pip install -e sam2
-python qwensam2agent.py
-```
-
----
-
-### Vercel / eve (`my-agent/`)
-
-A [Vercel-deployable eve agent](https://eve.dev) for the Luminus use case. Each capability is a typed tool auto-discovered from `agent/tools/` (`get_billing`, `energy_saving_tips`, `book_appointment`), backed by a shared `agent/lib/energy_db.ts`. The appointment tool is gated with `approval: always()` to demonstrate durable human-in-the-loop. The persona lives in `agent/instructions.md`.
-
-```bash
-cd my-agent
-npm install
-npm run dev   # opens the eve dev TUI; ask "My account is LUM-1001, why is my bill high?"
-```
-
----
-
-### Agent Laboratory (`agentlaboratory_energy.py`)
-
-Reuses [Agent Laboratory](https://github.com/SamuelSchmidgall/AgentLaboratory)'s unified `query_model()` interface to drive a small team of specialized support agents — a `SupportManager` routes the query to a `BillingAnalyst`, `EnergyAdvisor`, and/or `AppointmentAgent`. Multi-agent orchestration in Agent Laboratory's own agent style, applied to customer support instead of research.
-
-```bash
-export OPENAI_API_KEY="your-key"
-pip install -r requirements/agent-lab-energy.txt
-python agentlaboratory_energy.py
-python agentlaboratory_energy.py --query "Why was my bill so high?" --customer LUM-1002
-```
-
----
-
-### TinyAGI (`tinyagi_energy/`)
-
-A drop-in [TinyAGI](https://github.com/TinyAGI/tinyagi) team configuration (config + skills, not a single script). A `support` front-desk agent fans work out to `billing`, `advisor`, and `scheduler` teammates via `[@agent_id: ...]`, using the `luminus-energy` skill whose `energy.sh` script simulates the billing backend. Runs as a 24/7 multi-channel daemon.
-
-```bash
-# Try the tool layer directly — no daemon required:
-tinyagi_energy/skills/luminus-energy/scripts/energy.sh billing LUM-1001
-tinyagi_energy/skills/luminus-energy/scripts/energy.sh advice LUM-1002 heating
-# Full setup: see tinyagi_energy/README.md
-```
-
----
-
-## Setup
-
-1. Clone the repo:
 ```bash
 git clone https://github.com/pascal-maker/agentscomparison.git
 cd agentscomparison
+
+python compare.py --scenario high_bill
 ```
 
-2. Install dependencies:
-```bash
-# Pick the demo you want. For example:
-pip install -r requirements/openai-agents.txt
+Run another scenario:
 
-# See the full matrix:
+```bash
+python compare.py --scenario appliance_savings
+python compare.py --scenario meter_visit
+```
+
+Limit the comparison to one adapter:
+
+```bash
+python compare.py --scenario high_bill --adapter harness
+python compare.py --scenario high_bill --adapter tinyagi
+```
+
+## What Works Today
+
+The deterministic comparison runner currently compares:
+
+| Adapter | Backing implementation | Requires API key | Notes |
+| --- | --- | --- | --- |
+| `harness` | `luminus_harness/` Python module | No | Canonical source of truth |
+| `tinyagi` | `tinyagi_energy/.../energy.sh` | No | Shell adapter that delegates to the harness CLI |
+
+The live framework demos are still useful, but they are demos, not yet all wired into `compare.py`.
+
+## Shared Harness
+
+The canonical data and behavior live in `luminus_harness/`:
+
+- customer fixtures: `LUM-1001`, `LUM-1002`, `LUM-1003`
+- shared support instructions
+- billing explanations
+- energy-saving advice
+- appointment proposal behavior
+- comparison scenarios
+
+Use the harness directly:
+
+```bash
+python -m luminus_harness billing LUM-1001
+python -m luminus_harness advice LUM-1002 appliances
+python -m luminus_harness appointment LUM-1003 inspection 2026-08-12
+python -m luminus_harness --json scenarios
+```
+
+## Scenarios
+
+| Scenario | Customer | Purpose |
+| --- | --- | --- |
+| `high_bill` | `LUM-1001` | Explain an unexpectedly high bill and give general savings advice |
+| `appliance_savings` | `LUM-1002` | Advise on shifting appliance usage to reduce cost |
+| `meter_visit` | `LUM-1003` | Propose a smart meter inspection appointment with approval language |
+
+## Framework Demos
+
+Install dependencies per demo. Do not use one global Python environment for every framework unless you expect dependency conflicts.
+
+| Framework | Path | Install | Run | API key |
+| --- | --- | --- | --- | --- |
+| OpenAI Agents SDK | `openai/demo.py` | `pip install -r requirements/openai-agents.txt` | `python openai/demo.py --demo 8` | `OPENAI_API_KEY` |
+| Microsoft AutoGen | `medicautogenapp.py` | `pip install -r requirements/autogen.txt` | `python medicautogenapp.py` | `OPENAI_API_KEY` |
+| smolagents | `agentsfromhuggingface.py` | `pip install -r requirements/smolagents.txt` | `python agentsfromhuggingface.py` | Hugging Face or configured model access |
+| Swarm | `luminusswarmagent.py` | `pip install -r requirements/swarm.txt` | `python luminusswarmagent.py` | Usually `OPENAI_API_KEY` |
+| PydanticAI | `pydanticenegryassistant.py` | `pip install -r requirements/pydantic-ai.txt` | `python pydanticenegryassistant.py` | Provider-dependent |
+| Agno | `agnoagents.py` | `pip install -r requirements/agno.txt` | `python agnoagents.py` | `OPENAI_API_KEY` |
+| Mem0 | `mem0Energyassistant.py` | `pip install -r requirements/mem0.txt` | `python mem0Energyassistant.py` | `OPENAI_API_KEY` |
+| Gemini | `geminiagents.py` | `pip install -r requirements/gemini.txt` | `python geminiagents.py` | `GOOGLE_API_KEY` |
+| DeepSeek / local text model | `deepseekenergyagent.py` | `pip install -r requirements/text-models.txt` | `python deepseekenergyagent.py` | Depends on model setup |
+| Qwen + SAM2 | `qwensam2agent.py` | `pip install -r requirements/vision-medical.txt && pip install -e sam2` | `python qwensam2agent.py` | Hugging Face token if required |
+| eve / Vercel | `my-agent/` | `cd my-agent && pnpm install` | `pnpm run dev` | Provider config for eve |
+| Agent Laboratory | `agentlaboratory_energy.py` | `pip install -r requirements/agent-lab-energy.txt` | `python agentlaboratory_energy.py` | `OPENAI_API_KEY` |
+| TinyAGI | `tinyagi_energy/` | See `tinyagi_energy/README.md` | `tinyagi_energy/skills/luminus-energy/scripts/energy.sh billing LUM-1001` | No for tool-layer smoke test |
+
+For the full dependency matrix, see:
+
+```bash
 cat requirements/README.md
 ```
 
-3. Set your API keys:
+## OpenAI Agents SDK Demo
+
+The OpenAI demo is the most complete single-framework demo. It covers:
+
+- basic agent
+- function tools
+- handoffs
+- streaming
+- multi-turn conversation
+- SQLite session memory
+- LLM-as-a-judge
+- agents as tools
+- guardrails
+- human-in-the-loop
+- interactive chat
+- voice
+
+Examples:
+
+```bash
+pip install -r requirements/openai-agents.txt
+
+python openai/demo.py --demo 8
+python openai/demo.py --chat
+python openai/demo.py --demo 12
+```
+
+## TinyAGI Tool Adapter
+
+The TinyAGI energy skill now delegates to the shared harness CLI, so it uses the same source of truth as the deterministic comparison runner.
+
+```bash
+tinyagi_energy/skills/luminus-energy/scripts/energy.sh billing LUM-1001
+tinyagi_energy/skills/luminus-energy/scripts/energy.sh advice LUM-1002 heating
+tinyagi_energy/skills/luminus-energy/scripts/energy.sh appointment LUM-1003 inspection 2026-08-12
+```
+
+## Development
+
+Run the focused test suite:
+
+```bash
+python -m pytest tests/test_luminus_harness.py tests/test_compare.py
+```
+
+Run compile checks for the local comparison code:
+
+```bash
+python -m py_compile compare.py luminus_harness/__init__.py luminus_harness/__main__.py luminus_harness/core.py
+```
+
+## Security
+
+Never commit API keys, local `.env` files, generated certificates, model checkpoints, or runtime caches. Use environment variables for provider credentials:
+
 ```bash
 export OPENAI_API_KEY="your-key"
 export GOOGLE_API_KEY="your-key"
 ```
 
-## Key Takeaways
+## Project Status
 
-Each framework brings unique strengths:
-
-- **OpenAI Agents SDK** — most complete: tools, handoffs, guardrails, human-in-the-loop, voice, sessions, all in one SDK
-- **AutoGen** — best for structured multi-agent team conversations with robust orchestration
-- **smolagents** — simplest and fastest to get started, pure Python
-- **Swarm** — great for learning handoff patterns
-- **PydanticAI** — best for type safety and structured/validated outputs
-- **Gemini** — strong multimodal capabilities
-- **Mem0** — unique persistent memory across conversations
-- **Vercel / eve** — typed tools, durable human-in-the-loop approvals, one-command deploy to Vercel
-- **Agent Laboratory** — research-grade multi-agent orchestration with a unified multi-provider model interface
-- **TinyAGI** — config-driven 24/7 multi-agent teams across Discord/Telegram/WhatsApp
-
-## Security
-
-Never commit API keys to version control. Always use environment variables.
+This repo is now in a good shape for local deterministic comparison. The next useful improvement is not more README work; it is adding optional live adapters to `compare.py` one framework at a time.
