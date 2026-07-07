@@ -1,36 +1,15 @@
-# Python version: 3.10 recommended
-
-# Core libraries
-torch>=2.0,<3.0
-numpy>=1.22.2
-requests>=2.32.2
-google-generativeai>=0.3.0
-trackio>=0.1.0
-
-# Transformers pinned for CheXagent
-transformers==4.40.0
-
-# Streamlit
-streamlit>=1.43.2
-
-# PIL (Pillow)
-pillow>=10.3.0
-
-# Qwen VLM
-# We'll rely on 'transformers==4.40.0' for some of the Qwen2.5 Instruct code,
-# but note that certain Qwen features might need a more recent version.
-# If they fail on 4.40.0, you may have to isolate CheXagent in a separate environment.
-
-# Dependencies for optional tasks:
-# SAM2 is not on PyPI. You likely need to install it from GitHub or a local directory.
-# For segment-anything fallback, ensure protobuf<4.21.0 to avoid protobuf compatibility issues:
-#   pip install segment-anything protobuf<4.21.0
-# qwen_vl_utils is presumably local or from a GitHub repo as well.
-
-# If you want or need xformers (sometimes helpful for performance), you can install:
-# xformers>=0.0.20
-pyarrow>=14.0.1 # not directly required, pinned by Snyk to avoid a vulnerability
-tornado>=6.5 # not directly required, pinned by Snyk to avoid a vulnerability
-urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
-validators>=0.21.0 # not directly required, pinned by Snyk to avoid a vulnerability
-zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
+# Root install is intentionally minimal.
+#
+# This repo compares several agent frameworks that need incompatible or heavy
+# optional stacks. Install the requirements for the demo you want instead:
+#
+#   pip install -r requirements/openai-agents.txt
+#   pip install -r requirements/autogen.txt
+#   pip install -r requirements/gemini.txt
+#   pip install -r requirements/pydantic-ai.txt
+#   pip install -r requirements/mem0.txt
+#   pip install -r requirements/text-models.txt
+#   pip install -r requirements/vision-medical.txt
+#   pip install -r requirements/agent-lab-energy.txt
+#
+# See requirements/README.md for the full matrix.

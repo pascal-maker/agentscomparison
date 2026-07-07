@@ -2,6 +2,10 @@
 
 A hands-on comparison of AI agent frameworks, all built around the same use case: a **Luminus energy customer support assistant**. Each framework tackles billing queries, energy-saving advice, appointment booking, and multi-agent orchestration in its own way.
 
+## Shared Harness
+
+The canonical Luminus fixtures, instructions, billing explanation, advice text, and appointment proposal behavior live in `luminus_harness/`. Framework demos should adapt to that module instead of redefining their own customer data. This keeps the comparison stable: when `LUM-1001` changes, every demo sees the same scenario.
+
 ## Frameworks
 
 ### OpenAI Agents SDK (`openai/demo.py`)
@@ -24,7 +28,7 @@ The most comprehensive demo with 12 patterns covering the full SDK surface:
 | 12 | Voice Agent | Microphone input, speech-to-text, agent, text-to-speech, speaker output |
 
 ```bash
-pip install openai-agents 'openai-agents[voice]' sounddevice
+pip install -r requirements/openai-agents.txt
 
 # Run a specific demo
 python openai/demo.py --demo 8
@@ -46,7 +50,7 @@ python openai/demo.py
 Multi-agent system using `AssistantAgent` subclasses for billing, energy insights, and energy advice. Orchestrated with `RoundRobinGroupChat` to simulate a team conversation answering multi-part customer queries.
 
 ```bash
-pip install autogen-agentchat autogen-ext
+pip install -r requirements/autogen.txt
 python medicautogenapp.py
 ```
 
@@ -57,7 +61,7 @@ python medicautogenapp.py
 Lightweight `CodeAgent` with custom system prompts for billing, insights, and advice. Each agent processes the query individually, then an aggregator agent combines outputs. Minimal, fast, and LLM-agnostic.
 
 ```bash
-pip install smolagents
+pip install -r requirements/smolagents.txt
 python agentsfromhuggingface.py
 ```
 
@@ -68,6 +72,7 @@ python agentsfromhuggingface.py
 Experimental framework for ergonomic multi-agent handoffs and routines. Agents transfer conversation control based on the task at hand. Educational, not production-ready.
 
 ```bash
+pip install -r requirements/swarm.txt
 python luminusswarmagent.py
 ```
 
@@ -78,7 +83,7 @@ python luminusswarmagent.py
 Type-safe support agent with dependency injection and Pydantic models for structured, validated responses. Ensures responses adhere to a predefined schema.
 
 ```bash
-pip install pydantic-ai
+pip install -r requirements/pydantic-ai.txt
 python pydanticenegryassistant.py
 ```
 
@@ -89,7 +94,7 @@ python pydanticenegryassistant.py
 Agent framework demo for energy assistant use case.
 
 ```bash
-pip install agno
+pip install -r requirements/agno.txt
 python agnoagents.py
 ```
 
@@ -100,7 +105,7 @@ python agnoagents.py
 Agents with persistent memory for energy assistant interactions.
 
 ```bash
-pip install mem0ai
+pip install -r requirements/mem0.txt
 python mem0Energyassistant.py
 ```
 
@@ -111,7 +116,7 @@ python mem0Energyassistant.py
 Command-line energy advisor powered by Gemini AI. Also includes an MCP-enabled Gemini agent.
 
 ```bash
-pip install google-generativeai
+pip install -r requirements/gemini.txt
 python geminiagents.py
 ```
 
@@ -122,6 +127,7 @@ python geminiagents.py
 Energy assistant using the DeepSeek model.
 
 ```bash
+pip install -r requirements/text-models.txt
 python deepseekenergyagent.py
 ```
 
@@ -132,6 +138,8 @@ python deepseekenergyagent.py
 Qwen-VLM for medical Q&A combined with SAM-2 for image segmentation. Includes a Gradio web interface.
 
 ```bash
+pip install -r requirements/vision-medical.txt
+pip install -e sam2
 python qwensam2agent.py
 ```
 
@@ -155,6 +163,7 @@ Reuses [Agent Laboratory](https://github.com/SamuelSchmidgall/AgentLaboratory)'s
 
 ```bash
 export OPENAI_API_KEY="your-key"
+pip install -r requirements/agent-lab-energy.txt
 python agentlaboratory_energy.py
 python agentlaboratory_energy.py --query "Why was my bill so high?" --customer LUM-1002
 ```
@@ -184,7 +193,11 @@ cd agentscomparison
 
 2. Install dependencies:
 ```bash
-pip install -r requirements.txt
+# Pick the demo you want. For example:
+pip install -r requirements/openai-agents.txt
+
+# See the full matrix:
+cat requirements/README.md
 ```
 
 3. Set your API keys:

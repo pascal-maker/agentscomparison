@@ -24,26 +24,9 @@ import sys
 # Agent Laboratory lives in a sibling directory with its own modules.
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "AgentLaboratory"))
 from inference import query_model  # type: ignore[import-not-found]  # noqa: E402 (path injected above)
+from luminus_harness import customer_context
 
 MODEL = os.getenv("AGENTLAB_MODEL", "gpt-4o-mini")
-
-# --- Simulated Luminus customer database --------------------------------------
-CUSTOMERS = {
-    "LUM-1001": {"name": "Sofie", "plan": "Comfy Fixed", "last_bill_eur": 142.50},
-    "LUM-1002": {"name": "Marc", "plan": "Dynamic", "last_bill_eur": 208.90},
-    "LUM-1003": {"name": "Amira", "plan": "Solar Buyback", "last_bill_eur": 76.20},
-}
-
-
-def customer_context(customer_id: str) -> str:
-    c = CUSTOMERS.get(customer_id)
-    if not c:
-        return f"No Luminus account found for {customer_id}."
-    return (
-        f"Account {customer_id}: name={c['name']}, plan={c['plan']}, "
-        f"last bill=€{c['last_bill_eur']:.2f}. Usage peaks on weekday evenings "
-        f"(18:00-22:00) and rises in winter for heating."
-    )
 
 
 # --- Specialized agents (the Agent Laboratory pattern) ------------------------

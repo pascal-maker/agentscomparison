@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import asyncio
 import argparse
-import random
 from dataclasses import dataclass
 from typing import Literal
 
@@ -39,26 +38,18 @@ from agents import (
     TResponseInputItem,
     function_tool,
     input_guardrail,
+    set_tracing_disabled,
     trace,
 )
-
-# ---------------------------------------------------------------------------
-# Shared Luminus instructions
-# ---------------------------------------------------------------------------
-
-LUMINUS_INSTRUCTIONS = (
-    "You are a customer support agent for Luminus, the Belgian energy supplier. "
-    "Your role is to answer customer questions about billing, energy usage, and "
-    "energy-saving tips. You can also book appointments for technicians to visit "
-    "customer premises. Always address the customer by name and maintain data privacy."
+from luminus_harness import (
+    APPOINTMENT_INSTRUCTIONS,
+    LUMINUS_INSTRUCTIONS,
+    billing_explanation,
+    luminus_fact,
+    propose_appointment,
 )
 
-APPOINTMENT_INSTRUCTIONS = (
-    "You are the appointment booking specialist for Luminus. "
-    "Your role is to schedule technician visits to customer premises. "
-    "Always confirm the customer's name, address, and preferred time slot. "
-    "Maintain strict data privacy at all times."
-)
+set_tracing_disabled(True)
 
 # ---------------------------------------------------------------------------
 # Shared function tools
@@ -67,29 +58,19 @@ APPOINTMENT_INSTRUCTIONS = (
 @function_tool
 def luminus_billing_fun_fact() -> str:
     """Return an interesting Luminus billing or energy-saving fact."""
-    facts = [
-        "Switching to LED bulbs can reduce your lighting bill by up to 80 %.",
-        "Luminus customers who opt for the night tariff save on average €120 per year.",
-        "A standby device left plugged in can cost up to €50 extra per year.",
-        "Solar panels installed via Luminus reduce a typical household bill by 40 %.",
-    ]
-    return random.choice(facts)
+    return luminus_fact()
 
 
 @function_tool
 def get_average_bill(customer_name: str) -> str:
     """Return the average monthly bill for a Luminus customer (simulated)."""
-    # Simulated lookup — replace with real API call in production.
-    return f"The average monthly bill for {customer_name} based on your usage profile is €87.50."
+    return billing_explanation(customer_name)
 
 
 @function_tool
 def book_appointment(customer_name: str, date: str, time_slot: str) -> str:
     """Book a technician appointment for a Luminus customer."""
-    return (
-        f"Appointment confirmed for {customer_name} on {date} at {time_slot}. "
-        "A Luminus technician will visit your premises. You will receive a confirmation e-mail shortly."
-    )
+    return propose_appointment(customer_name, f"technician visit at {time_slot}", date)
 
 
 # ===========================================================================

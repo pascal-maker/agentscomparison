@@ -1,5 +1,8 @@
 # Environment variables
 .env
+.env.*
+!.env.example
+!example.env
 
 # Python
 __pycache__/
@@ -27,10 +30,42 @@ wheels/
 # Virtual Environment
 venv/
 ENV/
+.venv/
+venv_*/
+
+# Test/build/tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.local/
+
+# Node / frontend
+node_modules/
+.npm/
+.pnpm-store/
+.vercel/
+.output/
+*.tsbuildinfo
+
+# Local app/runtime artifacts
+.claude/
+.eve/
+.gradio/
+.workflow-data/
+tmp/
+output/
+
+# Generated experiment outputs
+AgentLaboratory/MATH_research_dir/
+AgentLaboratory/state_saves/
+sam2/checkpoints/
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
-.vercel
+
+# macOS Finder metadata
+.DS_Store
