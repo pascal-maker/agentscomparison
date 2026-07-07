@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
+import os
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 from luminus_harness import (
+    LUMINUS_INSTRUCTIONS,
     billing_explanation,
     energy_advice,
     get_scenario,
@@ -58,6 +61,47 @@ def tinyagi_results(scenario_id: str) -> list[AdapterResult]:
     ]
 
 
+async def openai_live_results(scenario_id: str) -> list[AdapterResult]:
+    if not os.getenv("OPENAI_API_KEY"):
+        raise RuntimeError("OPENAI_API_KEY is required for --live openai.")
+
+    try:
+        from agents import Agent, Runner, function_tool, set_tracing_disabled
+    except ImportError as error:
+        raise RuntimeError("Install OpenAI Agents dependencies: pip install -r requirements/openai-agents.txt") from error
+
+    scenario = get_scenario(scenario_id)
+    set_tracing_disabled(True)
+
+    @function_tool
+    def explain_bill() -> str:
+        """Return the canonical billing explanation for the scenario customer."""
+        return billing_explanation(scenario.customer_id)
+
+    @function_tool
+    def suggest_savings() -> str:
+        """Return canonical energy-saving advice for the scenario customer."""
+        return energy_advice(scenario.customer_id, scenario.focus)
+
+    @function_tool
+    def propose_visit() -> str:
+        """Return the canonical appointment proposal for the scenario customer."""
+        return propose_appointment(scenario.customer_id, scenario.appointment_reason, scenario.appointment_date)
+
+    agent = Agent(
+        name="Luminus Live Comparison Agent",
+        instructions=(
+            LUMINUS_INSTRUCTIONS
+            + " Use the available tools for billing, saving advice, and appointment proposals. "
+            + "Answer the customer's scenario query in one concise support response."
+        ),
+        tools=[explain_bill, suggest_savings, propose_visit],
+        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+    )
+    result = await Runner.run(agent, scenario.query)
+    return [AdapterResult("openai", "live_response", str(result.final_output))]
+
+
 def render_table(rows: list[AdapterResult]) -> str:
     adapter_width = max(len("Adapter"), *(len(row.adapter) for row in rows))
     capability_width = max(len("Capability"), *(len(row.capability) for row in rows))
@@ -72,7 +116,7 @@ def render_table(rows: list[AdapterResult]) -> str:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Compare deterministic Luminus adapters on one scenario.")
+    parser = argparse.ArgumentParser(description="Compare Luminus adapters on one scenario.")
     parser.add_argument("--scenario", default="high_bill", choices=list_scenarios())
     parser.add_argument(
         "--adapter",
@@ -80,19 +124,37 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["harness", "tinyagi"],
         help="Adapter to run. Repeat for multiple. Defaults to harness and tinyagi.",
     )
+    parser.add_argument(
+        "--live",
+        action="append",
+        choices=["openai"],
+        help="Optional live framework adapter. Repeat for multiple. Requires provider credentials.",
+    )
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
+async def collect_rows(scenario_id: str, adapters: list[str], live_adapters: list[str]) -> list[AdapterResult]:
+    rows: list[AdapterResult] = []
+    if "harness" in adapters:
+        rows.extend(harness_results(scenario_id))
+    if "tinyagi" in adapters:
+        rows.extend(tinyagi_results(scenario_id))
+    if "openai" in live_adapters:
+        rows.extend(await openai_live_results(scenario_id))
+    return rows
+
+
+async def async_main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     scenario = get_scenario(args.scenario)
     adapters = args.adapter or ["harness", "tinyagi"]
+    live_adapters = args.live or []
 
-    rows: list[AdapterResult] = []
-    if "harness" in adapters:
-        rows.extend(harness_results(args.scenario))
-    if "tinyagi" in adapters:
-        rows.extend(tinyagi_results(args.scenario))
+    try:
+        rows = await collect_rows(args.scenario, adapters, live_adapters)
+    except RuntimeError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 2
 
     print(f"Scenario: {scenario.title} ({scenario.scenario_id})")
     print(f"Customer: {scenario.customer_id}")
@@ -100,6 +162,10 @@ def main(argv: list[str] | None = None) -> int:
     print()
     print(render_table(rows))
     return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    return asyncio.run(async_main(argv))
 
 
 if __name__ == "__main__":

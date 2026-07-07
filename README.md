@@ -31,6 +31,13 @@ python compare.py --scenario high_bill --adapter harness
 python compare.py --scenario high_bill --adapter tinyagi
 ```
 
+Run the first live adapter. This performs a real OpenAI API call:
+
+```bash
+export OPENAI_API_KEY="your-key"
+python compare.py --scenario high_bill --live openai
+```
+
 ## What Works Today
 
 The deterministic comparison runner currently compares:
@@ -40,7 +47,13 @@ The deterministic comparison runner currently compares:
 | `harness` | `luminus_harness/` Python module | No | Canonical source of truth |
 | `tinyagi` | `tinyagi_energy/.../energy.sh` | No | Shell adapter that delegates to the harness CLI |
 
-The live framework demos are still useful, but they are demos, not yet all wired into `compare.py`.
+Optional live adapters:
+
+| Adapter | Backing implementation | Requires API key | Run |
+| --- | --- | --- | --- |
+| `openai` | OpenAI Agents SDK | `OPENAI_API_KEY` | `python compare.py --scenario high_bill --live openai` |
+
+The remaining live framework demos are still useful, but they are not yet all wired into `compare.py`.
 
 ## Shared Harness
 
@@ -158,4 +171,4 @@ export GOOGLE_API_KEY="your-key"
 
 ## Project Status
 
-This repo is now in a good shape for local deterministic comparison. The next useful improvement is not more README work; it is adding optional live adapters to `compare.py` one framework at a time.
+This repo is now in a good shape for local deterministic comparison and has the first optional live adapter. The next useful improvement is adding one more live adapter to `compare.py`, preferably Gemini or PydanticAI.
