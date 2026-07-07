@@ -414,6 +414,44 @@ async def demo_agents_as_tools() -> None:
 
 COMPETITOR_NAMES = {"engie", "totalenergies", "eneco", "essent", "vattenfall", "mega", "octa+", "bolt", "elegant"}
 
+ENERGY_TOPIC_KEYWORDS = {
+    "luminus",
+    "bill",
+    "billing",
+    "invoice",
+    "charge",
+    "cost",
+    "meter",
+    "electricity",
+    "gas",
+    "energy",
+    "usage",
+    "consumption",
+    "tariff",
+    "plan",
+    "solar",
+    "heating",
+    "appliance",
+    "appointment",
+    "technician",
+    "smart meter",
+}
+
+VOICE_TOPIC_REFUSAL = (
+    "Sorry, I can only help with Luminus energy, billing, meter, plan, "
+    "saving-tip, or appointment questions."
+)
+
+
+def extract_input_text(input: str | list[TResponseInputItem]) -> str:
+    if isinstance(input, str):
+        return input.lower()
+    return " ".join(
+        item.get("content", "").lower()
+        for item in input
+        if isinstance(item, dict) and isinstance(item.get("content"), str)
+    )
+
 
 @input_guardrail
 async def block_competitor_questions(
@@ -422,20 +460,26 @@ async def block_competitor_questions(
     input: str | list[TResponseInputItem],
 ) -> GuardrailFunctionOutput:
     """Block questions that explicitly mention competitor energy providers by name."""
-    # Extract text from input
-    if isinstance(input, str):
-        text = input.lower()
-    else:
-        text = " ".join(
-            item.get("content", "").lower()
-            for item in input
-            if isinstance(item, dict) and isinstance(item.get("content"), str)
-        )
-    # Only trigger if a competitor name is explicitly mentioned
+    text = extract_input_text(input)
     found = any(name in text for name in COMPETITOR_NAMES)
     return GuardrailFunctionOutput(
         output_info={"competitor_detected": found},
         tripwire_triggered=found,
+    )
+
+
+@input_guardrail
+async def block_non_energy_questions(
+    ctx: RunContextWrapper[None],
+    agent: Agent,
+    input: str | list[TResponseInputItem],
+) -> GuardrailFunctionOutput:
+    """Block questions outside Luminus energy support topics."""
+    text = extract_input_text(input)
+    is_energy_related = any(keyword in text for keyword in ENERGY_TOPIC_KEYWORDS)
+    return GuardrailFunctionOutput(
+        output_info={"energy_related": is_energy_related},
+        tripwire_triggered=not is_energy_related,
     )
 
 
@@ -622,7 +666,7 @@ async def demo_interactive_chat() -> None:
             ),
         ],
         handoffs=[appointment_agent],
-        input_guardrails=[block_competitor_questions],
+        input_guardrails=[block_non_energy_questions, block_competitor_questions],
     )
 
     # Use to_input_list() for history — no session to avoid duplicate IDs
@@ -701,11 +745,15 @@ async def demo_voice_agent() -> None:
         name="Luminus Voice Assistant",
         instructions=(
             "You are a Luminus voice assistant for energy customers. "
-            "You help with billing questions, energy-saving tips, and appointment booking. "
+            "Only answer questions about Luminus, billing, energy usage, saving tips, "
+            "meters, appointments, plans, and related customer support. "
+            "If the user asks about anything else, politely say you can only help "
+            "with Luminus energy support. "
             "Keep your answers short and conversational — you are speaking out loud, "
             "not writing. Use simple sentences. Avoid lists and bullet points."
         ),
         tools=[luminus_billing_fun_fact, get_average_bill, book_appointment],
+        input_guardrails=[block_non_energy_questions, block_competitor_questions],
     )
 
     pipeline = VoicePipeline(workflow=SingleAgentVoiceWorkflow(agent))
@@ -750,7 +798,11 @@ async def demo_voice_agent() -> None:
 
             # Run through the voice pipeline
             audio_input = AudioInput(buffer=audio_buffer)
-            result = await pipeline.run(audio_input)
+            try:
+                result = await pipeline.run(audio_input)
+            except InputGuardrailTripwireTriggered:
+                print(f"   🔵 Luminus: {VOICE_TOPIC_REFUSAL}")
+                continue
 
             # Play the response through speakers
             player = sd.OutputStream(
