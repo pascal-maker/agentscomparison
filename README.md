@@ -6,6 +6,14 @@ A hands-on comparison of AI agent frameworks, all built around the same use case
 
 The canonical Luminus fixtures, instructions, billing explanation, advice text, and appointment proposal behavior live in `luminus_harness/`. Framework demos should adapt to that module instead of redefining their own customer data. This keeps the comparison stable: when `LUM-1001` changes, every demo sees the same scenario.
 
+The harness also has a small CLI for non-Python adapters:
+
+```bash
+python -m luminus_harness billing LUM-1001
+python -m luminus_harness advice LUM-1002 heating
+python -m luminus_harness appointment LUM-1003 inspection 2026-08-12
+```
+
 ## Frameworks
 
 ### OpenAI Agents SDK (`openai/demo.py`)

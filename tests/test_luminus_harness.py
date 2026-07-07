@@ -1,3 +1,7 @@
+import json
+import subprocess
+import sys
+
 from luminus_harness import (
     billing_explanation,
     customer_context,
@@ -36,3 +40,32 @@ def test_appointment_proposal_accepts_customer_name() -> None:
 
     assert "APPT-LUM-1002-20260813" in proposal
     assert "Marc" in proposal
+
+
+def test_cli_billing_text_output() -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "luminus_harness", "billing", "LUM-1001"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert "Account LUM-1001" in result.stdout
+    assert "last bill EUR 142.50" in result.stdout
+
+
+def test_cli_context_json_output() -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "luminus_harness", "--json", "context", "LUM-1002"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    payload = json.loads(result.stdout)
+    assert payload == {
+        "ok": True,
+        "command": "context",
+        "customer_id": "LUM-1002",
+        "text": customer_context("LUM-1002"),
+    }

@@ -13,6 +13,8 @@ Dependencies:
 import os
 import google.generativeai as genai
 
+from luminus_harness import customer_context
+
 # Configure API key from environment variable
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 if not GOOGLE_API_KEY:
@@ -29,10 +31,14 @@ for m in genai.list_models():
 # Initialize the model
 model = genai.GenerativeModel('models/gemini-2.5-flash-preview-05-20')  # Using the latest 2.5 flash model
 
-def chat_with_energy_assistant(message):
+def chat_with_energy_assistant(message, customer_id="LUM-1001"):
     try:
+        context = customer_context(customer_id)
         prompt = f"""
-        You are an energy advisor AI assistant. Answer this question about energy usage, bills, or saving tips:
+        You are a Luminus energy advisor AI assistant. Use this canonical customer context:
+        {context}
+
+        Answer this question about energy usage, bills, or saving tips:
         {message}
         
         Be clear, practical, and cite specific numbers when possible.
@@ -45,6 +51,7 @@ def chat_with_energy_assistant(message):
 def main():
     print("\n💡 Energy Assistant (type 'exit' to quit)")
     print("Ask me about energy usage, bills, or saving tips!\n")
+    customer_id = input("Customer ID (default LUM-1001): ").strip() or "LUM-1001"
     
     while True:
         try:
@@ -52,7 +59,7 @@ def main():
             if user_input.lower() == 'exit':
                 print("👋 Goodbye!")
                 break
-            response = chat_with_energy_assistant(user_input)
+            response = chat_with_energy_assistant(user_input, customer_id=customer_id)
             print(f"\nAssistant: {response}\n")
         except Exception as e:
             print(f"Error: {str(e)}")

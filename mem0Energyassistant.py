@@ -18,6 +18,8 @@ from dateutil import parser as dateparse
 from openai import OpenAI
 from mem0 import Memory
 
+from luminus_harness import customer_context
+
 # ────────────────────────────────────────────────────────────────
 # 1. Config & global objects
 # ────────────────────────────────────────────────────────────────
@@ -55,7 +57,7 @@ def add_memory(user_id: str, kind: str, payload: dict):
 # ────────────────────────────────────────────────────────────────
 # 4. Core chat function with retrieval-augmented prompt
 # ────────────────────────────────────────────────────────────────
-def chat_with_energy_agent(message: str, user_id: str = "default_user") -> str:
+def chat_with_energy_agent(message: str, user_id: str = "LUM-1001") -> str:
     # 4-a. Retrieve top-K relevant memories
     relevant = memory.search(query=message, user_id=user_id, limit=4)
     memories_str = "\n".join(f"- {memory}" for memory in relevant)
@@ -75,6 +77,9 @@ JSON with `{{"remember": <string>}}` when appropriate.
 
 User Memories:
 {memories_str}
+
+Canonical Luminus Customer Context:
+{customer_context(user_id)}
 """.strip()
 
     # 4-c. Call OpenAI
@@ -105,7 +110,7 @@ User Memories:
 # 5. CLI demo
 # ────────────────────────────────────────────────────────────────
 def main():
-    user_id = input("Choose a customer ID (default_user): ").strip() or "default_user"
+    user_id = input("Choose a customer ID (LUM-1001): ").strip() or "LUM-1001"
 
     # First-time: store a fresh meter reading so the agent has data
     add_memory(user_id, "meter_reading", fetch_latest_meter_reading(user_id))
