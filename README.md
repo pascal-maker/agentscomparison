@@ -90,7 +90,7 @@ Install dependencies per demo. Do not use one global Python environment for ever
 | Framework | Path | Install | Run | API key |
 | --- | --- | --- | --- | --- |
 | OpenAI Agents SDK | `openai/demo.py` | `pip install -r requirements/openai-agents.txt` | `python openai/demo.py --demo 8` | `OPENAI_API_KEY` |
-| Microsoft AutoGen | `medicautogenapp.py` | `pip install -r requirements/autogen.txt` | `python medicautogenapp.py` | `OPENAI_API_KEY` |
+| Microsoft AutoGen | `pascalmicrosoft.py` | `pip install -r requirements/autogen.txt` | `python pascalmicrosoft.py` | `OPENAI_API_KEY` |
 | smolagents | `agentsfromhuggingface.py` | `pip install -r requirements/smolagents.txt` | `python agentsfromhuggingface.py` | Hugging Face or configured model access |
 | Swarm | `luminusswarmagent.py` | `pip install -r requirements/swarm.txt` | `python luminusswarmagent.py` | Usually `OPENAI_API_KEY` |
 | PydanticAI | `pydanticenegryassistant.py` | `pip install -r requirements/pydantic-ai.txt` | `python pydanticenegryassistant.py` | Provider-dependent |
@@ -98,7 +98,6 @@ Install dependencies per demo. Do not use one global Python environment for ever
 | Mem0 | `mem0Energyassistant.py` | `pip install -r requirements/mem0.txt` | `python mem0Energyassistant.py` | `OPENAI_API_KEY` |
 | Gemini | `geminiagents.py` | `pip install -r requirements/gemini.txt` | `python geminiagents.py` | `GOOGLE_API_KEY` |
 | DeepSeek / local text model | `deepseekenergyagent.py` | `pip install -r requirements/text-models.txt` | `python deepseekenergyagent.py` | Depends on model setup |
-| Qwen + SAM2 | `qwensam2agent.py` | `pip install -r requirements/vision-medical.txt && pip install -e sam2` | `python qwensam2agent.py` | Hugging Face token if required |
 | eve / Vercel | `my-agent/` | `cd my-agent && pnpm install` | `pnpm run dev` | Provider config for eve |
 | Agent Laboratory | `agentlaboratory_energy.py` | `pip install -r requirements/agent-lab-energy.txt` | `python agentlaboratory_energy.py` | `OPENAI_API_KEY` |
 | TinyAGI | `tinyagi_energy/` | See `tinyagi_energy/README.md` | `tinyagi_energy/skills/luminus-energy/scripts/energy.sh billing LUM-1001` | No for tool-layer smoke test |

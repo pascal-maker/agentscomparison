@@ -9,7 +9,6 @@
 #   pip install -r requirements/pydantic-ai.txt
 #   pip install -r requirements/mem0.txt
 #   pip install -r requirements/text-models.txt
-#   pip install -r requirements/vision-medical.txt
 #   pip install -r requirements/agent-lab-energy.txt
 #
 # See requirements/README.md for the full matrix.

@@ -59,6 +59,7 @@ output/
 # Generated experiment outputs
 AgentLaboratory/MATH_research_dir/
 AgentLaboratory/state_saves/
+/sam2/
 sam2/checkpoints/
 
 # IDE
