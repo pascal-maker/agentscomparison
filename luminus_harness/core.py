@@ -29,10 +29,47 @@ class Customer:
     last_bill_eur: float
 
 
+@dataclass(frozen=True)
+class Scenario:
+    scenario_id: str
+    title: str
+    customer_id: str
+    query: str
+    focus: Focus = "general"
+    appointment_reason: str = "inspection"
+    appointment_date: str = "2026-08-12"
+
+
 CUSTOMERS: dict[str, Customer] = {
     "LUM-1001": Customer("LUM-1001", "Sofie", "Comfy Fixed", 142.50),
     "LUM-1002": Customer("LUM-1002", "Marc", "Dynamic", 208.90),
     "LUM-1003": Customer("LUM-1003", "Amira", "Solar Buyback", 76.20),
+}
+
+SCENARIOS: dict[str, Scenario] = {
+    "high_bill": Scenario(
+        scenario_id="high_bill",
+        title="Unexpected high bill",
+        customer_id="LUM-1001",
+        query="My last bill was unexpectedly high. Why did it change and how can I lower it?",
+        focus="general",
+    ),
+    "appliance_savings": Scenario(
+        scenario_id="appliance_savings",
+        title="Appliance off-peak savings",
+        customer_id="LUM-1002",
+        query="Can I lower my bill by changing when I run appliances?",
+        focus="appliances",
+    ),
+    "meter_visit": Scenario(
+        scenario_id="meter_visit",
+        title="Smart meter appointment",
+        customer_id="LUM-1003",
+        query="I need a smart meter inspection appointment.",
+        focus="general",
+        appointment_reason="smart meter inspection",
+        appointment_date="2026-08-12",
+    ),
 }
 
 SAVING_TIPS = {
@@ -126,3 +163,15 @@ def propose_appointment(customer_id: str, reason: str, preferred_date: str) -> s
 
 def luminus_fact() -> str:
     return random.choice(FACTS)
+
+
+def list_scenarios() -> list[str]:
+    return sorted(SCENARIOS)
+
+
+def get_scenario(scenario_id: str) -> Scenario:
+    try:
+        return SCENARIOS[scenario_id]
+    except KeyError as error:
+        known = ", ".join(list_scenarios())
+        raise ValueError(f"Unknown scenario {scenario_id!r}. Known scenarios: {known}") from error

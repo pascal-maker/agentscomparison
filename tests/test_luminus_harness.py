@@ -7,6 +7,8 @@ from luminus_harness import (
     customer_context,
     energy_advice,
     propose_appointment,
+    get_scenario,
+    list_scenarios,
 )
 
 
@@ -69,3 +71,24 @@ def test_cli_context_json_output() -> None:
         "customer_id": "LUM-1002",
         "text": customer_context("LUM-1002"),
     }
+
+
+def test_scenario_registry_exposes_canonical_inputs() -> None:
+    scenarios = list_scenarios()
+
+    assert "high_bill" in scenarios
+    assert get_scenario("high_bill").customer_id == "LUM-1001"
+    assert "unexpectedly high" in get_scenario("high_bill").query
+
+
+def test_cli_scenarios_json_output() -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "luminus_harness", "--json", "scenarios"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    payload = json.loads(result.stdout)
+    assert payload["ok"] is True
+    assert "high_bill" in {scenario["id"] for scenario in payload["scenarios"]}

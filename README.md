@@ -14,6 +14,13 @@ python -m luminus_harness advice LUM-1002 heating
 python -m luminus_harness appointment LUM-1003 inspection 2026-08-12
 ```
 
+Use `compare.py` to run deterministic local adapters against the same scenario:
+
+```bash
+python compare.py --scenario high_bill
+python compare.py --scenario appliance_savings --adapter harness --adapter tinyagi
+```
+
 ## Frameworks
 
 ### OpenAI Agents SDK (`openai/demo.py`)

@@ -5,13 +5,23 @@ import json
 import sys
 from typing import Callable
 
-from .core import billing_explanation, customer_context, energy_advice, energy_insights, propose_appointment
+from .core import (
+    billing_explanation,
+    customer_context,
+    energy_advice,
+    energy_insights,
+    get_scenario,
+    list_scenarios,
+    propose_appointment,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Canonical Luminus comparison harness.")
     parser.add_argument("--json", action="store_true", help="Print a structured JSON payload.")
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    subparsers.add_parser("scenarios", help="List canonical comparison scenarios.")
 
     context = subparsers.add_parser("context", help="Print canonical customer context.")
     context.add_argument("customer_id")
@@ -36,6 +46,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def render(args: argparse.Namespace) -> str:
     handlers: dict[str, Callable[[argparse.Namespace], str]] = {
+        "scenarios": lambda parsed: "\n".join(list_scenarios()),
         "context": lambda parsed: customer_context(parsed.customer_id),
         "billing": lambda parsed: billing_explanation(parsed.customer_id),
         "insights": lambda parsed: energy_insights(parsed.customer_id),
@@ -54,9 +65,20 @@ def main(argv: list[str] | None = None) -> int:
         payload = {
             "ok": ok,
             "command": args.command,
-            "customer_id": args.customer_id,
             "text": text,
         }
+        if args.command == "scenarios":
+            payload["scenarios"] = [
+                {
+                    "id": scenario_id,
+                    "title": get_scenario(scenario_id).title,
+                    "customer_id": get_scenario(scenario_id).customer_id,
+                    "query": get_scenario(scenario_id).query,
+                }
+                for scenario_id in list_scenarios()
+            ]
+        else:
+            payload["customer_id"] = args.customer_id
         print(json.dumps(payload, ensure_ascii=False))
     else:
         stream = sys.stdout if ok else sys.stderr
