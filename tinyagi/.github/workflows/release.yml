@@ -138,7 +138,7 @@ jobs:
           head -5 release_notes.md
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@26994186c0ac3ef5cae75ac16aa32e8153525f77 # v1
         if: github.ref_type == 'tag'
         with:
           body_path: release_notes.md
