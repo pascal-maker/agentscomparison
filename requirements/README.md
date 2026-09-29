@@ -17,6 +17,7 @@ break another framework.
 | Swarm | `pip install -r requirements/swarm.txt` | `python luminusswarmagent.py` |
 | Agent Laboratory energy demo | `pip install -r requirements/agent-lab-energy.txt` | `python agentlaboratory_energy.py` |
 | Trackio example | `pip install -r requirements/trackio.txt` | `python trackio_example.py` |
+| Gradio voice demo | `pip install -r requirements/energy-voice-demo.txt` | `python energy_voice_app.py` |
 
 Recommended workflow:
 

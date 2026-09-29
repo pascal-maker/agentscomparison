@@ -123,7 +123,14 @@ The OpenAI demo is the most complete single-framework demo. It covers:
 - guardrails
 - human-in-the-loop
 - interactive chat
-- voice
+- voice-based Belgian energy offer comparison
+
+The voice demo (`--demo 12`) compares residential electricity or gas offers
+through the official regulator comparator for Flanders, Brussels, or Wallonia.
+It needs a microphone/speaker, an OpenAI API key, and a Browser Use API key.
+Copy `.env.example` to `.env` and add your keys; `.env` is ignored by Git.
+The Browser Use lookup is read-only, has a configurable per-session spend cap,
+and prints offer source links in the terminal. It does not change contracts.
 
 Examples:
 
@@ -134,6 +141,39 @@ python openai/demo.py --demo 8
 python openai/demo.py --chat
 python openai/demo.py --demo 12
 ```
+
+For the voice comparison, say the region, four-digit postcode, energy type,
+and annual consumption in kWh (for example: “Compare electricity in Flanders,
+postcode 9000, using 3,500 kilowatt-hours per year”). If a regional comparator
+requires more details, the assistant asks instead of guessing. Unrelated
+questions are redirected to energy topics.
+
+### Browser voice demo
+
+The Gradio version records a voice question in the browser, then returns a
+spoken answer, transcript, optional uploaded-PDF context, and visual offer
+cards. It does not use a WebRTC connection:
+
+```bash
+python -m venv .venv-energy-voice
+source .venv-energy-voice/bin/activate
+pip install -r requirements/energy-voice-demo.txt
+python energy_voice_app.py
+```
+
+Open `http://localhost:7860` and allow microphone access. The browser demo
+reads `OPENAI_API_KEY` and `BROWSERBASE_API_KEY` from the root `.env`. It does not require
+WebRTC/TURN credentials. Visitors can upload an optional FAQ or bill PDF for
+the current conversation. TariefCheck is linked separately for sustainable
+renovation quotes. The Space deployment is documented in
+`energy_voice_space/README.md`.
+
+The same server exposes a Framer text-answer API at `POST /api/answer`. It
+uses Gemma 4 with the bundled PDF evidence and checks CREG through Browserbase
+for current electricity-price questions. Add `GEMINI_API_KEY` to `.env` for
+local use; Framer should point to the public backend URL ending in
+`/api/answer`. The route currently answers text questions only; live voice and
+visitor PDF upload are not connected to it yet.
 
 ## TinyAGI Tool Adapter
 

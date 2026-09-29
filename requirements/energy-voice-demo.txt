@@ -1,0 +1,9 @@
+# Gradio voice demo with optional PDF FAQ upload.
+gradio>=5.23,<6
+numpy>=2.2,<3
+openai-agents[voice]==0.2.0
+pypdf>=5,<7
+python-dotenv>=1.0,<2
+fastapi>=0.115,<1
+python-multipart>=0.0.20,<1
+uvicorn>=0.30,<1

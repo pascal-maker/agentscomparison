@@ -1,3 +1,4 @@
 openai-agents[voice]
 sounddevice
 numpy>=1.22.2
+python-dotenv

@@ -21,10 +21,23 @@ pass `--demo <number>` from the command line.
 
 from __future__ import annotations
 
+import json
 import asyncio
 import argparse
-from dataclasses import dataclass
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Literal
+
+from dotenv import load_dotenv
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
+
+from luminus_harness.provider_comparison import MeterType, MeterTechnology
+from luminus_harness.comparison_session import ComparisonSessions, is_comparison_followup, is_offer_comparison_question
+
+load_dotenv(REPO_ROOT / ".env")
 
 from agents import (
     Agent,
@@ -41,6 +54,7 @@ from agents import (
     set_tracing_disabled,
     trace,
 )
+from agents.voice import VoiceWorkflowBase
 from luminus_harness import (
     APPOINTMENT_INSTRUCTIONS,
     LUMINUS_INSTRUCTIONS,
@@ -48,6 +62,7 @@ from luminus_harness import (
     luminus_fact,
     propose_appointment,
 )
+from luminus_harness.voice_agent import ENERGY_TOPIC_REFUSAL, create_energy_voice_agent, is_energy_topic
 
 set_tracing_disabled(True)
 
@@ -71,6 +86,43 @@ def get_average_bill(customer_name: str) -> str:
 def book_appointment(customer_name: str, date: str, time_slot: str) -> str:
     """Book a technician appointment for a Luminus customer."""
     return propose_appointment(customer_name, f"technician visit at {time_slot}", date)
+
+
+@dataclass
+class VoiceComparisonContext:
+    comparisons: ComparisonSessions = field(default_factory=ComparisonSessions)
+    session_id: str | None = None
+    calls_this_turn: int = 0
+
+
+@function_tool
+async def compare_energy_providers(
+    ctx: RunContextWrapper[VoiceComparisonContext],
+    region: Literal["flanders", "brussels", "wallonia"] | None = None,
+    postcode: str | None = None,
+    energy_type: Literal["electricity", "gas"] | None = None,
+    annual_consumption_kwh: float | None = None,
+    meter_type: MeterType | None = None,
+    meter_technology: MeterTechnology | None = None,
+    annual_day_consumption_kwh: float | None = None,
+    annual_night_consumption_kwh: float | None = None,
+    is_prosumer: bool | None = None,
+) -> str:
+    """Compare explicit inputs. Ask for missing fields; never guess or retry in this turn."""
+    state = ctx.context
+    if state.calls_this_turn:
+        return "Deze beurt is al verwerkt. Geef het resultaat of vraag de ontbrekende gegevens; start geen nieuwe opzoeking."
+    state.calls_this_turn += 1
+    values = {name: value for name, value in {
+        "region": region, "postcode": postcode, "energy_type": energy_type,
+        "annual_consumption_kwh": annual_consumption_kwh, "meter_type": meter_type,
+        "meter_technology": meter_technology, "annual_day_consumption_kwh": annual_day_consumption_kwh,
+        "annual_night_consumption_kwh": annual_night_consumption_kwh, "is_prosumer": is_prosumer,
+    }.items() if value is not None}
+    reply = await state.comparisons.submit(values, state.session_id)
+    # Retain a terminal token to reject accidental tool retries until a new explicit request.
+    state.session_id = reply["comparison_session_id"] or state.session_id
+    return json.dumps(reply, ensure_ascii=False)
 
 
 # ===========================================================================
@@ -720,10 +772,49 @@ async def demo_interactive_chat() -> None:
 # 12. Voice / Realtime agent
 # ===========================================================================
 
+class ConsoleVoiceWorkflow(VoiceWorkflowBase):
+    """Refuse unrelated current turns and speak only the completed answer."""
+
+    def __init__(self, agent: Agent) -> None:
+        self._input_history: list[TResponseInputItem] = []
+        self._current_agent = agent
+        self.comparison_context = VoiceComparisonContext()
+
+    async def run(self, transcription: str):
+        print(f"\n\n🧑 You: {transcription}")
+        state = self.comparison_context
+        state.comparisons.prune()
+        session = state.comparisons.sessions.get(state.session_id)
+        fields = ("region", "postcode", "energy_type", "annual_consumption_kwh") + (session.required_fields if session else ())
+        pending = next((name for name in fields if session and name not in session.inputs), None)
+        followup = False
+        if session:
+            followup = is_comparison_followup(transcription, pending)
+        if not is_energy_topic(transcription) and not followup:
+            print(ENERGY_TOPIC_REFUSAL)
+            yield ENERGY_TOPIC_REFUSAL
+            return
+        if transcription.strip().casefold() in {"stop", "annuleer", "cancel"} and session:
+            state.comparisons.discard(state.session_id)
+            yield "De vergelijking is geannuleerd. Je vergelijkingsgegevens zijn gewist."
+            return
+        if is_offer_comparison_question(transcription):
+            state.comparisons.discard(state.session_id)
+            state.session_id = None
+        state.calls_this_turn = 0
+        print("🔊 Assistant: ", end="", flush=True)
+        history = [*self._input_history, {"role": "user", "content": transcription}]
+        result = await Runner.run(self._current_agent, history, context=state)
+        self._input_history = result.to_input_list()
+        self._current_agent = result.last_agent
+        final_text = str(result.final_output or "")
+        print(final_text, flush=True)
+        yield final_text
+
+
 async def demo_voice_agent() -> None:
     """
-    Voice-powered Luminus energy assistant. Speak into your microphone and
-    hear the agent respond through your speakers.
+    Voice-powered Belgian household energy comparison demo.
 
     Uses VoicePipeline: microphone → speech-to-text → agent → text-to-speech → speaker.
     Press Ctrl+C to stop.
@@ -731,32 +822,37 @@ async def demo_voice_agent() -> None:
     try:
         import numpy as np
         import sounddevice as sd
-        from agents.voice import AudioInput, SingleAgentVoiceWorkflow, VoicePipeline
+        from agents.voice import AudioInput, VoicePipeline
     except ImportError:
         print("Voice dependencies missing. Install with:")
         print("  pip install 'openai-agents[voice]' sounddevice")
         return
 
     print("\n" + "=" * 60)
-    print("  Luminus Energy Assistant — Voice Agent")
+    print("  Belgian Energy Comparison — Voice Agent")
     print("=" * 60)
+    print("Compare electricity or gas offers in Flanders, Brussels, or Wallonia.")
+    print("Say a region, four-digit postcode, energy type, and annual use in kWh.")
+    print("The comparison is read-only; source links appear in this terminal.\n")
 
-    agent = Agent(
-        name="Luminus Voice Assistant",
-        instructions=(
-            "You are a Luminus voice assistant for energy customers. "
-            "Only answer questions about Luminus, billing, energy usage, saving tips, "
-            "meters, appointments, plans, and related customer support. "
-            "If the user asks about anything else, politely say you can only help "
-            "with Luminus energy support. "
-            "Keep your answers short and conversational — you are speaking out loud, "
-            "not writing. Use simple sentences. Avoid lists and bullet points."
+    agent = create_energy_voice_agent(
+        additional_tools=[compare_energy_providers],
+        additional_instructions=(
+            "Voor het vergelijken van elektriciteits- of gascontracten gebruik je "
+            "compare_energy_providers. Vraag eerst naar de regio, de viercijferige "
+            "postcode, elektriciteit of gas, en het jaarlijkse verbruik in kWh. "
+            "Raad ontbrekende gegevens niet. TariefCheck gaat alleen over offertes "
+            "voor duurzame werken en is geen energiecontractvergelijker. De "
+            "vergelijking is alleen informatief: wijzig of sluit nooit een contract af. "
+            "Als de tool collecting teruggeeft, stel de aangegeven vervolgvraag. "
+            "Geef alleen expliciete antwoorden door via de gestructureerde velden. "
+            "Roep de tool hoogstens één keer per gebruikersbeurt aan. Bij een "
+            "afgesloten of niet ondersteunde vergelijking: geef uitleg en de bronlink."
         ),
-        tools=[luminus_billing_fun_fact, get_average_bill, book_appointment],
-        input_guardrails=[block_non_energy_questions, block_competitor_questions],
     )
 
-    pipeline = VoicePipeline(workflow=SingleAgentVoiceWorkflow(agent))
+
+    pipeline = VoicePipeline(workflow=ConsoleVoiceWorkflow(agent))
 
     # --- Recording settings ---
     SAMPLE_RATE = 24000
@@ -798,11 +894,7 @@ async def demo_voice_agent() -> None:
 
             # Run through the voice pipeline
             audio_input = AudioInput(buffer=audio_buffer)
-            try:
-                result = await pipeline.run(audio_input)
-            except InputGuardrailTripwireTriggered:
-                print(f"   🔵 Luminus: {VOICE_TOPIC_REFUSAL}")
-                continue
+            result = await pipeline.run(audio_input)
 
             # Play the response through speakers
             player = sd.OutputStream(
@@ -880,9 +972,12 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.chat:
-        asyncio.run(run_demo(11))
-    elif args.demo is not None:
-        asyncio.run(run_demo(args.demo))
-    else:
-        asyncio.run(run_all())
+    try:
+        if args.chat:
+            asyncio.run(run_demo(11))
+        elif args.demo is not None:
+            asyncio.run(run_demo(args.demo))
+        else:
+            asyncio.run(run_all())
+    except KeyboardInterrupt:
+        print("\nSession interrupted. Goodbye!")
