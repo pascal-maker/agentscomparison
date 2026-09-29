@@ -172,11 +172,32 @@ If the comparator requires information not supplied (such as day/night consumpti
 """
 
 
-def _validate_result(result: dict[str, Any], region: str, energy_type: str, consumption: float) -> dict[str, Any]:
+def _validate_result(result: dict[str, Any], region: str, energy_type: str, consumption: float,
+                     additional_inputs: dict[str, Any] | None = None) -> dict[str, Any]:
     if result.get("status") not in {"success", "needs_input", "unavailable"}:# used to validate the result
         raise RuntimeError("Browser Use did not return a recognized comparison status.")
     if result["status"] == "success" and not result.get("offers"):# used to validate the result
         raise RuntimeError("The comparator returned no offers.")
+    notes = result.get("notes", [])
+    if result["status"] == "success" and isinstance(notes, list):
+        assumptions = [note for note in notes if isinstance(note, str) and any(
+            marker in note.casefold() for marker in ("veronderstell", "aangenomen", "uitgegaan van", "assum")
+        )]
+        if assumptions:
+            missing = []
+            supplied = additional_inputs or {}
+            for note in assumptions:
+                lowered = note.casefold()
+                if ("prosument" in lowered or "zonnepanelen" in lowered) and "is_prosumer" not in supplied:
+                    missing.append("is_prosumer")
+                if "meter" in lowered:
+                    for field in ("meter_type", "meter_technology"):
+                        if field not in supplied:
+                            missing.append(field)
+            result = {**result, "status": "needs_input" if missing else "unavailable",
+                      "offers": [], "required_fields": list(dict.fromkeys(missing)),
+                      "required_information": ["De vergelijker gebruikte een niet bevestigde aanname; geef de ontbrekende gegevens expliciet op."],
+                      "notes": assumptions}
     for offer in result.get("offers", []):# used to validate the result
         if not isinstance(offer, dict):# used to validate the result
             raise RuntimeError("The comparator returned a malformed offer.")
@@ -238,47 +259,56 @@ def _run_browser_use_lookup(
     if isinstance(live_url, str) and live_url.startswith("https://"):
         print(f"[Browser Use] Live browser: {live_url}", flush=True)# used to print the live url
 
-    deadline = time.monotonic() + 150# used to set the deadline
+    deadline = time.monotonic() + 210# used to set the deadline
     last_progress: tuple[str | None, str | None] = (None, None)# used to set the last progress
-    while time.monotonic() < deadline:# used to loop until the deadline
-        session = _request_json("GET", f"{base_url}/{session_id}", api_key)# used to get the session
-        status = session.get("status")# used to get the status
-        summary = session.get("lastStepSummary")# used to get the summary
-        progress = (
-            status if isinstance(status, str) else None,
-            summary if isinstance(summary, str) else None,
-        )# used to get the progress
-        if progress != last_progress:# used to check if the progress is different from the last progress
-            status_label = progress[0] or "unknown status"
-            summary_label = f" — {progress[1]}" if progress[1] else ""
-            print(f"[Browser Use] {status_label}{summary_label}", flush=True)
-            last_progress = progress
-        if status in {"stopped", "timed_out", "error"}:# used to check if the status is stopped, timed_out or error
-            if status != "stopped" or session.get("isTaskSuccessful") is not True:
-                details = [f"status={status}", f"session={session_id}"]
-                if isinstance(summary, str) and summary:# used to check if the summary is valid
-                    details.append(f"last step: {summary}")# used to add the last step
-                if session.get("stepCount") is not None:# used to check if the step count is valid
-                    details.append(f"steps={session['stepCount']}")# used to add the step count
-                if session.get("totalCostUsd") is not None:# used to check if the total cost is valid
-                    details.append(f"cost=${session['totalCostUsd']}")# used to add the total cost
-                raise RuntimeError(
-                    "Browser Use did not finish (" + "; ".join(details) + ")."
-                )# used to raise an error if the browser use did not finish
-            output = session.get("output")# used to get the output
-            if isinstance(output, str):# used to check if the output is a string
-                try:
-                    output = json.loads(output)# used to parse the output
-                except json.JSONDecodeError:
-                    raise RuntimeError("Browser Use returned unstructured comparison data.") from None
-            if not isinstance(output, dict):# used to check if the output is a dictionary
-                raise RuntimeError("Browser Use returned no structured comparison data.")
-            return _validate_result(output, region, energy_type, annual_consumption_kwh)
-        time.sleep(2)# used to wait for 2 seconds
-    raise RuntimeError(
-        f"Local wait limit reached for Browser Use session {session_id}; "
-        "check its live browser URL or session details before retrying."
-    )
+    terminal = False
+    try:
+        while True:
+            session = _request_json("GET", f"{base_url}/{session_id}", api_key)
+            status = session.get("status")
+            summary = session.get("lastStepSummary")
+            progress = (
+                status if isinstance(status, str) else None,
+                summary if isinstance(summary, str) else None,
+            )
+            if progress != last_progress:
+                status_label = progress[0] or "unknown status"
+                summary_label = f" — {progress[1]}" if progress[1] else ""
+                print(f"[Browser Use] {status_label}{summary_label}", flush=True)
+                last_progress = progress
+            if status in {"stopped", "timed_out", "error"}:
+                terminal = True
+                if status != "stopped" or session.get("isTaskSuccessful") is not True:
+                    details = [f"status={status}", f"session={session_id}"]
+                    if isinstance(summary, str) and summary:
+                        details.append(f"last step: {summary}")
+                    if session.get("stepCount") is not None:
+                        details.append(f"steps={session['stepCount']}")
+                    if session.get("totalCostUsd") is not None:
+                        details.append(f"cost=${session['totalCostUsd']}")
+                    raise RuntimeError("Browser Use did not finish (" + "; ".join(details) + ").")
+                output = session.get("output")
+                if isinstance(output, str):
+                    try:
+                        output = json.loads(output)
+                    except json.JSONDecodeError:
+                        raise RuntimeError("Browser Use returned unstructured comparison data.") from None
+                if not isinstance(output, dict):
+                    raise RuntimeError("Browser Use returned no structured comparison data.")
+                return _validate_result(output, region, energy_type, annual_consumption_kwh, additional_inputs)
+            if time.monotonic() >= deadline:
+                raise RuntimeError(f"Local wait limit reached for Browser Use session {session_id}.")
+            time.sleep(2)
+    except Exception:
+        if not terminal:
+            try:
+                stopped = _request_json("POST", f"{base_url}/{session_id}/stop", api_key,
+                                        {"strategy": "session"})
+                print(f"[Browser Use] Stopped after local error; status={stopped.get('status')}; "
+                      f"cost=${stopped.get('totalCostUsd')}", flush=True)
+            except Exception as stop_error:
+                print(f"[Browser Use] Could not stop session {session_id}: {stop_error}", flush=True)
+        raise
 
 
 async def compare_energy_offers(

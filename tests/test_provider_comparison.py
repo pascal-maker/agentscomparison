@@ -1,4 +1,5 @@
 import json
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
@@ -52,3 +53,34 @@ async def test_invalid_optional_inputs_do_not_contact_browser_use(monkeypatch, e
     reply = await provider.compare_energy_offers(**BASE, **extra)
     assert reply
     lookup.assert_not_called()
+
+
+def test_assumed_prosumer_status_never_returns_offers():
+    result = provider._validate_result({
+        "status": "success", "offers": [{"supplier": "Example", "product": "Tariff",
+                                         "estimated_annual_cost_eur": 999, "source_url": "https://www.vtest.be/"}],
+        "notes": ["Er is uitgegaan van de veronderstelling dat er geen zonnepanelen zijn."],
+        "required_information": [],
+    }, "flanders", "electricity", 3500)
+    assert result["status"] == "needs_input"
+    assert result["offers"] == []
+    assert result["required_fields"] == ["is_prosumer"]
+
+
+def test_local_timeout_stops_remote_session(monkeypatch):
+    requests = []
+    def request(method, url, key, payload=None):
+        requests.append((method, url, payload))
+        if url.endswith("/stop"):
+            return {"status": "stopped", "totalCostUsd": "0.40"}
+        if method == "POST":
+            return {"id": "mock-session"}
+        return {"status": "running"}
+    monkeypatch.setattr(provider, "_request_json", request)
+    monkeypatch.setattr(provider, "time", SimpleNamespace(monotonic=Mock(side_effect=[0, 211]),
+                                                           sleep=Mock()))
+    with pytest.raises(RuntimeError, match="Local wait limit"):
+        provider._run_browser_use_lookup(api_key="test-only-placeholder", max_cost_usd=1.0, **BASE)
+    assert [(method, url.rsplit("/", 1)[-1]) for method, url, _ in requests] == [
+        ("POST", "sessions"), ("GET", "mock-session"), ("POST", "stop")]
+    assert requests[-1][2] == {"strategy": "session"}

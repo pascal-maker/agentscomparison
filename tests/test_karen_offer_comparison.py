@@ -58,6 +58,15 @@ def test_complete_request_uses_exact_inputs_and_up_to_three_displayed_prices(api
     api[3].assert_not_awaited()
 
 
+def test_compound_energy_name_and_labelled_prosumer_answer_are_forwarded(api):
+    reply = ask(api, "Vergelijk elektriciteitsaanbiedingen in Vlaanderen voor postcode 9000 en "
+                     "3500 kWh per jaar. Digitale meter, enkelvoudig tarief, prosument: nee.")
+    assert reply["comparison_status"] == "success"
+    api[2].assert_awaited_once_with(region="flanders", postcode="9000", energy_type="electricity",
+                                    annual_consumption_kwh=3500, meter_type="single_rate",
+                                    meter_technology="digital", is_prosumer=False)
+
+
 def test_missing_details_across_turns_and_state_contains_no_conversation(api):
     reply = ask(api, "Vergelijk energieaanbiedingen")
     token = reply["comparison_session_id"]

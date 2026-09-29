@@ -36,8 +36,8 @@ REGIONS = {
     "wallonia": r"\b(?:walloni[eë]|waals(?:e)?(?: gewest)?|wallonia|wallonie)\b",
 }
 ENERGIES = {
-    "electricity": r"\b(?:elektriciteit|stroom|electricity|electriciteit)\b",
-    "gas": r"\b(?:aardgas|gas)\b",
+    "electricity": r"\b(?:elektriciteit|elektriciteits\w*|stroom|electricity|electriciteit)\b",
+    "gas": r"\b(?:aardgas\w*|gas(?:aanbiedingen|contracten|tarieven)?)\b",
 }
 NUMBER = r"[-+]?(?:\d{1,3}(?:[. ]\d{3})+|\d+)(?:[,.]\d+)?"
 
@@ -45,7 +45,7 @@ NUMBER = r"[-+]?(?:\d{1,3}(?:[. ]\d{3})+|\d+)(?:[,.]\d+)?"
 def is_offer_comparison_question(question: str) -> bool:
     text = question.casefold()
     action = re.search(r"\b(?:vergelijk\w*|compar(?:e|ing|ison)|goedkoop\w*|voordelig\w*|cheapest|best(?:e)?)\b", text)
-    subject = re.search(r"\b(?:energie\w*|elektriciteit|stroom|aardgas|gas|electricity|leveranciers?|providers?|offers?|aanbiedingen|contracten?|tarieven|v-test|brusim|compacwape|kwh)\b", text)
+    subject = re.search(r"\b(?:energie\w*|elektriciteit|elektriciteits\w*|stroom|aardgas\w*|gas(?:aanbiedingen|contracten|tarieven)?|electricity|leveranciers?|providers?|offers?|aanbiedingen|contracten?|tarieven|v-test|brusim|compacwape|kwh)\b", text)
     return bool(action and subject)
 
 
@@ -123,7 +123,11 @@ def extract_additional_inputs(question: str, pending: str | None = None) -> dict
         bare = re.fullmatch(rf"({NUMBER})(?:\s*kwh)?(?:\s*(?:per jaar|jaarlijks|annual(?:ly)?))?", text)
         if bare:
             values[pending] = _number(bare[1], allow_zero=True)
-    if pending == "is_prosumer" and text in {"ja", "yes", "nee", "no"}:
+    labelled_prosumer = re.findall(r"\b(?:prosument|prosumer)\s*:\s*(ja|yes|nee|no)\b", text)
+    if labelled_prosumer:
+        answers = {answer in {"ja", "yes"} for answer in labelled_prosumer}
+        values["is_prosumer"] = answers.pop() if len(answers) == 1 else None
+    elif pending == "is_prosumer" and text in {"ja", "yes", "nee", "no"}:
         values["is_prosumer"] = text in {"ja", "yes"}
     elif re.search(r"\b(?:prosument|prosumer)\b", text):
         positive = re.fullmatch(r"(?:ik ben (?:een )?|i am (?:a )?)?(?:prosument|prosumer)(?:\s*:\s*(?:ja|yes))?", text)
