@@ -188,5 +188,22 @@ text now covers explicit meter/prosumer inputs. Actual Framer preview rendered
 a labelled mock comparison and its official source card; the original backend
 setting was restored and the mock result cleared. Voice continuity and exact
 spoken answers were checked with mocked browser speech APIs. No paid comparator
-call or live microphone recognition was tested. Framer remains unpublished, and
-these backend review repairs have not been deployed to the Space.
+call or live microphone recognition was tested. Framer remains unpublished. The backend deployment is recorded below.
+
+
+## Backend deployment — 29 September 2026
+
+Backend fixes from local commit `d0ebaa5` were deployed to
+the existing Space in [revision `2f7e4b1`](https://huggingface.co/spaces/pascal-maker/belgian-energy-voice-assistant/commit/2f7e4b19b2fe327c019f9e2477c6de08d434803f).
+The Space reported RUNNING with that exact runtime revision and retained its
+existing `zero-a10g` hardware. Only the backend README, comparison collector,
+provider comparator, and shared voice agent were uploaded. Requirements,
+PDF/source-retrieval code, secrets, and Space configuration were preserved.
+
+Live smoke checks passed for health, missing-input collection, isolated sessions,
+monthly-consumption rejection, cancellation/closed tokens, synthetic PDF upload
+and local follow-up, and PDF comparison blocking. A separate request verified
+that Framer's existing preview origin can call `/api/answer` and receive the
+Dutch collection prompt. All test sessions were deleted or cancelled. These
+checks made zero paid comparator calls. Real offer retrieval and live microphone
+recognition remain untested, and Framer was not published.
