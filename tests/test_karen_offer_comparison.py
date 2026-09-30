@@ -58,6 +58,23 @@ def test_complete_request_uses_exact_inputs_and_up_to_three_displayed_prices(api
     api[3].assert_not_awaited()
 
 
+def test_optional_tariff_label_and_free_form_notes_are_not_presented_as_verified_facts():
+    raw = json.loads(result())
+    raw["offers"][0]["price_type"] = "Variabel"
+    raw["offers"][0]["conditions"] = "Niet gecontroleerde voorwaarden"
+    raw["offers"][0]["tariff_date_or_validity"] = "Niet gecontroleerde tariefdatum"
+    raw["notes"] = ["Niet gecontroleerde vrije tekst"]
+    reply = comparison._format_result(json.dumps(raw), {
+        "region": "wallonia", "annual_consumption_kwh": 15000,
+    })
+    assert reply["comparison_status"] == "success"
+    assert "€ 1.200,50 per jaar" in reply["answer"]
+    assert "Niet gecontroleerde vrije tekst" not in reply["answer"]
+    assert "Niet gecontroleerde voorwaarden" not in reply["answer"]
+    assert "Niet gecontroleerde tariefdatum" not in reply["answer"]
+    assert " Variabel." not in reply["answer"]
+
+
 def test_compound_energy_name_and_labelled_prosumer_answer_are_forwarded(api):
     reply = ask(api, "Vergelijk elektriciteitsaanbiedingen in Vlaanderen voor postcode 9000 en "
                      "3500 kWh per jaar. Digitale meter, enkelvoudig tarief, prosument: nee.")

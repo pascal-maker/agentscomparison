@@ -208,15 +208,9 @@ def _format_result(raw: str, inputs: dict) -> dict:
                 return failed
             price = f"{cost:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
             line = f"{len(sources) + 1}. {supplier} — {product}: € {price} per jaar."
-            for key in ("price_type", "conditions", "tariff_date_or_validity"):
-                if isinstance(offer.get(key), str) and offer[key]:
-                    line += " " + offer[key] + "."
             lines.append(line)
             sources.append({"title": f"{supplier} · {product}", "url": offer["source_url"],
                             "detail": f"{comparator.name} · gecontroleerd {checked_label}"})
-        notes = result.get("notes", [])
-        if isinstance(notes, list):
-            lines.extend(note for note in notes if isinstance(note, str))
         lines.append("Dit zijn de getoonde ramingen van de vergelijker; controleer de voorwaarden voor je een contract kiest.")
         return _reply("\n\n".join(lines), "success", sources=sources, live_source_status="checked", checked_at_utc=result["checked_at_utc"])
     except (ValueError, TypeError, KeyError, AttributeError):

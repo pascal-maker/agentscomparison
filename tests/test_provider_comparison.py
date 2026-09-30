@@ -35,6 +35,9 @@ async def test_optional_inputs_reach_browser_use_payload_with_existing_cost_cap(
     assert '"meter_type": "dual_rate"' in payload["task"]
     assert '"meter_technology": "digital"' in payload["task"]
     assert provider.COMPARATORS["flanders"].url in payload["task"]
+    assert "SELECT the matching suggestion" in payload["task"]
+    assert "not JavaScript that mutates form values" in payload["task"]
+    assert "never default to variable" in payload["task"]
     assert payload["outputSchema"]["properties"]["required_fields"]["items"]["enum"] == list(provider.EXTRA_FIELDS)
     assert [method for method, _ in requests] == ["POST", "GET"]
 
@@ -65,6 +68,16 @@ def test_assumed_prosumer_status_never_returns_offers():
     assert result["status"] == "needs_input"
     assert result["offers"] == []
     assert result["required_fields"] == ["is_prosumer"]
+
+
+def test_success_requires_official_comparator_source():
+    with pytest.raises(RuntimeError, match="official comparator source"):
+        provider._validate_result({
+            "status": "success", "offers": [{"supplier": "Example", "product": "Tariff",
+                                             "estimated_annual_cost_eur": 999,
+                                             "source_url": "https://example.com/offer"}],
+            "notes": [], "required_information": [],
+        }, "flanders", "electricity", 3500)
 
 
 def test_local_timeout_stops_remote_session(monkeypatch):

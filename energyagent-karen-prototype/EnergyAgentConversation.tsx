@@ -267,12 +267,18 @@ export default function EnergyAgentConversation({
         nextRecognition.lang = "nl-BE"
         nextRecognition.interimResults = false
         nextRecognition.continuous = false
+        let hasTranscript = false
         nextRecognition.onresult = (event) => {
             const transcript = event.results[0]?.[0]?.transcript?.trim()
             if (!transcript) {
                 setVoiceError("De spraakdienst gaf geen herkende tekst terug. Typ je vraag of probeer opnieuw.")
                 return
             }
+            hasTranscript = true
+            if (voiceTimeout.current !== null) window.clearTimeout(voiceTimeout.current)
+            voiceTimeout.current = null
+            nextRecognition.stop()
+            setListening(false)
             setAsked(transcript)
             setStatus("Vraag herkend · Karen haalt bronnen op…")
             void ask(transcript, true)
@@ -284,6 +290,7 @@ export default function EnergyAgentConversation({
             setStatus("Spraak gehoord · Karen herkent je vraag…")
         }
         nextRecognition.onerror = (event) => {
+            if (hasTranscript) return
             setListening(false)
             if (voiceTimeout.current !== null) window.clearTimeout(voiceTimeout.current)
             voiceTimeout.current = null

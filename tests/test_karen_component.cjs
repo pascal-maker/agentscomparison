@@ -23,7 +23,7 @@ let recognizer
 window.SpeechRecognition = class {
     constructor() { recognizer = this }
     start() {}
-    stop() { this.onend?.() }
+    stop() { this.stopCalls = (this.stopCalls || 0) + 1; this.onend?.() }
 }
 const source = require("node:fs").readFileSync(path.join(__dirname, "../energyagent-karen-prototype/EnergyAgentConversation.tsx"), "utf8")
 const compiled = buildSync({
@@ -71,6 +71,7 @@ async function voice(question) {
         recognizer.onresult({ results: [[{ transcript: question }]] })
         recognizer.onend?.()
     })
+    assert.equal(recognizer.stopCalls, 1, "Recognition must stop before Karen speaks")
 }
 async function main() {
     await act(async () => root.render(React.createElement(Component, { apiEndpoint: "https://backend.example/api/answer", sampleQuestion: "sample" })))
