@@ -165,6 +165,19 @@ ontkende en expliciete frequentievragen blijven buiten deze smalle route.
 Een live controle op 9 oktober gaf `answer_with_sources` en `passage_checked`.
 Dit is een lokale Vane-proef, nog geen wijziging aan de gehoste Karen of Framer.
 
+### Brusselse gasketel: frequentie met expliciete brandstof (9 oktober)
+
+Voor de vraag hoe vaak een gasketel in Brussel gecontroleerd moet worden, haalt
+de lokale adapter de [officiële burgerpagina van Leefmilieu Brussel](https://leefmilieu.brussels/verwarmingsketel)
+rechtstreeks op. `brussels_boiler_answer.py` controleert de exacte bron-URL en
+zichtbare passages over aardgas, de termijn van twee jaar en erkende technici.
+Het antwoord noemt **aardgas** uitdrukkelijk; bij propaan, butaan of LPG wordt
+deze route niet gebruikt. Ontbreekt de pagina of één van de passages, dan volgt
+`insufficient_evidence` zonder termijn. De lokale live controle gaf
+`answer_with_sources` en `passage_checked`; er is geen betaalde zoekaanroep
+gedaan. Dit blijft een smalle, gecontroleerde route in de lokale proef en is nog
+niet aan de Framer-microfoon gekoppeld.
+
 ## Evalueren
 
 ### Lokale zoekfix bouwen (3 oktober)
