@@ -23,6 +23,12 @@ from .brussels_boiler_answer import (
     fetch_checked_answer as fetch_checked_brussels_boiler,
     is_residential_frequency_question,
 )
+from .flanders_boiler_answer import (
+    ARTICLE_TITLE as FLANDERS_BOILER_TITLE,
+    ARTICLE_URL as FLANDERS_BOILER_URL,
+    fetch_checked_answer as fetch_checked_flanders_boiler,
+    is_gas_maintenance_question,
+)
 
 
 class Turn(BaseModel):
@@ -108,6 +114,24 @@ class VaneAdapter:
 
     async def answer(self, request: PublicQuestion) -> KarenAnswer:
         try:
+            if is_gas_maintenance_question(request.question):
+                checked = await fetch_checked_flanders_boiler(self.client)
+                if checked:
+                    answer, excerpt, final_url = checked
+                    return KarenAnswer(
+                        status="answer_with_sources", answer=answer,
+                        evidence_status="passage_checked",
+                        sources=[Source(id=1, title=FLANDERS_BOILER_TITLE,
+                                        url=final_url, excerpt=excerpt)],
+                    )
+                return KarenAnswer(
+                    status="insufficient_evidence",
+                    answer=("Ik kon de officiële Vlaamse pagina nu niet volledig controleren. "
+                            "Daarom bevestig ik geen onderhoudsregel."),
+                    sources=[Source(id=1, title=FLANDERS_BOILER_TITLE,
+                                    url=FLANDERS_BOILER_URL,
+                                    excerpt="Officiële pagina; inhoud niet bevestigd in deze beurt.")],
+                )
             if is_residential_frequency_question(request.question):
                 checked = await fetch_checked_brussels_boiler(self.client)
                 if checked:

@@ -178,6 +178,23 @@ deze route niet gebruikt. Ontbreekt de pagina of één van de passages, dan volg
 gedaan. Dit blijft een smalle, gecontroleerde route in de lokale proef en is nog
 niet aan de Framer-microfoon gekoppeld.
 
+### Vlaamse gasketel: onderhoud afhankelijk van vermogen (9 oktober)
+
+De expliciete vraag naar onderhoud van een gasketel in Vlaanderen gaat naar
+[Vlaanderen.be over centrale verwarming](https://www.vlaanderen.be/verplicht-onderhoud-van-uw-cv-installatie-centrale-verwarming).
+`flanders_boiler_answer.py` controleert de officiële URL, de beperking tot een
+**centraal** stooktoestel en de passages voor beide vermogensklassen in het
+*gasgedeelte* van de pagina. Karen noemt verplicht tweejaarlijks onderhoud
+vanaf 20 kW, aanbevolen maar niet verplicht onderhoud onder 20 kW en het
+kenplaatje als plaats om het vermogen te vinden. Het vermogen wordt niet uit de
+vraag geraden. Bij een ontbrekende of gewijzigde passage volgt
+`insufficient_evidence` zonder betaalde zoekaanroep. Een lokale live controle
+gaf `answer_with_sources` en `passage_checked`.
+
+Deze drie regionale ketelvragen zijn beperkte, vastgelegde broncontroles. Ze
+bewijzen nog niet dat de algemene Vane-zoekroute willekeurige actuele vragen
+betrouwbaar kan beantwoorden.
+
 ## Evalueren
 
 ### Lokale zoekfix bouwen (3 oktober)
