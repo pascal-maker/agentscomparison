@@ -1,0 +1,198 @@
+diff --git a/src/lib/agents/search/api.ts b/src/lib/agents/search/api.ts
+index 94b70ae..7714697 100644
+--- a/src/lib/agents/search/api.ts
++++ b/src/lib/agents/search/api.ts
+@@ -4,16 +4,22 @@ import { classify } from './classifier';
+ import Researcher from './researcher';
+ import { getWriterPrompt } from '@/lib/prompts/search/writer';
+ import { WidgetExecutor } from './widgets';
++import { guardClassification, trace } from './karenGuards';
++import { isEnecoInvoice, selectEvidence } from '@/lib/karenEvidence';
+ 
+ class APISearchAgent {
+   async searchAsync(session: SessionManager, input: SearchAgentInput) {
+-    const classification = await classify({
++    const rawClassification = await classify({
+       chatHistory: input.chatHistory,
+       enabledSources: input.config.sources,
+       query: input.followUp,
+       llm: input.config.llm,
+     });
+ 
++    const classification = guardClassification(rawClassification, input.followUp, input.config.sources);
++    trace('classification', { question: input.followUp, raw: rawClassification.classification,
++      guarded: classification.classification });
++
+     const widgetPromise = WidgetExecutor.executeAll({
+       classification,
+       chatHistory: input.chatHistory,
+@@ -41,6 +47,12 @@ class APISearchAgent {
+       searchPromise,
+     ]);
+ 
++    if (searchResults) {
++      const before = searchResults.searchFindings.length;
++      searchResults.searchFindings = selectEvidence(input.followUp, searchResults.searchFindings);
++      trace('evidence_selection', { before, after: searchResults.searchFindings.length });
++    }
++    trace('final_sources', { count: searchResults?.searchFindings.length ?? 0 });
+     if (searchResults) {
+       session.emit('data', {
+         type: 'searchResults',
+@@ -52,6 +64,14 @@ class APISearchAgent {
+       type: 'researchComplete',
+     });
+ 
++    if (isEnecoInvoice(input.followUp)) {
++      // The local adapter fetches and checks Eneco's own article. Do not wait
++      // for the unconstrained writer on this narrowly scoped question.
++      session.emit('data', { type: 'response', data: 'Bronnen gevonden; passagecontrole volgt.' });
++      session.emit('end', {});
++      return;
++    }
++
+     const finalContext =
+       searchResults?.searchFindings
+         .map(
+diff --git a/src/lib/agents/search/researcher/actions/search/baseSearch.ts b/src/lib/agents/search/researcher/actions/search/baseSearch.ts
+index de99123..5ad8381 100644
+--- a/src/lib/agents/search/researcher/actions/search/baseSearch.ts
++++ b/src/lib/agents/search/researcher/actions/search/baseSearch.ts
+@@ -8,9 +8,13 @@ import computeSimilarity from '@/lib/utils/computeSimilarity';
+ import z from 'zod';
+ import Scraper from '@/lib/scraper';
+ import { splitText } from '@/lib/utils/splitText';
++import { trace } from '../../../karenGuards';
++import { authorityDomains, isEnecoInvoice, selectEvidence, selectInvoiceEvidence, selectScopedEvidence } from '@/lib/karenEvidence';
+ 
+ export const executeSearch = async (input: {
+   queries: string[];
++  question?: string;
++  search?: typeof searchSearxng;
+   mode: SearchAgentConfig['mode'];
+   searchConfig?: SearxngSearchOptions;
+   researchBlock: ResearchBlock;
+@@ -41,7 +45,7 @@ export const executeSearch = async (input: {
+     const results: Chunk[] = [];
+ 
+     const search = async (q: string) => {
+-      const res = await searchSearxng(q, {
++      const res = await (input.search ?? searchSearxng)(q, {
+         ...(input.searchConfig ? input.searchConfig : {}),
+       });
+ 
+@@ -69,7 +73,9 @@ export const executeSearch = async (input: {
+               };
+             }),
+           )
+-        ).filter((c) => c.metadata.similarity > 0.5);
++        ).filter((c) => c.metadata.similarity > 0.5 ||
++          (input.question && authorityDomains(input.question).length > 0 &&
++            selectEvidence(input.question, [c]).length > 0));
+       } catch (err) {
+         resultChunks = res.results.map((r) => {
+           const content = r.content || r.title;
+@@ -85,6 +91,7 @@ export const executeSearch = async (input: {
+           };
+         });
+       } finally {
++        trace('search_results', { query: q, beforeFilter: res.results.length, afterFilter: resultChunks.length });
+         results.push(...resultChunks);
+       }
+ 
+@@ -127,6 +134,20 @@ export const executeSearch = async (input: {
+ 
+     await Promise.all(input.queries.map(search));
+ 
++    if (input.question && isEnecoInvoice(input.question)) {
++      const selected = selectInvoiceEvidence(input.question, results);
++      trace('invoice_pre_dedup', { before: results.length, after: selected.length,
++        urls: selected.map(item => item.metadata.url) });
++      return selected;
++    }
++
++    if (input.question && authorityDomains(input.question).length > 0) {
++      const selected = selectScopedEvidence(input.question, results);
++      trace('scoped_pre_dedup', { before: results.length, after: selected.length,
++        urls: selected.map(item => item.metadata.url) });
++      return selected;
++    }
++
+     results.sort((a, b) => b.metadata.similarity - a.metadata.similarity);
+ 
+     const uniqueSearchResultIndices: Set<number> = new Set();
+@@ -176,7 +197,7 @@ export const executeSearch = async (input: {
+     const searchResults: Chunk[] = [];
+ 
+     const search = async (q: string) => {
+-      const res = await searchSearxng(q, {
++      const res = await (input.search ?? searchSearxng)(q, {
+         ...(input.searchConfig ? input.searchConfig : {}),
+       });
+ 
+diff --git a/src/lib/agents/search/researcher/actions/search/webSearch.ts b/src/lib/agents/search/researcher/actions/search/webSearch.ts
+index d9f6234..13668d5 100644
+--- a/src/lib/agents/search/researcher/actions/search/webSearch.ts
++++ b/src/lib/agents/search/researcher/actions/search/webSearch.ts
+@@ -1,7 +1,9 @@
+ import z from 'zod';
++import { searchWebForQuestion } from '@/lib/karenWebSearch';
+ import { ResearchAction } from '../../../types';
+ import { ResearchBlock } from '@/lib/types';
+ import { executeSearch } from './baseSearch';
++import { normalizeQueries, planQueries, trace } from '../../../karenGuards';
+ 
+ const actionSchema = z.object({
+   type: z.literal('web_search'),
+@@ -85,9 +87,15 @@ const webSearchAction: ResearchAction<typeof actionSchema> = {
+     config.sources.includes('web') &&
+     config.classification.classification.skipSearch === false,
+   execute: async (input, additionalConfig) => {
+-    input.queries = (
+-      Array.isArray(input.queries) ? input.queries : [input.queries]
+-    ).slice(0, 3);
++    try {
++      input = actionSchema.parse({ ...input, type: 'web_search', queries: normalizeQueries(input?.queries) });
++    } catch {
++      trace('invalid_queries', { rejected: true });
++      return { type: 'search_results', results: [] };
++    }
++    input.queries = planQueries(additionalConfig.question, input.queries);
++    trace('queries', { queries: input.queries });
++    if (!input.queries.length) return { type: 'search_results', results: [] };
+ 
+     const researchBlock = additionalConfig.session.getBlock(
+       additionalConfig.researchBlockId,
+@@ -100,6 +108,8 @@ const webSearchAction: ResearchAction<typeof actionSchema> = {
+       embedding: additionalConfig.embedding,
+       mode: additionalConfig.mode,
+       queries: input.queries,
++      question: additionalConfig.question,
++      search: searchWebForQuestion(additionalConfig.question || ''),
+       researchBlock: researchBlock,
+       session: additionalConfig.session,
+     });
+diff --git a/src/lib/agents/search/researcher/index.ts b/src/lib/agents/search/researcher/index.ts
+index 0a25d91..7dd11ba 100644
+--- a/src/lib/agents/search/researcher/index.ts
++++ b/src/lib/agents/search/researcher/index.ts
+@@ -168,6 +168,7 @@ class Researcher {
+         researchBlockId: researchBlockId,
+         fileIds: input.config.fileIds,
+         mode: input.config.mode,
++        question: input.followUp,
+       });
+ 
+       actionOutput.push(...actionResults);
+diff --git a/src/lib/agents/search/types.ts b/src/lib/agents/search/types.ts
+index d77db7c..347c49d 100644
+--- a/src/lib/agents/search/types.ts
++++ b/src/lib/agents/search/types.ts
+@@ -63,6 +63,7 @@ export type ClassifierOutput = {
+ };
+ 
+ export type AdditionalConfig = {
++  question?: string;
+   llm: BaseLLM<any>;
+   embedding: BaseEmbedding<any>;
+   session: SessionManager;

@@ -1,0 +1,5 @@
+services:
+  vane:
+    image: karen-vane-trial:patched
+    environment:
+      KAREN_VANE_DIAGNOSTICS: "1"

@@ -1,0 +1,13 @@
+{
+  "regions": {
+    "wallonia": ["wallonie.be"],
+    "brussels": ["environnement.brussels", "leefmilieu.brussels", "brugel.brussels"],
+    "flanders": ["vlaanderen.be", "vreg.be"]
+  },
+  "energy_regions": {
+    "wallonia": ["energie.wallonie.be"]
+  },
+  "suppliers": {
+    "eneco": ["eneco.be", "eneco.nl"]
+  }
+}

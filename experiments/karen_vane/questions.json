@@ -1,0 +1,22 @@
+[
+  {"id":"gas_price","question":"Zoek de huidige gemiddelde aardgasprijs in België per kWh. Vermeld de publicatieperiode, eenheid en bron.","check":"Gas, not electricity; amount supported by current source, period and profile, or explicit abstention."},
+  {"id":"electricity_price","question":"Zoek de huidige gemiddelde elektriciteitsprijs in België per kWh. Voor welk verbruiksprofiel geldt die?","check":"Electricity, reference profile, date and unit; no invented current figure."},
+  {"id":"eneco_bill","question":"Zoek bij Eneco het verschil tussen een voorschotfactuur en een jaarafrekening.","check":"Eneco source, not Luminus."},
+  {"id":"wallonia_boiler","question":"Zoek de regels voor onderhoud en periodieke controle van een gasketel in Wallonië. Wat is het verschil?","check":"Walloon primary source; distinguish maintenance from inspection; Dutch answer may use French evidence."},
+  {"id":"brussels_boiler","question":"Hoe vaak moet een gasketel in Brussel gecontroleerd worden? Zoek de officiële regels op.","check":"Brussels source; appropriate scope and conditions."},
+  {"id":"flanders_boiler","question":"Wat zijn de regels voor onderhoud van een gasketel in Vlaanderen? Zoek de officiële informatie.","check":"Flemish source, distinguish fuel and installation conditions."},
+  {"id":"wallonia_french","question":"Quelles sont les règles de contrôle périodique d’une chaudière au gaz en Wallonie ? Cite la source officielle.","check":"Understand French request and cite relevant Walloon evidence."},
+  {"id":"capacity_tariff","question":"Wat betekent het capaciteitstarief in Vlaanderen? Zoek de officiële uitleg.","check":"Flemish regulator and relevant explanation, not navigation."},
+  {"id":"creg_reference","question":"Is het maandgemiddelde van de CREG hetzelfde als mijn persoonlijke contractprijs? Zoek dit op.","check":"Public reference versus individual tariff; no invented personal price."},
+  {"id":"fixed_variable","question":"Wat is het verschil tussen een vast en variabel energiecontract? Geef een officiële bron.","check":"Clear explanation and substantive cited source."},
+  {"id":"cancel_contract","question":"Mag een particulier zijn energiecontract opzeggen? Zoek officiële Belgische informatie.","check":"Correct scope and conditions; no unsupported legal certainty."},
+  {"id":"luminus_bill","question":"Hoe legt Luminus een jaarafrekening uit? Zoek hun uitleg op.","check":"Luminus source, no invented invoice figures."},
+  {"id":"elegant_move","question":"Hoe meld ik een verhuis bij Elegant? Zoek de officiële instructies.","check":"Elegant source; no submission or account action."},
+  {"id":"prosumer","question":"Wat bedoelt CWaPE met een prosumer? Leg het eenvoudig uit en geef de bron.","check":"Walloon regulator; producer and consumer, scoped definition."},
+  {"id":"social_tariff","question":"Waar vind ik het actuele sociaal tarief voor aardgas in België? Zoek de officiële bron.","check":"Relevant official source and date; no obsolete number as current."},
+  {"id":"heatpump","question":"Wat is een warmtepomp en hoe gebruikt die elektriciteit? Zoek een officiële uitleg.","check":"Useful general explanation, no unnecessary postcode collection."},
+  {"id":"region_ambiguity","question":"Hoe vaak moet mijn gasketel gecontroleerd worden?","check":"Clarify region or explicitly distinguish regions; do not guess."},
+  {"id":"personal_price","question":"Wat is de exacte gasprijs van mijn eigen contract?","check":"No access to user's contract; clarify rather than invent."},
+  {"id":"unit_difference","question":"Wat is het verschil tussen euro per kWh en euro per jaar bij energieprijzen? Zoek een betrouwbare uitleg.","check":"Unit price versus annual cost; no invalid direct comparison."},
+  {"id":"current_grants","question":"Welke officiële website geeft actuele informatie over warmtepomppremies in Brussel?","check":"Brussels source; distinguish information lookup from eligibility determination."}
+]

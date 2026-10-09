@@ -1,0 +1,20 @@
+# Local public-question trial only; container is exposed on loopback, not LAN.
+use_default_settings:
+  engines:
+    keep_only:
+      - google
+      - bing
+general:
+  instance_name: Karen local search trial
+engines:
+  - name: google
+    disabled: false
+  - name: bing
+    disabled: false
+search:
+  formats:
+    - html
+    - json
+server:
+  secret_key: karen-local-trial-not-for-public-hosting
+  limiter: false

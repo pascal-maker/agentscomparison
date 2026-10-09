@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Karen × Vane — proef</title>
+<style>body{font:18px/1.6 system-ui;max-width:850px;margin:50px auto;padding:0 20px;background:#f5f6f2;color:#172b22}textarea{box-sizing:border-box;width:100%;padding:14px;font:inherit}button{padding:12px 20px;font:inherit;margin:12px 8px 12px 0;cursor:pointer}article{white-space:pre-wrap;background:white;padding:22px;margin:20px 0;border-radius:12px}small{display:block;color:#526158}li{margin-bottom:22px}blockquote{font-size:15px;margin:8px 0}</style>
+<h1>Karen × Vane</h1><p>Afzonderlijke proef met openbare energievragen. Geen facturen, persoonsgegevens of live offertevergelijkingen invoeren.</p>
+<form id="form"><textarea id="question" rows="3" required maxlength="1000" placeholder="Wat is het verschil tussen een voorschot en een jaarafrekening?"></textarea><button id="send">Vraag stellen</button><button type="button" id="clear">Nieuw gesprek</button></form>
+<small id="status">Alleen geaccepteerde antwoorden gaan mee naar de volgende vraag. Bronpassages zijn niet automatisch inhoudelijk geverifieerd.</small><section id="conversation"></section>
+<script>
+let history=[];const $=id=>document.getElementById(id);
+$('clear').onclick=()=>{history=[];$('conversation').replaceChildren();$('question').value='';};
+$('form').onsubmit=async event=>{event.preventDefault();const question=$('question').value.trim();if(!question)return;$('send').disabled=true;$('clear').disabled=true;$('status').textContent='Vane onderzoekt je vraag…';
+try{const response=await fetch('/api/answer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question,history})});if(!response.ok)throw Error('HTTP '+response.status);const data=await response.json();
+const block=document.createElement('article');const heading=document.createElement('strong');heading.textContent=question;block.append(heading,document.createElement('hr'),document.createTextNode(data.answer));
+const list=document.createElement('ol');for(const source of data.sources||[]){const item=document.createElement('li');const link=document.createElement('a');link.textContent=source.title;link.href=source.url;link.target='_blank';link.rel='noopener noreferrer';const quote=document.createElement('blockquote');quote.textContent=source.excerpt;item.append(link,quote);list.append(item);}block.append(list);$('conversation').append(block);
+$('status').textContent=({sources_for_review:'Bronnen ter beoordeling',insufficient_evidence:'Geen passende bron',service_error:'Dienstfout',answer_with_sources:'Antwoord met bronnen'}[data.status]||data.status)+(data.evidence_status==='passage_checked'?' · antwoordpassages op Eneco gecontroleerd':' · bewijs nog niet inhoudelijk geverifieerd')+(data.error_code?' · '+data.error_code:'');
+if(data.status==='answer_with_sources'){history=[...history,{role:'human',content:question},{role:'assistant',content:data.answer.slice(0,6000)}].slice(-6);$('question').value='';}
+}catch(error){$('status').textContent='Proef mislukt: '+error.message;}finally{$('send').disabled=false;$('clear').disabled=false;}};
+</script></html>
