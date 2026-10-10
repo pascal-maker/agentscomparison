@@ -81,3 +81,13 @@ test('social tariff period limits Tavily to federal tariff authorities', async (
   }).searchWebForQuestion(question);
   await search(`CREG sociaal tarief voor energie aardgas ${new Date().getUTCFullYear()} kwartaal`);
 });
+
+test('Belgian contract exit limits Tavily to Belgian federal consumer authorities', async () => {
+  const question='Waar staat de officiële uitleg over een eventuele opzegvergoeding bij een particulier elektriciteitscontract in België?';
+  const search=load({KAREN_WEB_SEARCH_PROVIDER:'tavily',TAVILY_API_KEY:'test-secret'}, async (_,options)=>{
+    const body=JSON.parse(options.body);
+    assert.deepEqual(Array.from(body.include_domains),['creg.be','economie.fgov.be']);
+    return {ok:true,json:async()=>({results:[]})};
+  }).searchWebForQuestion(question);
+  await search('CREG opzegvergoeding energiecontract particulier elektriciteit België');
+});

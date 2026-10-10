@@ -19,10 +19,22 @@ const socialTariffPeriod = (question: string) =>
   /sociaal\s+tarief|tarif\s+social/i.test(question)
   && /geldigheidsperiode|huidig|kwartaal|trimestre|période/i.test(question)
   && /\bgas\b|aardgas|\bgaz\b/i.test(question);
+const brusselsSupplierSwitch = (question: string) =>
+  regionWords.brussels.test(question) && /leverancier|fournisseur/i.test(question)
+  && /verander|overstap|changer|changement/i.test(question);
+const walloniaGasMeter = (question: string) =>
+  regionWords.wallonia.test(question) && /meterstand|index|relevé|compteur/i.test(question)
+  && /\bgas\b|aardgas|\bgaz\b/i.test(question);
+const belgianContractExit = (question: string) =>
+  /belgi[eë]|belgique|belgium/i.test(question) && /contract/i.test(question)
+  && /opzeg.*vergoeding|indemnit[eé].*rupture/i.test(question);
 
 function topicDomains(question: string): string[] {
   return capacityPeak(question) ? relations.topic_authorities.capacity_peak :
-    socialTariffPeriod(question) ? relations.topic_authorities.social_tariff_period : [];
+    socialTariffPeriod(question) ? relations.topic_authorities.social_tariff_period :
+    brusselsSupplierSwitch(question) ? relations.topic_authorities.brussels_supplier_switch :
+    walloniaGasMeter(question) ? relations.topic_authorities.wallonia_gas_meter :
+    belgianContractExit(question) ? relations.topic_authorities.belgian_contract_exit : [];
 }
 
 export function authorityDomains(question: string): string[] {
@@ -66,6 +78,9 @@ export function selectEvidence(question: string, findings: Chunk[]): Chunk[] {
         ? relations.energy_regions.wallonia : relations.regions[region])) return false;
     if (supplier && !domainMatches(host, relations.suppliers.eneco)) return false;
     const passage = finding.metadata.title + ' ' + finding.content;
+    const brusselsSwitchPage = brusselsSupplierSwitch(question)
+      && host === 'brugel.brussels'
+      && /les-5-etapes-pour-changer-de-fournisseur/i.test(url.pathname);
     const walloonGasBoilerComparison = region === 'wallonia' && asksMaintenanceAndControl
       && /\bgas\b|gasketel|gaz/i.test(question) && /ketel|chaudi|boiler/i.test(question);
     const boilerPage = /ketel|chaudi|boiler/i.test(finding.metadata.title + ' ' + url.pathname);
@@ -78,7 +93,8 @@ export function selectEvidence(question: string, findings: Chunk[]): Chunk[] {
     if (topic && !topic.test(passage)) return false;
     // Tavily's short snippet may omit "gaz" on an otherwise directly relevant
     // official boiler page. Keep it as a candidate, not as a verified answer.
-    if (energy && !energy.test(passage) && !(walloonGasBoilerComparison && boilerPage)) return false;
+    if (energy && !energy.test(passage) && !(walloonGasBoilerComparison && boilerPage)
+      && !brusselsSwitchPage) return false;
     if (asksMaintenanceAndControl && (!/onderhoud|entretien/i.test(passage)
       || !/controle|contrôle|inspection/i.test(passage))) return false;
     if (capacityPeak(question)) {
@@ -92,6 +108,20 @@ export function selectEvidence(question: string, findings: Chunk[]): Chunk[] {
       if (!/sociaal\s+tarief|tarif\s+social/i.test(passage)
         || !/\bgas\b|aardgas|\bgaz\b/i.test(passage)
         || !/geldigh|periode|période|kwartaal|trimestre|\bq[1-4]\s*20\d{2}\b/i.test(passage)) return false;
+    }
+    if (brusselsSupplierSwitch(question)) {
+      if (!/leverancier|fournisseur/i.test(finding.metadata.title + ' ' + url.pathname)
+        || !/verander|overstap|changer|changement/i.test(passage)) return false;
+    }
+    if (walloniaGasMeter(question)) {
+      if (!/index|relev|compteur|meterstand/i.test(finding.metadata.title + ' ' + url.pathname)
+        || !/index|relev|compteur|meterstand/i.test(passage)
+        || !/\bgas\b|aardgas|\bgaz\b/i.test(passage)) return false;
+    }
+    if (belgianContractExit(question)) {
+      if (!/contract|opzeg|résiliat/i.test(finding.metadata.title + ' ' + url.pathname)
+        || !/opzeg\w*|résiliat/i.test(passage)
+        || !/vergoeding|indemnit/i.test(passage)) return false;
     }
     return true;
   });

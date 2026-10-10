@@ -56,6 +56,8 @@ Dat bewaart het aparte Docker-volume. Deze proef gebruikt geen bestaande Vane-da
   `HELDOUT-EVALUATION-2026-10-10.md` voor de beperkte live meting.
 - `TOPIC-SOURCE-RESULTS-2026-10-10.md`: vervolgmeting van de onderwerpgerichte
   Fluvius- en CREG-bronregels; de algemene route blijft review-only.
+- `HELDOUT-REMAINING-2026-10-10.md`: de drie overige publieke vragen en de
+  persoonlijke contractprijsvraag; alleen kandidaatbronnen, geen bewezen claims.
 - `../../tests/test_karen_vane_trial.py`: geen netwerk of modelkosten.
 
 ## Wat Pydantic wel en niet doet

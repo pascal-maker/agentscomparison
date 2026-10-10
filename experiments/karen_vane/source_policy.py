@@ -21,6 +21,9 @@ TOPIC_TERMS = {
     "boiler": ("ketel", "chaudi", "boiler"),
     "capacity_peak": ("maandpiek", "capaciteitstarief"),
     "social_tariff_period": ("sociaal tarief", "tarif social"),
+    "brussels_supplier_switch": ("leverancier", "fournisseur"),
+    "wallonia_gas_meter": ("index", "relev", "compteur", "meterstand"),
+    "belgian_contract_exit": ("opzeg", "résiliat"),
 }
 ENERGY_TERMS = {
     "gas": ("gas", "gaz"),
@@ -56,6 +59,14 @@ def extract_scope(question: str) -> Scope:
              else "social_tariff_period" if re.search(r"sociaal\s+tarief|tarif\s+social", text)
              and re.search(r"geldigheidsperiode|huidig|kwartaal|trimestre|période", text)
              and re.search(r"\bgas\b|aardgas|\bgaz\b", text)
+             else "brussels_supplier_switch" if region == "brussels"
+             and re.search(r"leverancier|fournisseur", text)
+             and re.search(r"verander|overstap|changer|changement", text)
+             else "wallonia_gas_meter" if region == "wallonia"
+             and re.search(r"meterstand|index|relevé|compteur", text)
+             and re.search(r"\bgas\b|aardgas|\bgaz\b", text)
+             else "belgian_contract_exit" if re.search(r"belgi[eë]|belgique|belgium", text)
+             and "contract" in text and re.search(r"opzeg.*vergoeding|indemnit[eé].*rupture", text)
              else "invoice" if re.search(r"factuur|afrekening|voorschot|invoice|\bbill\b", text)
              else "boiler" if re.search(r"ketel|verwarm|chaudi|boiler", text) else None)
     energy = ("gas" if re.search(r"\bgas\b|gasketel|chaudi", text)
@@ -107,8 +118,10 @@ def source_reason(scope: Scope, url: str, title: str, content: str) -> str | Non
             return "wrong_region_in_passage"
     if scope.topic and not any(term in passage for term in TOPIC_TERMS[scope.topic]):
         return "wrong_topic"
+    brussels_switch_page = (scope.topic == "brussels_supplier_switch" and host == "brugel.brussels"
+                            and "les-5-etapes-pour-changer-de-fournisseur" in parsed.path.casefold())
     if scope.energy and not any(term in passage for term in ENERGY_TERMS[scope.energy]) \
-            and not (walloon_gas_boiler_comparison and boiler_page):
+            and not (walloon_gas_boiler_comparison and boiler_page) and not brussels_switch_page:
         return "wrong_energy_type"
     if scope.maintenance and scope.control and not (
             re.search(r"onderhoud|entretien", passage)
@@ -127,5 +140,19 @@ def source_reason(scope: Scope, url: str, title: str, content: str) -> str | Non
             and re.search(r"sociaal\s+tarief|tarif\s+social", passage)
             and re.search(r"\bgas\b|aardgas|\bgaz\b", passage)
             and re.search(r"geldigh|periode|période|kwartaal|trimestre|\bq[1-4]\s*20\d{2}\b", passage)):
+        return "wrong_topic"
+    if scope.topic == "brussels_supplier_switch" and not (
+            re.search(r"leverancier|fournisseur", page_label)
+            and re.search(r"verander|overstap|changer|changement", passage)):
+        return "wrong_topic"
+    if scope.topic == "wallonia_gas_meter" and not (
+            re.search(r"index|relev|compteur|meterstand", page_label)
+            and re.search(r"index|relev|compteur|meterstand", passage)
+            and re.search(r"\bgas\b|aardgas|\bgaz\b", passage)):
+        return "wrong_topic"
+    if scope.topic == "belgian_contract_exit" and not (
+            re.search(r"contract|opzeg|résiliat", page_label)
+            and re.search(r"opzeg\w*|résiliat", passage)
+            and re.search(r"vergoeding|indemnit", passage)):
         return "wrong_topic"
     return None

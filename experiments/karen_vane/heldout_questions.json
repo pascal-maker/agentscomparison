@@ -19,9 +19,9 @@
     "id": "heldout_wallonia_meter",
     "question": "Waar geeft Wallonië officiële uitleg over het doorgeven van mijn meterstand voor aardgas?",
     "expected_status": ["sources_for_review", "insufficient_evidence"],
-    "authority_hosts": ["wallonie.be"],
-    "concept_groups": [["meterstand", "index de compteur", "relevé de compteur"], ["gas", "gaz"]],
-    "review_note": "Een officiële pagina kan naar de netbeheerder verwijzen; beoordeel de werkelijke bevoegdheid handmatig."
+    "authority_hosts": ["wallonie.be", "cwape.be", "ores.be"],
+    "concept_groups": [["meterstand", "index de compteur", "relevé de compteur", "relevé index", "relevé d'index"], ["gas", "gaz"]],
+    "review_note": "CWaPE is de gewestelijke regulator; ORES-instructies gelden alleen voor klanten van ORES. Beoordeel de werkelijke bevoegdheid handmatig."
   },
   {
     "id": "heldout_social_tariff_period",

@@ -77,6 +77,9 @@ test('public page lookup phrasing searches despite mistaken classifier, personal
   for (const question of [
     'Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek voor het capaciteitstarief bepaald wordt?',
     'Op welke officiële Belgische pagina vind ik de geldigheidsperiode van het huidige sociaal tarief voor aardgas?',
+    'Welke Brusselse instantie legt uit hoe ik van elektriciteitsleverancier kan veranderen?',
+    'Waar geeft Wallonië officiële uitleg over het doorgeven van mijn meterstand voor aardgas?',
+    'Waar staat de officiële uitleg over een eventuele opzegvergoeding bij een particulier elektriciteitscontract in België?',
   ]) {
     assert.equal(guards.guardClassification(original, question, ['web']).classification.skipSearch, false);
   }
@@ -84,6 +87,20 @@ test('public page lookup phrasing searches despite mistaken classifier, personal
     'Wat betaal ik deze maand precies per kWh aardgas volgens mijn eigen contract?', ['web']).classification.skipSearch, true);
   assert.equal(guards.guardClassification(original,
     'Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek bepaald wordt?', []).classification.skipSearch, true);
+});
+
+test('three remaining public navigation questions use one query each', () => {
+  const pairs = [
+    ['Welke Brusselse instantie legt uit hoe ik van elektriciteitsleverancier kan veranderen?',
+      'BRUGEL changer fournisseur électricité Bruxelles'],
+    ['Waar geeft Wallonië officiële uitleg over het doorgeven van mijn meterstand voor aardgas?',
+      'CWaPE ORES relevé index compteur gaz Wallonie particulier'],
+    ['Waar staat de officiële uitleg over een eventuele opzegvergoeding bij een particulier elektriciteitscontract in België?',
+      'CREG opzegvergoeding energiecontract particulier elektriciteit België'],
+  ];
+  for (const [question, query] of pairs) {
+    assert.deepEqual(Array.from(guards.planQueries(question, ['first', 'second', 'third'])), [query]);
+  }
 });
 
 test('federal tariff period question uses one anchored public search query', () => {

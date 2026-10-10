@@ -111,3 +111,43 @@ test('social tariff period requires tariff authority and rejects premium pages',
   assert.deepEqual(Array.from(mod.exports.authorityDomains(question)),
     ['creg.be','economie.fgov.be']);
 });
+
+test('Brussels supplier switch rejects unrelated energy sharing and keeps regulator steps',()=>{
+  const question='Welke Brusselse instantie legt uit hoe ik van elektriciteitsleverancier kan veranderen?';
+  const findings=[
+    {metadata:{url:'https://energysharing.brugel.brussels/',title:'Energy Sharing'},
+      content:'Brusselse consumenten delen elektriciteit met hun leverancier.'},
+    {metadata:{url:'https://brugel.brussels/themes/consommateurs-7/les-5-etapes-pour-changer-de-fournisseur-9',
+      title:'Les 5 étapes pour changer de fournisseur'},
+      content:'Première étape : comparez les prix des différents fournisseurs grâce à BruSim.'},
+  ];
+  assert.deepEqual(Array.from(select(question,findings),x=>x.metadata.url),
+    ['https://brugel.brussels/themes/consommateurs-7/les-5-etapes-pour-changer-de-fournisseur-9']);
+});
+
+test('Walloon gas meter reading rejects unrelated Walloon PDF and keeps operator instructions',()=>{
+  const question='Waar geeft Wallonië officiële uitleg over het doorgeven van mijn meterstand voor aardgas?';
+  const findings=[
+    {metadata:{url:'https://marchespublics.wallonie.be/old.pdf',title:'Exposé des motifs'},
+      content:'Marchés publics et procédures électroniques.'},
+    {metadata:{url:'https://www.ores.be/particulier/votre-index',title:'Index compteur - Particulier'},
+      content:'Communiquer votre relevé d’index de gaz à ORES.'},
+  ];
+  assert.deepEqual(Array.from(select(question,findings),x=>x.metadata.url),
+    ['https://www.ores.be/particulier/votre-index']);
+});
+
+test('Belgian contract exit excludes Dutch law and unrelated Belgian proposal',()=>{
+  const question='Waar staat de officiële uitleg over een eventuele opzegvergoeding bij een particulier elektriciteitscontract in België?';
+  const findings=[
+    {metadata:{url:'https://consument.acm.nl/energiecontract-opzeggen',title:'Energiecontract opzeggen'},
+      content:'De opzegvergoeding voor Nederlandse consumenten.'},
+    {metadata:{url:'https://www.vlaamsparlement.be/opzegvergoeding',title:'Voorstel opzegvergoeding'},
+      content:'Een voorstel voor een nieuwe opzegvergoeding.'},
+    {metadata:{url:'https://www.creg.be/nl/consumenten/prijzen-en-tarieven/types-contracten-voor-elektriciteit-en-aardgas',
+      title:'Types contracten voor elektriciteit en aardgas'},
+      content:'Een consument kan het elektriciteitscontract opzeggen zonder opzeggingsvergoeding.'},
+  ];
+  assert.deepEqual(Array.from(select(question,findings),x=>x.metadata.url),
+    ['https://www.creg.be/nl/consumenten/prijzen-en-tarieven/types-contracten-voor-elektriciteit-en-aardgas']);
+});

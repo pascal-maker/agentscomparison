@@ -1,4 +1,10 @@
 /** Narrow safeguards for the isolated Karen trial, not factual validation. */
+export function publicSourceNavigation(question: string): boolean {
+  const text = question.toLowerCase();
+  return /\bwelke\b.{0,90}\binstantie\b.{0,40}\blegt\s+uit\b/.test(text)
+    || /\bwaar\b.{0,100}\boffici[eë]le\b.{0,40}\buitleg\b/.test(text);
+}
+
 export function explicitWebLookup(question: string): boolean {
   const text = question.toLowerCase();
   if (/\b(?:niet\s+(?:online\s+)?zoeken|zoek\s+niet|do\s+not\s+search|don['’]t\s+search)\b/.test(text)) return false;
@@ -6,7 +12,8 @@ export function explicitWebLookup(question: string): boolean {
   if (/\b(?:mijn\s+eigen\s+contract|volgens\s+mijn\s+contract|wat\s+betaal\s+ik\s+precies)\b/.test(text)) return false;
   return /\b(?:zoek|opzoeken)\b|\b(?:search|look\s+up)\b.*\b(?:web|internet|online|sources)\b/i.test(text)
     || /\bwaar\s+(?:kan\s+ik|vind\s+ik)\b.{0,120}\b(?:nakijken|vinden|terugvinden)\b/.test(text)
-    || /\bop\s+welke\s+offici[eë]le\b.{0,100}\b(?:vind\s+ik|staat|kan\s+ik)\b/.test(text);
+    || /\bop\s+welke\s+offici[eë]le\b.{0,100}\b(?:vind\s+ik|staat|kan\s+ik)\b/.test(text)
+    || publicSourceNavigation(text);
 }
 
 export function numericCalculation(question: string): boolean {
@@ -55,9 +62,23 @@ export function planQueries(question: string | undefined, proposed: string[]): s
     && /\bgas\b|aardgas|\bgaz\b/i.test(question)) {
     return [`CREG sociaal tarief voor energie aardgas ${new Date().getUTCFullYear()} kwartaal`];
   }
+  if (/brussel\w*|bruxelles|brussels/i.test(question)
+    && /leverancier|fournisseur/i.test(question)
+    && /verander|overstap|changer|changement/i.test(question)) {
+    return ['BRUGEL changer fournisseur électricité Bruxelles'];
+  }
+  if (wallonia && /meterstand|index|relevé|compteur/i.test(question)
+    && /\bgas\b|aardgas|\bgaz\b/i.test(question)) {
+    return ['CWaPE ORES relevé index compteur gaz Wallonie particulier'];
+  }
+  if (/belgi[eë]|belgique|belgium/i.test(question) && /contract/i.test(question)
+    && /opzeg.*vergoeding|indemnit[eé].*rupture/i.test(question)) {
+    return ['CREG opzegvergoeding energiecontract particulier elektriciteit België'];
+  }
   if (wallonia && /ketel|chaudi|boiler/i.test(question) && /\bgas\b|gasketel|gaz/i.test(question)) {
     return ['Wallonie entretien contrôle périodique chaudière gaz'];
   }
+  if (publicSourceNavigation(question)) return [question];
   if (regions === 1 || /\beneco\b/i.test(question)) return [question];
   return proposed;
 }

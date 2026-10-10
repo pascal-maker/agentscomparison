@@ -9,7 +9,10 @@
   },
   "topic_authorities": {
     "capacity_peak": ["fluvius.be", "vreg.be", "vlaanderen.be"],
-    "social_tariff_period": ["creg.be", "economie.fgov.be"]
+    "social_tariff_period": ["creg.be", "economie.fgov.be"],
+    "brussels_supplier_switch": ["brugel.brussels", "leefmilieu.brussels", "environnement.brussels"],
+    "wallonia_gas_meter": ["cwape.be", "ores.be", "energie.wallonie.be"],
+    "belgian_contract_exit": ["creg.be", "economie.fgov.be"]
   },
   "suppliers": {
     "eneco": ["eneco.be", "eneco.nl"]
