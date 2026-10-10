@@ -2,7 +2,11 @@
 export function explicitWebLookup(question: string): boolean {
   const text = question.toLowerCase();
   if (/\b(?:niet\s+(?:online\s+)?zoeken|zoek\s+niet|do\s+not\s+search|don['’]t\s+search)\b/.test(text)) return false;
-  return /\b(?:zoek|opzoeken)\b|\b(?:search|look\s+up)\b.*\b(?:web|internet|online|sources)\b/i.test(text);
+  // A personal contract amount cannot be recovered from a public web page.
+  if (/\b(?:mijn\s+eigen\s+contract|volgens\s+mijn\s+contract|wat\s+betaal\s+ik\s+precies)\b/.test(text)) return false;
+  return /\b(?:zoek|opzoeken)\b|\b(?:search|look\s+up)\b.*\b(?:web|internet|online|sources)\b/i.test(text)
+    || /\bwaar\s+(?:kan\s+ik|vind\s+ik)\b.{0,120}\b(?:nakijken|vinden|terugvinden)\b/.test(text)
+    || /\bop\s+welke\s+offici[eë]le\b.{0,100}\b(?:vind\s+ik|staat|kan\s+ik)\b/.test(text);
 }
 
 export function numericCalculation(question: string): boolean {

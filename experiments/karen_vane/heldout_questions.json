@@ -1,0 +1,50 @@
+[
+  {
+    "id": "heldout_flanders_peak",
+    "question": "Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek voor het capaciteitstarief bepaald wordt?",
+    "expected_status": ["sources_for_review", "insufficient_evidence"],
+    "authority_hosts": ["vreg.be", "vlaanderen.be"],
+    "concept_groups": [["maandpiek", "maandelijkse piek"], ["capaciteitstarief"]],
+    "review_note": "Controleer de methode en toepasselijkheid handmatig op de officiële pagina; geen bedrag afleiden."
+  },
+  {
+    "id": "heldout_brussels_supplier",
+    "question": "Welke Brusselse instantie legt uit hoe ik van elektriciteitsleverancier kan veranderen?",
+    "expected_status": ["sources_for_review", "insufficient_evidence"],
+    "authority_hosts": ["brugel.brussels", "leefmilieu.brussels", "environnement.brussels"],
+    "concept_groups": [["leverancier", "fournisseur"], ["veranderen", "changer", "changement", "overstap"]],
+    "review_note": "Controleer of de gevonden pagina echt over een huishoudelijke leverancierswissel in Brussel gaat."
+  },
+  {
+    "id": "heldout_wallonia_meter",
+    "question": "Waar geeft Wallonië officiële uitleg over het doorgeven van mijn meterstand voor aardgas?",
+    "expected_status": ["sources_for_review", "insufficient_evidence"],
+    "authority_hosts": ["wallonie.be"],
+    "concept_groups": [["meterstand", "index de compteur", "relevé de compteur"], ["gas", "gaz"]],
+    "review_note": "Een officiële pagina kan naar de netbeheerder verwijzen; beoordeel de werkelijke bevoegdheid handmatig."
+  },
+  {
+    "id": "heldout_social_tariff_period",
+    "question": "Op welke officiële Belgische pagina vind ik de geldigheidsperiode van het huidige sociaal tarief voor aardgas?",
+    "expected_status": ["sources_for_review", "insufficient_evidence"],
+    "authority_hosts": ["creg.be", "economie.fgov.be"],
+    "concept_groups": [["sociaal tarief", "tarif social"], ["gas", "gaz"], ["periode", "période", "kwartaal", "trimestre"]],
+    "review_note": "Controleer de publicatiedatum en geldigheidsperiode; een gevonden prijs is niet automatisch actueel."
+  },
+  {
+    "id": "heldout_contract_exit",
+    "question": "Waar staat de officiële uitleg over een eventuele opzegvergoeding bij een particulier elektriciteitscontract in België?",
+    "expected_status": ["sources_for_review", "insufficient_evidence"],
+    "authority_hosts": ["creg.be", "economie.fgov.be"],
+    "concept_groups": [["opzeg", "résiliation"], ["vergoeding", "indemnité", "contract"]],
+    "review_note": "Controleer datum, contracttype en wettelijke nuance voordat een regel wordt geformuleerd."
+  },
+  {
+    "id": "heldout_personal_price",
+    "question": "Wat betaal ik deze maand precies per kWh aardgas volgens mijn eigen contract?",
+    "expected_status": ["insufficient_evidence"],
+    "authority_hosts": [],
+    "concept_groups": [],
+    "review_note": "Zonder contractgegevens kan Karen geen persoonlijke prijs bevestigen; zij moet om context vragen."
+  }
+]

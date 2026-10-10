@@ -72,6 +72,20 @@ test('guard preserves numeric calculations, opt-out and disabled web source', ()
   assert.equal(guards.guardClassification(original, questions[0], []).classification.skipSearch, true);
 });
 
+test('public page lookup phrasing searches despite mistaken classifier, personal price does not', () => {
+  const original = { classification: { skipSearch: true, showCalculationWidget: false } };
+  for (const question of [
+    'Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek voor het capaciteitstarief bepaald wordt?',
+    'Op welke officiële Belgische pagina vind ik de geldigheidsperiode van het huidige sociaal tarief voor aardgas?',
+  ]) {
+    assert.equal(guards.guardClassification(original, question, ['web']).classification.skipSearch, false);
+  }
+  assert.equal(guards.guardClassification(original,
+    'Wat betaal ik deze maand precies per kWh aardgas volgens mijn eigen contract?', ['web']).classification.skipSearch, true);
+  assert.equal(guards.guardClassification(original,
+    'Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek bepaald wordt?', []).classification.skipSearch, true);
+});
+
 test('real search action normalizes JSON-array strings before network lookup', async () => {
   let received;
   const action = load('researcher/actions/search/webSearch.ts', {
