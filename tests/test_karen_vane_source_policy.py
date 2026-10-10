@@ -99,6 +99,35 @@ def test_eneco_disambiguates_singapore_company_and_unverified_citations():
     assert "[8]" not in result.answer
 
 
+def test_capacity_peak_keeps_focused_operator_page_not_incidental_official_page():
+    question = "Hoe wordt mijn maandpiek voor het capaciteitstarief in Vlaanderen bepaald?"
+    result = answer(question, [
+        source("https://www.vlaanderen.be/zonnepanelen/thuisbatterij",
+               "De maandpiek beïnvloedt het capaciteitstarief.", "Thuisbatterij"),
+        source("https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief",
+               "De maandpiek en het capaciteitstarief voor digitale meters.",
+               "Het capaciteitstarief op mijn factuur"),
+    ])
+    assert result.status == "sources_for_review"
+    assert [str(s.url) for s in result.sources] == [
+        "https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief"]
+
+
+def test_social_tariff_period_requires_federal_tariff_source_not_premium():
+    question = "Op welke officiële Belgische pagina vind ik de geldigheidsperiode van het huidige sociaal tarief voor aardgas?"
+    result = answer(question, [
+        source("https://prepaid.fluvius.be/sociaal-tarief",
+               "Sociaal tarief aardgas Q4 2026.", "Sociaal tarief"),
+        source("https://www.creg.be/nl/sociaaltariefpremie",
+               "Sociaal tarief aardgas Q4 2026.", "Sociaaltariefpremie"),
+        source("https://www.creg.be/nl/sociaal-tarief-voor-energie",
+               "Sociaal tarief aardgas Q4 2026.", "Sociaal tarief voor energie"),
+    ])
+    assert result.status == "sources_for_review"
+    assert [str(s.url) for s in result.sources] == [
+        "https://www.creg.be/nl/sociaal-tarief-voor-energie"]
+
+
 def test_invoice_keeps_supplier_source_and_drops_broker():
     result = answer("Zoek bij Eneco voorschotfactuur versus jaarafrekening", [
         source("https://callmepower.be/nl/energie/eneco", "Eneco voorschotfactuur"),

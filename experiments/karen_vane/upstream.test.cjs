@@ -86,6 +86,20 @@ test('public page lookup phrasing searches despite mistaken classifier, personal
     'Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek bepaald wordt?', []).classification.skipSearch, true);
 });
 
+test('federal tariff period question uses one anchored public search query', () => {
+  assert.deepEqual(Array.from(guards.planQueries(
+    'Op welke officiële Belgische pagina vind ik de geldigheidsperiode van het huidige sociaal tarief voor aardgas?',
+    ['sociaal tarief aardgas Belgien', 'tariff gas Belgium'])),
+  [`CREG sociaal tarief voor energie aardgas ${new Date().getUTCFullYear()} kwartaal`]);
+});
+
+test('Flemish capacity peak question uses one focused public search query', () => {
+  assert.deepEqual(Array.from(guards.planQueries(
+    'Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek voor het capaciteitstarief bepaald wordt?',
+    ['thuisbatterij Vlaanderen', 'digitale meter informatie'])),
+  ['Fluvius capaciteitstarief maandpiek digitale meter']);
+});
+
 test('real search action normalizes JSON-array strings before network lookup', async () => {
   let received;
   const action = load('researcher/actions/search/webSearch.ts', {

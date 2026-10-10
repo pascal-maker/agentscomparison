@@ -13,6 +13,17 @@ const regionWords: Record<Region, RegExp> = {
 };
 const domainMatches = (host: string, domains: string[]) =>
   domains.some(domain => host === domain || host.endsWith('.' + domain));
+const capacityPeak = (question: string) =>
+  regionWords.flanders.test(question) && /maandpiek|capaciteitstarief/i.test(question);
+const socialTariffPeriod = (question: string) =>
+  /sociaal\s+tarief|tarif\s+social/i.test(question)
+  && /geldigheidsperiode|huidig|kwartaal|trimestre|période/i.test(question)
+  && /\bgas\b|aardgas|\bgaz\b/i.test(question);
+
+function topicDomains(question: string): string[] {
+  return capacityPeak(question) ? relations.topic_authorities.capacity_peak :
+    socialTariffPeriod(question) ? relations.topic_authorities.social_tariff_period : [];
+}
 
 export function authorityDomains(question: string): string[] {
   const regions = (Object.keys(regionWords) as Region[])
@@ -22,6 +33,7 @@ export function authorityDomains(question: string): string[] {
   // A question naming both a supplier and a region needs a richer authority
   // relation than this pilot map. Do not guess a combined domain filter.
   if (regions.length && supplier) return [];
+  if (topicDomains(question).length) return topicDomains(question);
   return regions.length ? (regions[0] === 'wallonia' && walloonEnergy(question)
     ? relations.energy_regions.wallonia : relations.regions[regions[0]]) :
     supplier ? relations.suppliers.eneco : [];
@@ -41,14 +53,17 @@ export function selectEvidence(question: string, findings: Chunk[]): Chunk[] {
     && /controle|contrôle|inspection/i.test(question);
   const energy = /\bgas\b|gasketel|chaudi/i.test(question) ? /gas|gaz/i :
     /elektric|stroom|électric/i.test(question) ? /elektric|stroom|électric|electric/i : null;
+  const specialDomains = topicDomains(question);
 
   return findings.filter(finding => {
     let url: URL;
     try { url = new URL(finding.metadata.url); } catch { return false; }
     if (url.protocol !== 'https:') return false;
     const host = url.hostname.toLowerCase().replace(/\.$/, '');
-    if (region && !domainMatches(host, region === 'wallonia' && walloonEnergy(question)
-      ? relations.energy_regions.wallonia : relations.regions[region])) return false;
+    if (specialDomains.length && !domainMatches(host, specialDomains)) return false;
+    if (region && !domainMatches(host, specialDomains.length ? specialDomains :
+      region === 'wallonia' && walloonEnergy(question)
+        ? relations.energy_regions.wallonia : relations.regions[region])) return false;
     if (supplier && !domainMatches(host, relations.suppliers.eneco)) return false;
     const passage = finding.metadata.title + ' ' + finding.content;
     const walloonGasBoilerComparison = region === 'wallonia' && asksMaintenanceAndControl
@@ -66,6 +81,18 @@ export function selectEvidence(question: string, findings: Chunk[]): Chunk[] {
     if (energy && !energy.test(passage) && !(walloonGasBoilerComparison && boilerPage)) return false;
     if (asksMaintenanceAndControl && (!/onderhoud|entretien/i.test(passage)
       || !/controle|contrôle|inspection/i.test(passage))) return false;
+    if (capacityPeak(question)) {
+      if (!/maandpiek|capaciteitstarief|piekvermogen|nettarief/i.test(finding.metadata.title + ' ' + url.pathname)) return false;
+      if (!/maandpiek/i.test(passage) || !/capaciteitstarief/i.test(passage)) return false;
+    }
+    if (socialTariffPeriod(question)) {
+      const pageLabel = finding.metadata.title + ' ' + url.pathname;
+      if (/premie|prime/i.test(pageLabel)
+        || !/sociaal.?tarief|sociale.?tarieven|tarif.?social/i.test(pageLabel)) return false;
+      if (!/sociaal\s+tarief|tarif\s+social/i.test(passage)
+        || !/\bgas\b|aardgas|\bgaz\b/i.test(passage)
+        || !/geldigh|periode|période|kwartaal|trimestre|\bq[1-4]\s*20\d{2}\b/i.test(passage)) return false;
+    }
     return true;
   });
 }

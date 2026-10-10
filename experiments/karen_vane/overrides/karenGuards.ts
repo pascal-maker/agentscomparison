@@ -46,6 +46,15 @@ export function planQueries(question: string | undefined, proposed: string[]): s
   const regions = [wallonia, /brussel\w*|bruxelles|brussels/i.test(question),
     /vlaander\w*|vlaams\w*|flanders/i.test(question)].filter(Boolean).length;
   if (negated || regions > 1) return [];
+  if (regions === 1 && /vlaander\w*|vlaams\w*|flanders/i.test(question)
+    && /maandpiek|capaciteitstarief/i.test(question)) {
+    return ['Fluvius capaciteitstarief maandpiek digitale meter'];
+  }
+  if (/sociaal\s+tarief|tarif\s+social/i.test(question)
+    && /geldigheidsperiode|huidig|kwartaal|trimestre|période/i.test(question)
+    && /\bgas\b|aardgas|\bgaz\b/i.test(question)) {
+    return [`CREG sociaal tarief voor energie aardgas ${new Date().getUTCFullYear()} kwartaal`];
+  }
   if (wallonia && /ketel|chaudi|boiler/i.test(question) && /\bgas\b|gasketel|gaz/i.test(question)) {
     return ['Wallonie entretien contrôle périodique chaudière gaz'];
   }

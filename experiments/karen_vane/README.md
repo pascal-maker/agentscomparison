@@ -54,6 +54,8 @@ Dat bewaart het aparte Docker-volume. Deze proef gebruikt geen bestaande Vane-da
 - `heldout_questions.json` en `evaluate_heldout.py`: nieuwe publieke vragen en
   diagnostiek per bron. Domein- en woordmatches zijn geen feitencontrole; zie
   `HELDOUT-EVALUATION-2026-10-10.md` voor de beperkte live meting.
+- `TOPIC-SOURCE-RESULTS-2026-10-10.md`: vervolgmeting van de onderwerpgerichte
+  Fluvius- en CREG-bronregels; de algemene route blijft review-only.
 - `../../tests/test_karen_vane_trial.py`: geen netwerk of modelkosten.
 
 ## Wat Pydantic wel en niet doet

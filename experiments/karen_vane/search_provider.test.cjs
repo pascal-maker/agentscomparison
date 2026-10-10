@@ -71,3 +71,13 @@ test('Eneco invoice query stays broad at Tavily while downstream policy checks U
   }).searchWebForQuestion(question);
   await search(question);
 });
+
+test('social tariff period limits Tavily to federal tariff authorities', async () => {
+  const question='Op welke officiële Belgische pagina vind ik de geldigheidsperiode van het huidige sociaal tarief voor aardgas?';
+  const search=load({KAREN_WEB_SEARCH_PROVIDER:'tavily',TAVILY_API_KEY:'test-secret'}, async (_,options)=>{
+    const body=JSON.parse(options.body);
+    assert.deepEqual(Array.from(body.include_domains),['creg.be','economie.fgov.be']);
+    return {ok:true,json:async()=>({results:[]})};
+  }).searchWebForQuestion(question);
+  await search(`CREG sociaal tarief voor energie aardgas ${new Date().getUTCFullYear()} kwartaal`);
+});

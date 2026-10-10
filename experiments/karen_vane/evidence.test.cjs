@@ -79,3 +79,35 @@ test('invoice pages survive before embedding dedup, with official Belgian pages 
   assert.match(got[1].metadata.url,/alle-info-over-je-voorschotfactuur/);
   assert.ok(got.every(item=>item.metadata.url.startsWith('https://eneco.be/')));
 });
+
+test('Flemish capacity peak keeps topic pages and rejects incidental official pages',()=>{
+  const question='Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek voor het capaciteitstarief bepaald wordt?';
+  const findings=[
+    {metadata:{url:'https://www.vlaanderen.be/zonnepanelen/thuisbatterij',title:'Thuisbatterij'},
+      content:'De maandpiek bepaalt het capaciteitstarief.'},
+    {metadata:{url:'https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief',title:'Het capaciteitstarief op mijn factuur'},
+      content:'De maandpiek is de hoogste kwartierpiek; het capaciteitstarief gebruikt maandpieken.'},
+    {metadata:{url:'https://www.fluvius.be.evil.test/capaciteitstarief',title:'Capaciteitstarief'},
+      content:'Maandpiek en capaciteitstarief.'},
+  ];
+  assert.deepEqual(Array.from(select(question,findings),x=>x.metadata.url),
+    ['https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief']);
+  assert.deepEqual(Array.from(mod.exports.authorityDomains(question)),
+    ['fluvius.be','vreg.be','vlaanderen.be']);
+});
+
+test('social tariff period requires tariff authority and rejects premium pages',()=>{
+  const question='Op welke officiële Belgische pagina vind ik de geldigheidsperiode van het huidige sociaal tarief voor aardgas?';
+  const findings=[
+    {metadata:{url:'https://prepaid.fluvius.be/sociaal-tarief',title:'Het sociaal tarief'},
+      content:'Sociaal tarief voor aardgas per kwartaal.'},
+    {metadata:{url:'https://www.creg.be/nl/sociaaltariefpremie',title:'Sociaaltariefpremie'},
+      content:'Sociaal tarief voor aardgas Q4 2026.'},
+    {metadata:{url:'https://www.creg.be/nl/sociaal-tarief-voor-energie',title:'Sociaal tarief voor energie'},
+      content:'Het sociaal tarief voor aardgas geldt in Q4 2026.'},
+  ];
+  assert.deepEqual(Array.from(select(question,findings),x=>x.metadata.url),
+    ['https://www.creg.be/nl/sociaal-tarief-voor-energie']);
+  assert.deepEqual(Array.from(mod.exports.authorityDomains(question)),
+    ['creg.be','economie.fgov.be']);
+});

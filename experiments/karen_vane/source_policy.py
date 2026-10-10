@@ -14,10 +14,13 @@ from urllib.parse import urlsplit
 RELATIONS = json.loads(Path(__file__).with_name("source_relations.json").read_text())
 REGION_AUTHORITIES = RELATIONS["regions"]
 ENERGY_REGION_AUTHORITIES = RELATIONS["energy_regions"]
+TOPIC_AUTHORITIES = RELATIONS["topic_authorities"]
 SUPPLIER_AUTHORITIES = RELATIONS["suppliers"]
 TOPIC_TERMS = {
     "invoice": ("factuur", "afrekening", "voorschot", "invoice", "bill"),
     "boiler": ("ketel", "chaudi", "boiler"),
+    "capacity_peak": ("maandpiek", "capaciteitstarief"),
+    "social_tariff_period": ("sociaal tarief", "tarif social"),
 }
 ENERGY_TERMS = {
     "gas": ("gas", "gaz"),
@@ -49,7 +52,11 @@ def extract_scope(question: str) -> Scope:
         r"\bniet\s+(?:in\s+)?(?:walloni[eë]|vlaander\w*|brussel\w*|bruxelles)", text))
     region = found[0] if len(found) == 1 and not negated_region else None
     supplier = "eneco" if re.search(r"\beneco\b", text) else None
-    topic = ("invoice" if re.search(r"factuur|afrekening|voorschot|invoice|\bbill\b", text)
+    topic = ("capacity_peak" if region == "flanders" and re.search(r"maandpiek|capaciteitstarief", text)
+             else "social_tariff_period" if re.search(r"sociaal\s+tarief|tarif\s+social", text)
+             and re.search(r"geldigheidsperiode|huidig|kwartaal|trimestre|période", text)
+             and re.search(r"\bgas\b|aardgas|\bgaz\b", text)
+             else "invoice" if re.search(r"factuur|afrekening|voorschot|invoice|\bbill\b", text)
              else "boiler" if re.search(r"ketel|verwarm|chaudi|boiler", text) else None)
     energy = ("gas" if re.search(r"\bgas\b|gasketel|chaudi", text)
               else "electricity" if re.search(r"elektric|stroom|électric", text) else None)
@@ -75,9 +82,12 @@ def source_reason(scope: Scope, url: str, title: str, content: str) -> str | Non
     if scope.region_ambiguous:
         return "ambiguous_question_region"
 
-    domains = (ENERGY_REGION_AUTHORITIES[scope.region]
+    domains = (TOPIC_AUTHORITIES[scope.topic] if scope.topic in TOPIC_AUTHORITIES
+               else ENERGY_REGION_AUTHORITIES[scope.region]
                if scope.region in ENERGY_REGION_AUTHORITIES and scope.topic == "boiler"
                else REGION_AUTHORITIES.get(scope.region, []))
+    if scope.topic in TOPIC_AUTHORITIES and not _host_in(host, domains):
+        return "wrong_topic_authority"
     if scope.region and not _host_in(host, domains):
         return "wrong_region_or_unconfirmed_authority"
     if scope.supplier and not _host_in(host, SUPPLIER_AUTHORITIES[scope.supplier]):
@@ -106,4 +116,16 @@ def source_reason(scope: Scope, url: str, title: str, content: str) -> str | Non
         return "missing_compared_concept"
     if scope.supplier and scope.supplier not in passage and scope.supplier not in host:
         return "supplier_not_in_passage"
+    page_label = title.casefold() + " " + parsed.path.casefold()
+    if scope.topic == "capacity_peak" and not (
+            re.search(r"maandpiek|capaciteitstarief|piekvermogen|nettarief", page_label)
+            and "maandpiek" in passage and "capaciteitstarief" in passage):
+        return "wrong_topic"
+    if scope.topic == "social_tariff_period" and not (
+            not re.search(r"premie|prime", page_label)
+            and re.search(r"sociaal.?tarief|sociale.?tarieven|tarif.?social", page_label)
+            and re.search(r"sociaal\s+tarief|tarif\s+social", passage)
+            and re.search(r"\bgas\b|aardgas|\bgaz\b", passage)
+            and re.search(r"geldigh|periode|période|kwartaal|trimestre|\bq[1-4]\s*20\d{2}\b", passage)):
+        return "wrong_topic"
     return None

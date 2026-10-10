@@ -7,6 +7,10 @@
   "energy_regions": {
     "wallonia": ["energie.wallonie.be"]
   },
+  "topic_authorities": {
+    "capacity_peak": ["fluvius.be", "vreg.be", "vlaanderen.be"],
+    "social_tariff_period": ["creg.be", "economie.fgov.be"]
+  },
   "suppliers": {
     "eneco": ["eneco.be", "eneco.nl"]
   }

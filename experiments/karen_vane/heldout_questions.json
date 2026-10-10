@@ -3,7 +3,7 @@
     "id": "heldout_flanders_peak",
     "question": "Waar kan ik voor Vlaanderen nakijken hoe mijn maandpiek voor het capaciteitstarief bepaald wordt?",
     "expected_status": ["sources_for_review", "insufficient_evidence"],
-    "authority_hosts": ["vreg.be", "vlaanderen.be"],
+    "authority_hosts": ["fluvius.be", "vreg.be", "vlaanderen.be"],
     "concept_groups": [["maandpiek", "maandelijkse piek"], ["capaciteitstarief"]],
     "review_note": "Controleer de methode en toepasselijkheid handmatig op de officiële pagina; geen bedrag afleiden."
   },
@@ -28,7 +28,7 @@
     "question": "Op welke officiële Belgische pagina vind ik de geldigheidsperiode van het huidige sociaal tarief voor aardgas?",
     "expected_status": ["sources_for_review", "insufficient_evidence"],
     "authority_hosts": ["creg.be", "economie.fgov.be"],
-    "concept_groups": [["sociaal tarief", "tarif social"], ["gas", "gaz"], ["periode", "période", "kwartaal", "trimestre"]],
+    "concept_groups": [["sociaal tarief", "tarif social"], ["gas", "gaz"], ["periode", "période", "kwartaal", "trimestre", "q1 ", "q2 ", "q3 ", "q4 "]],
     "review_note": "Controleer de publicatiedatum en geldigheidsperiode; een gevonden prijs is niet automatisch actueel."
   },
   {
