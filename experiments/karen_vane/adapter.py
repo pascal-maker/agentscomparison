@@ -30,6 +30,7 @@ from .flanders_boiler_answer import (
     fetch_checked_answer as fetch_checked_flanders_boiler,
     is_gas_maintenance_question,
 )
+from .public_navigation_answer import page_for_question, fetch_checked_answer as fetch_checked_navigation
 
 
 class Turn(BaseModel):
@@ -128,6 +129,21 @@ class VaneAdapter:
                     status="insufficient_evidence",
                     answer=("Ik ken de prijs uit je eigen contract niet. "
                             "Welke prijs per kWh en welke periode staan in je contract of factuur?"),
+                )
+            navigation_page = page_for_question(request.question)
+            if navigation_page:
+                checked = await fetch_checked_navigation(self.client, navigation_page)
+                if checked:
+                    answer, excerpt, final_url = checked
+                    return KarenAnswer(
+                        status="answer_with_sources", answer=answer,
+                        evidence_status="passage_checked",
+                        sources=[Source(id=1, title=navigation_page.title,
+                                        url=final_url, excerpt=excerpt)],
+                    )
+                return KarenAnswer(
+                    status="insufficient_evidence",
+                    answer="Ik kon de officiële uitlegpagina nu niet volledig controleren.",
                 )
             if is_gas_maintenance_question(request.question):
                 checked = await fetch_checked_flanders_boiler(self.client)

@@ -58,6 +58,8 @@ Dat bewaart het aparte Docker-volume. Deze proef gebruikt geen bestaande Vane-da
   Fluvius- en CREG-bronregels; de algemene route blijft review-only.
 - `HELDOUT-REMAINING-2026-10-10.md`: de drie overige publieke vragen en de
   persoonlijke contractprijsvraag; alleen kandidaatbronnen, geen bewezen claims.
+- `PASSAGE-CHECKED-NAVIGATION-2026-10-11.md`: drie vindplaatsvragen met een
+  rechtstreeks gecontroleerde officiële pagina en een beperkt vast antwoord.
 - `../../tests/test_karen_vane_trial.py`: geen netwerk of modelkosten.
 
 ## Wat Pydantic wel en niet doet

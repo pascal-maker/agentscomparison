@@ -129,27 +129,36 @@ def test_social_tariff_period_requires_federal_tariff_source_not_premium():
 
 
 def test_brussels_supplier_switch_drops_energy_sharing():
-    result = answer("Welke Brusselse instantie legt uit hoe ik van elektriciteitsleverancier kan veranderen?", [
+    question = "Welke Brusselse instantie legt uit hoe ik van elektriciteitsleverancier kan veranderen?"
+    sources = [
         source("https://energysharing.brugel.brussels/", "Brusselse energie delen met leveranciers", "Energy Sharing"),
         source("https://brugel.brussels/themes/consommateurs/les-5-etapes-pour-changer-de-fournisseur",
                "Première étape : comparez les prix des différents fournisseurs grâce à BruSim.",
                "Les 5 étapes pour changer de fournisseur"),
-    ])
-    assert [str(s.url) for s in result.sources] == [
+    ]
+    scope = extract_scope(question)
+    accepted = [s["metadata"]["url"] for s in sources if source_reason(
+        scope, s["metadata"]["url"], s["metadata"]["title"], s["content"]) is None]
+    assert accepted == [
         "https://brugel.brussels/themes/consommateurs/les-5-etapes-pour-changer-de-fournisseur"]
 
 
 def test_walloon_gas_meter_drops_wrong_walloon_pdf():
-    result = answer("Waar geeft Wallonië officiële uitleg over het doorgeven van mijn meterstand voor aardgas?", [
+    question = "Waar geeft Wallonië officiële uitleg over het doorgeven van mijn meterstand voor aardgas?"
+    sources = [
         source("https://marchespublics.wallonie.be/old.pdf", "Marchés publics", "Exposé des motifs"),
         source("https://www.ores.be/particulier/votre-index",
                "Communiquer le relevé d'index de gaz à ORES.", "Index compteur - Particulier"),
-    ])
-    assert [str(s.url) for s in result.sources] == ["https://www.ores.be/particulier/votre-index"]
+    ]
+    scope = extract_scope(question)
+    accepted = [s["metadata"]["url"] for s in sources if source_reason(
+        scope, s["metadata"]["url"], s["metadata"]["title"], s["content"]) is None]
+    assert accepted == ["https://www.ores.be/particulier/votre-index"]
 
 
 def test_belgian_contract_exit_drops_dutch_authority_and_proposal():
-    result = answer("Waar staat de officiële uitleg over een eventuele opzegvergoeding bij een particulier elektriciteitscontract in België?", [
+    question = "Waar staat de officiële uitleg over een eventuele opzegvergoeding bij een particulier elektriciteitscontract in België?"
+    sources = [
         source("https://consument.acm.nl/energiecontract-opzeggen",
                "Nederlandse opzegvergoeding voor elektriciteit", "Energiecontract opzeggen"),
         source("https://www.vlaamsparlement.be/opzegvergoeding",
@@ -157,8 +166,11 @@ def test_belgian_contract_exit_drops_dutch_authority_and_proposal():
         source("https://www.creg.be/nl/consumenten/prijzen-en-tarieven/types-contracten-voor-elektriciteit-en-aardgas",
                "Consumenten kunnen een elektriciteitscontract opzeggen zonder opzeggingsvergoeding.",
                "Types contracten voor elektriciteit en aardgas"),
-    ])
-    assert [str(s.url) for s in result.sources] == [
+    ]
+    scope = extract_scope(question)
+    accepted = [s["metadata"]["url"] for s in sources if source_reason(
+        scope, s["metadata"]["url"], s["metadata"]["title"], s["content"]) is None]
+    assert accepted == [
         "https://www.creg.be/nl/consumenten/prijzen-en-tarieven/types-contracten-voor-elektriciteit-en-aardgas"]
 
 
