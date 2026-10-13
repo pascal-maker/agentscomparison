@@ -35,11 +35,5 @@
     "case_id": "be-01",
     "excerpt": "Bronnen: Vlaanderen.be – Energiefactuur · BRUGEL – Mijn factuur begrijpen",
     "reason": "citation"
-  },
-  {
-    "case_id": "be-08",
-    "excerpt": "ik kon de Q4-bedragen daar niet rechtstreeks verifiëren",
-    "reason": "hedge",
-    "note": "Self-report by the Agent. The CREG page does link both Q4 PDFs, so the hedge reflects a retrieval gap, not missing official data."
   }
 ]

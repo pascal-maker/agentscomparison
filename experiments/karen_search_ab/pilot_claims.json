@@ -137,8 +137,8 @@
     "region": "flanders",
     "kind": "general",
     "answer_excerpt": "en rekent dat aan tegen een tarief per kW",
-    "source_url": "https://prepaid.fluvius.be/mijn-factuur/wat-kost-energie-bij-fluvius/capaciteitstarief",
-    "quote": "Prijs netbeheerder = 40 euro per kW/jaar (louter indicatief)",
+    "source_url": "https://www.fluvius.be/nl/veelgestelde-vragen/capaciteitstarief-gezinnen-kleine-ondernemingen",
+    "quote": "Op die ‘facturatiepiek’ past je leverancier het capaciteitstarief (in euro per kW per jaar) toe.",
     "extracted_by": "claude-opus-5-5"
   },
   {
@@ -147,8 +147,8 @@
     "region": "flanders",
     "kind": "general",
     "answer_excerpt": "Er geldt een minimum van 2,5 kW",
-    "source_url": "https://prepaid.fluvius.be/mijn-factuur/wat-kost-energie-bij-fluvius/capaciteitstarief",
-    "quote": "We nemen de laatst gekende maandpiek. Dat is meestal de gemiddelde maandpiek van de vorige maand. Er wordt altijd minimaal 2,5 kW aangerekend.",
+    "source_url": "https://www.fluvius.be/nl/veelgestelde-vragen/capaciteitstarief-gezinnen-kleine-ondernemingen",
+    "quote": "Elke maand vragen we iedere klant een minimumbijdrage te betalen voor de netkosten, het bedrag dat overeenkomt met een gemiddelde maandpiek 2,5 kW.",
     "amount": "2,5",
     "unit": "KW",
     "extracted_by": "claude-opus-5-5"
@@ -464,6 +464,16 @@
     "answer_excerpt": "Zie de FOD Economie voor wie ervoor in aanmerking komt en hoe de toekenning werkt",
     "source_url": "https://www.creg.be/nl/consumenten/prijzen-en-tarieven/sociaal-tarief/sociaal-tarief-voor-energie",
     "quote": "vindt u alle informatie over de voorwaarden en hoe u het sociaal tarief kunt aanvragen",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "be08_agent_could_not_verify_q4",
+    "region": "federal",
+    "kind": "general",
+    "answer_excerpt": "ik kon de Q4-bedragen daar niet rechtstreeks verifiëren",
+    "source_url": "https://www.creg.be/nl/consumenten/prijzen-en-tarieven/sociaal-tarief/sociaal-tarief-voor-energie",
+    "quote": "ElektriciteitAardgas & Warmte\\*[Q4 2026 (01/10-31/12)",
     "extracted_by": "claude-opus-5-5"
   }
 ]

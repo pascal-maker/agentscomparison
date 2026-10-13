@@ -74,6 +74,35 @@ andere geblokkeerde antwoorden zou de publieke Agent-route wel tonen**
 in bedragen, maar in onbevestigde procedures, regionale veralgemening en
 verouderde bronnen.
 
+## Externe review van het pilotpakket
+
+Er kwam een tweede, onafhankelijke review van de 46 pilotclaims binnen. De
+links daarin dragen `utm_source=chatgpt.com` en sommige bedragen zijn tegen
+een commerciële site gecontroleerd. Daarom staat die review in
+`semantic_reviews.json` als `external-review-2026-10-13` met
+`reviewer_type: "model"`, niet als menselijke review.
+
+- **Gecorrigeerd op basis van die review.** De Fluvius-FAQ bevestigt de
+  minimumbijdrage van 2,5 kW voor elke klant, ook met een digitale meter, en
+  het tarief in euro per kW. De twee betreffende claims verwijzen nu naar die
+  passage. Mijn oordelen over “voorschot is een raming” en “verrekening op de
+  afrekening” zijn herzien naar `SUPPORTED`.
+- **Nieuwe fout.** “Ik kon de Q4-bedragen daar niet rechtstreeks verifiëren”
+  is geen hedge maar een onjuiste claim: de CREG-pagina linkt beide Q4-PDF's.
+  Beide reviewers geven `CONTRADICTED`.
+- **`wa-05`.** De SPW-nieuwspagina van 24 september 2026 bevestigt de sluiting
+  op 30 september 2026, met overgangsregels voor oudere projecten tot
+  30 september 2027.
+- **Nog oneens.** Deze punten blokkeren nog, omdat een negatief oordeel van
+  één reviewer volstaat. Een mens moet beslissen:
+  - “doorgaans in overleg”: BRUGEL zegt “bepaalde leveranciers”;
+  - “ongeacht netbeheerder”: de externe review raadt zelf aan dit te schrappen;
+  - “excl. btw” zonder de andere uitsluitingen (energiebijdrage, accijns);
+  - “CREG is de officiële bron voor de regeling”.
+
+Resultaat pilot: `fl-01` en `br-04` zijn `NEEDS_HUMAN_SIGNOFF`; `wa-05`,
+`be-01` en `be-08` blijven `BLOCKED`.
+
 ## Besluit
 
 **Geen productie- of Framer-migratie voorstellen.** Houd `KEEP_BROWSERBASE`

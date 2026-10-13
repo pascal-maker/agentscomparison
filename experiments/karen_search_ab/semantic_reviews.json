@@ -107,16 +107,16 @@
     "claim_key": "flanders_capacity_price_per_kw",
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
-    "verdict": "PARTIALLY_SUPPORTED",
-    "rationale": "The only passage is an explicitly indicative Prepaid example (EUR 40 per kW/year). It is consistent with a per-kW tariff but is not a rule statement for regular customers.",
+    "verdict": "SUPPORTED",
+    "rationale": "Revised after the external review: the Fluvius FAQ states the capacity tariff is applied in euro per kW (per year or per month).",
     "reviewed_on": "2026-10-13"
   },
   {
     "claim_key": "flanders_capacity_minimum_2_5_kw",
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
-    "verdict": "PARTIALLY_SUPPORTED",
-    "rationale": "The 'always at least 2.5 kW' passage sits under Prepaid customers, and the other 2.5 kW passages concern classic meters. The answer puts the minimum under digital meters; the fetched pages do not state it for regular digital-meter customers.",
+    "verdict": "SUPPORTED",
+    "rationale": "Revised after the external review: the Fluvius FAQ charges every customer a monthly minimum contribution equal to a 2.5 kW average month peak, digital meters included.",
     "reviewed_on": "2026-10-13"
   },
   {
@@ -235,8 +235,8 @@
     "claim_key": "advance_invoice_is_estimate",
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
-    "verdict": "PARTIALLY_SUPPORTED",
-    "rationale": "BRUGEL states advances are always based on an estimate, but only for Brussels; the answer states it generally without a Flemish or Walloon passage.",
+    "verdict": "SUPPORTED",
+    "rationale": "Revised: an advance being an estimate is definitional, not a regional legal rule, so the Brussels-only source does not make the general statement misleading.",
     "reviewed_on": "2026-10-13"
   },
   {
@@ -251,8 +251,8 @@
     "claim_key": "advance_settled_on_annual_bill",
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
-    "verdict": "PARTIALLY_SUPPORTED",
-    "rationale": "BRUGEL explains that the regularisation bill offsets advances against actual consumption, but only for Brussels; the answer generalises to all of Belgium.",
+    "verdict": "SUPPORTED",
+    "rationale": "Revised: settling advances against actual consumption is how the regularisation bill works; the regional caveat is too strict for this definitional claim.",
     "reviewed_on": "2026-10-13"
   },
   {
@@ -965,6 +965,390 @@
     "reviewer_type": "model",
     "verdict": "SUPPORTED",
     "rationale": "Still dissatisfied: file with the Vlaamse Ombudsdienst.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be08_agent_could_not_verify_q4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "CONTRADICTED",
+    "reviewed_on": "2026-10-13",
+    "rationale": "The CREG social-tariff page links both Q4 2026 PDFs, so the Agent's statement that it could not verify the Q4 amounts there is wrong as a description of the source."
+  },
+  {
+    "claim_key": "flanders_capacity_quarter_hour",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_part_of_network_costs",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_avoid_simultaneous_use",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_digital_meter_quarter_registration",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_month_peak_definition",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_twelve_month_average",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_cannot_measure_peaks",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_consumption_share",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_quarter_average_not_seconds",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Fluvius capacity-tariff pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_price_per_kw",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Fluvius FAQ: the capacity tariff is expressed in euro per kW; suggests saying exactly that.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_minimum_2_5_kw",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Fluvius FAQ: a 2.5 kW minimum contribution applies, also with a digital meter.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_minimum_peak",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Fluvius FAQ: fixed fee based on 2.5 kW plus a consumption component.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_limit_peaks_advice",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "General spreading advice is supported; the appliance list is illustrative.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_gas_boiler_inspection_interval",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Leefmilieu Brussel (gas boilers every two years, certified EPB technician, inspection after combustion work).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_gas_boiler_inspection_scope",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Leefmilieu Brussel (gas boilers every two years, certified EPB technician, inspection after combustion work).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_boiler_inspection_certified_technician",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Leefmilieu Brussel (gas boilers every two years, certified EPB technician, inspection after combustion work).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_boiler_inspection_after_combustion_repair",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Leefmilieu Brussel (gas boilers every two years, certified EPB technician, inspection after combustion work).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_heat_pump_heating_subsidy",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically correct for the temporary 2025-2026 regime, which closed for applications on 30 September 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_heat_pump_hot_water_subsidy",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically correct for the temporary 2025-2026 regime, which closed for applications on 30 September 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_income_multiplier",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically correct for the temporary 2025-2026 regime, which closed for applications on 30 September 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_multiplier_from_2026",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically correct for the temporary 2025-2026 regime, which closed for applications on 30 September 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_conditions",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically correct for the temporary 2025-2026 regime, which closed for applications on 30 September 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_invoice_cap",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically correct for the temporary 2025-2026 regime, which closed for applications on 30 September 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_habitation_heat_pump_exists",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "CONTRADICTED",
+    "rationale": "As a current claim: the temporary regime was only valid until 30 September 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_habitation_current_regime",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "CONTRADICTED",
+    "rationale": "On 13 October 2026 it can no longer be called the current Walloon regime; transitional rules for older projects run to 30 September 2027.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_advance_invoice_change",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be or BRUGEL.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "advance_invoice_is_estimate",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be or BRUGEL.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_advance_self_service",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be or BRUGEL.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "advance_settled_on_annual_bill",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be or BRUGEL.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_advance_refusal_motivated",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be or BRUGEL.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_advance_change_by_agreement",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported, though BRUGEL says certain suppliers are willing to adjust by agreement.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_exclusive_night_2026q4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_single_2026q4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_gas_2026q4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_reduced_for_eligible",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_set_quarterly_by_creg",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_2026q4_period",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_depends_on_meter",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_2026q4_excl_vat_basis",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_gas_2026q4_excl_vat_basis",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_only_some_categories",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_often_automatic",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_fod_economie_referral",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CREG (Q4 2026 tables and social-tariff page) or FOD Economie; some amounts were cross-checked against a commercial site.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_same_everywhere",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported, but recommends narrowing to 'bij alle energieleveranciers hetzelfde' as CREG phrases it.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "creg_role_social_tariff",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG sets the amount but does not decide who is entitled.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_commercial_source_for_amounts",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "NOT_SUPPORTED",
+    "rationale": "Amounts are correct, but citing June Energy is wrong when the official CREG Q4 documents exist.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be08_agent_could_not_verify_q4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "CONTRADICTED",
+    "rationale": "Demonstrably wrong: CREG published the Q4 2026 tariffs and its page links them.",
     "reviewed_on": "2026-10-13"
   }
 ]
