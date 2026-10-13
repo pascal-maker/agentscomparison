@@ -96,7 +96,8 @@ def _contains_amount(text: str, amount: str, unit: Unit) -> bool:
     if not amount_match:
         return False
     if unit == "EUR":
-        return bool(re.search(r"€\s*" + re.escape(amount) + r"\b|\b" + re.escape(amount) + r"\s*€", text))
+        return bool(re.search(r"€\s*" + re.escape(amount) + r"\b|\b" + re.escape(amount) + r"\s*(?:€|euro\b)",
+                              text, re.IGNORECASE))
     if unit == "KW":
         return bool(re.search(r"(?<!\d)" + re.escape(amount) + r"\s*kW\b", text, re.IGNORECASE))
     nearby = text[max(0, amount_match.start() - 40):amount_match.end() + 40]
@@ -195,7 +196,9 @@ def _answer_text(answer: str) -> str:
 
 
 def _answer_lines(answer: str) -> list[str]:
-    return [line for line in map(_normalized, _answer_text(answer).splitlines()) if line]
+    # List markers ("- ", "1. ") are layout, not content.
+    lines = (re.sub(r"^\s*(?:[-*]|\d+[.)])\s+", "", line) for line in _answer_text(answer).splitlines())
+    return [line for line in map(_normalized, lines) if line]
 
 
 def uncovered_text(answer: str, excerpts: list[str]) -> list[str]:
@@ -369,6 +372,10 @@ def main() -> None:
     parser.add_argument("--fetch", action="append", default=[], metavar="URL",
                         help="Paid Browserbase Fetch of an official URL into results/sources/ (repeatable)")
     parser.add_argument("--review-packet", type=Path, help="Write a Markdown packet for an independent reviewer")
+    parser.add_argument("--run", action="append", metavar="FILE",
+                        help="Saved Agent run(s) in results/; later rows replace failed earlier rows")
+    parser.add_argument("--claims", default="pilot_claims.json")
+    parser.add_argument("--non-claims", default="pilot_non_claims.json")
     args = parser.parse_args()
     if args.fetch:
         from dotenv import load_dotenv
@@ -380,13 +387,17 @@ def main() -> None:
         for failure in fetch_snapshots(args.fetch, api_key=api_key):
             print(json.dumps({"fetch_failed": failure}, ensure_ascii=False))
         return
-    pilot = json.loads((HERE / "results" / "agent-pilot-2026-10-13.json").read_text(encoding="utf-8"))
-    claims = _load("pilot_claims.json", ClaimEvidence)
-    non_claims = _load("pilot_non_claims.json", NonClaim)
+    claims = _load(args.claims, ClaimEvidence)
+    non_claims = _load(args.non_claims, NonClaim)
     reviews = _load("semantic_reviews.json", SemanticReview)
-    on_date = date.fromisoformat(pilot["run_at"][:10])
+    rows: dict[str, tuple[dict, date]] = {}
+    for name in args.run or ["agent-pilot-2026-10-13.json"]:
+        run = json.loads((HERE / "results" / name).read_text(encoding="utf-8"))
+        for row in run["rows"]:
+            if row["case_id"] not in rows or not row.get("agent_error"):
+                rows[row["case_id"]] = (row, date.fromisoformat(run["run_at"][:10]))
     packet = []
-    for row in pilot["rows"]:
+    for row, on_date in rows.values():
         evaluated = evaluate_case(row, claims, non_claims, reviews, on_date=on_date)
         packet.append(review_packet(row, evaluated, claims, non_claims))
         print(json.dumps(evaluated, ensure_ascii=False))

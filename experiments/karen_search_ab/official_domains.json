@@ -1,8 +1,9 @@
 {
   "federal": {
     "CREG": ["creg.be"],
-    "FOD Economie": ["economie.fgov.be"],
-    "Belgische overheid": ["belgium.be"]
+    "FOD Economie": ["economie.fgov.be", "consumerconnect.be"],
+    "Belgische overheid": ["belgium.be"],
+    "Ombudsdienst voor Energie": ["ombudsmanenergie.be", "mediateurenergie.be"]
   },
   "flanders": {
     "Vlaamse Nutsregulator": ["vlaamsenutsregulator.be"],
@@ -10,8 +11,8 @@
     "Fluvius": ["fluvius.be"]
   },
   "brussels": {
-    "BRUGEL": ["brugel.brussels"],
-    "Leefmilieu Brussel": ["leefmilieu.brussels", "environnement.brussels"],
+    "BRUGEL": ["brugel.brussels", "litigesenergie.brussels"],
+    "Leefmilieu Brussel": ["leefmilieu.brussels", "environnement.brussels", "renolution.brussels"],
     "Sibelga": ["sibelga.be"]
   },
   "wallonia": {

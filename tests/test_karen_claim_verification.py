@@ -210,9 +210,53 @@ def test_five_saved_cases_have_expected_conservative_statuses() -> None:
 
 
 def test_committed_claim_files_are_consistent() -> None:
-    claims = _load("pilot_claims.json", ClaimEvidence)
+    claims = _load("pilot_claims.json", ClaimEvidence) + _load("eval_claims.json", ClaimEvidence)
     reviews = _load("semantic_reviews.json", SemanticReview)
     _load("pilot_non_claims.json", NonClaim)
+    _load("eval_non_claims.json", NonClaim)
     keys = [claim.claim_key for claim in claims]
     assert len(keys) == len(set(keys))
     assert {review.claim_key for review in reviews} <= set(keys)
+
+
+def test_euro_word_and_list_markers() -> None:
+    subsidy = claim(kind="general", region="flanders", source_url="https://www.vlaanderen.be/premie",
+                    answer_excerpt="| Geothermisch | €6.000 |", amount="6.000", unit="EUR",
+                    quote="- geothermisch warmtepomp: 6.000 euro voor categorie 3")
+    source = {"url": "https://www.vlaanderen.be/premie", "content": "- geothermisch warmtepomp: 6.000 euro voor categorie 3"}
+    assert verify_claim(subsidy, "| Geothermisch | €6.000 |", [source], on_date=TODAY)["status"] == "PASSAGE_MATCH_NEEDS_REVIEW"
+    assert uncovered_text("1. Het tarief bedraagt 5,738 cent/kWh.\n- Het tarief bedraagt 5,738 cent/kWh.",
+                          [claim().answer_excerpt]) == []
+
+
+def test_agent_eval_fetches_only_official_non_pdf_sources() -> None:
+    from experiments.karen_search_ab.agent_eval import official_sources
+    from experiments.karen_search_ab.benchmark import load_domains
+
+    sources = [{"url": "https://www.creg.be/a.pdf"}, {"url": "https://www.june.energy/blog"},
+               {"url": "https://renolution.brussels/nl/premies"}, {"url": "https://www.cwape.be/node/148"}]
+    assert official_sources(sources, load_domains()) == ["https://renolution.brussels/nl/premies",
+                                                         "https://www.cwape.be/node/148"]
+
+
+def test_held_out_eval_is_fully_covered_and_fails_closed() -> None:
+    runs = [HERE / "results" / "agent-eval-2026-10-13.json", HERE / "results" / "agent-eval-2026-10-13-fl09-retry.json"]
+    claims = _load("eval_claims.json", ClaimEvidence)
+    snapshots = load_snapshots({claim.source_url for claim in claims if claim.source_url})
+    if not all(path.exists() for path in runs) or len(snapshots) < 16:
+        pytest.skip("local held-out evaluation evidence is unavailable")
+    non_claims = _load("eval_non_claims.json", NonClaim)
+    reviews = _load("semantic_reviews.json", SemanticReview)
+    rows = {}
+    for path in runs:
+        for row in json.loads(path.read_text(encoding="utf-8"))["rows"]:
+            if row["case_id"] not in rows or not row["agent_error"]:
+                rows[row["case_id"]] = row
+    verdicts = {}
+    for case_id, row in rows.items():
+        evaluated = evaluate_case(row, claims, non_claims, reviews, on_date=TODAY)
+        assert evaluated["coverage"]["complete"], (case_id, evaluated["coverage"])
+        assert not {result["status"] for result in evaluated["claims"]} & {
+            "QUOTE_NOT_FOUND", "SOURCE_MISSING", "CLAIM_NOT_IN_ANSWER", "WRONG_REGION_OR_SOURCE"}
+        verdicts[case_id] = evaluated["case_verdict"]
+    assert sorted(case for case, verdict in verdicts.items() if verdict != "BLOCKED") == ["fl-05", "wa-04"]

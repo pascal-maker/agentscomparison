@@ -85,13 +85,14 @@ def source_priority(candidate: dict, *, region: str, topic: str, registry: dict)
 
 _BOT_CHALLENGE = re.compile(
     r"testing whether you are a human visitor|what code is in the image|verify (?:that )?you are (?:a )?human"
-    r"|checking your browser|enable javascript and cookies to continue|\bcaptcha\b",
+    r"|checking your browser|enable javascript and cookies to continue|\bcaptcha\b"
+    r"|your request is being verified",
     re.IGNORECASE,
 )
 
 
 def is_bot_challenge(content: str) -> bool:
-    """FOD Economie answers Fetch with HTTP 200 and an image CAPTCHA; never treat that as a source."""
+    """FOD Economie (image CAPTCHA) and CWaPE (verification interstitial) answer Fetch with HTTP 200."""
     return bool(_BOT_CHALLENGE.search(content[:3000]))
 
 

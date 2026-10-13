@@ -91,3 +91,8 @@ PYTHONPATH=. pytest -q tests/test_karen_claim_verification.py
 De publieke Agent-route en Framer gebruiken deze proefcontrole nog niet. Eerst
 zijn volledige claimdekking, een onafhankelijke inhoudelijke beoordeling en
 een gecontroleerde evaluatie op meer dan vijf vragen nodig.
+
+**Vervolg:** volledige dekking (46 claims), de reviewregel en tien extra vragen
+staan in [`karen-claim-evaluation-2026-10-13.md`](karen-claim-evaluation-2026-10-13.md).
+Let op: de FOD Economie-pagina in de pilotuitvoer hierboven bleek een CAPTCHA
+te zijn, geen originele bron.

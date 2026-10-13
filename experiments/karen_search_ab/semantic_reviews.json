@@ -358,5 +358,613 @@
     "verdict": "SUPPORTED",
     "rationale": "CREG refers to the FOD Economie page for conditions and how to apply.",
     "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_feed_in_for_unused_solar",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Compensation requires a feed-in contract; without one the surplus is injected for free (Vlaanderen.be). The opening sentence states it unconditionally and the answer never mentions the no-contract case.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_digital_meter_measures_separately",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The digital meter measures injected electricity exactly; offtake is billed separately.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_no_netting",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "After the switch, invoice components are charged on actual offtake, i.e. no netting.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_feed_in_contract",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Owners with a digital meter can conclude a feed-in contract with their supplier.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_terms_vary_by_supplier",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "VNR notes suppliers sometimes tie the feed-in contract to their own supply contract; its comparison tool exists because terms differ.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_no_fixed_amount",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "VNR only estimates an average compensation for a given injection volume; there is no single fixed amount.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_supplier_buys_injection",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Injected electricity can be sold to the supplier under a feed-in contract.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_amount_depends_on_contract_and_volume",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The VNR estimate depends on the injected volume; contract terms are covered by the comparison guidance.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_self_consumption_advice",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "VNR advises maximising self-consumption during production hours to buy less electricity.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_gas_boiler_every_two_years",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Gas central heating from 20 kW: maintenance every two years.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_certified_technician",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Maintenance of gas or oil boilers must be done by a certified technician.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_below_20kw_recommended",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Below 20 kW maintenance is not mandatory but recommended.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_rating_plate",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The power in kW is on the boiler's rating plate.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_premium_exists",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The page describes Mijn VerbouwPremie for heat pumps and the 2026 amounts.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_since_march_2026_type_and_income",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Amounts depend on type and income category, but the 1 March 2026 change applies to categories 1-2 and non-residential buildings; categories 3-4 have no such date split. The date is misattributed.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_geothermal_category_3",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 3 geothermal: 6.000 euro.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_geothermal_category_4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 4 geothermal: 8.000 euro.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_water_category_3",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 3 air-water: 4.500 euro.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_water_category_4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 4 air-water: 6.000 euro.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_air_category_3",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 3 air-air: 450 euro.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_air_category_4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 4 air-air: 600 euro.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_hybrid_category_3",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 3 hybrid: 3.000 euro.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_hybrid_category_4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 4 hybrid: 4.000 euro.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_cap_category_3",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Maximum 35% of the invoice (excl. VAT) for category 3; the answer omits 'excl. VAT'.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_cap_category_4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Maximum 50% of the invoice (excl. VAT) for category 4; the answer omits 'excl. VAT'.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_lower_for_other_categories",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 2 amounts from 1 March 2026 are lower (e.g. 4.000 / 1.500 euro).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_landlords_to_housing_companies",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category 4 amounts apply to owner-occupiers in category 4 or landlords to a housing company.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_j4_exists",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The Renolution page describes premium J4 for heating with a heat pump.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_i",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category I air/water: 4.500 EUR per dwelling unit.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_ii",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category II air/water: 4.750 EUR per dwelling unit.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_iii",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category III air/water: 5.000 EUR per dwelling unit.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_i",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category I water/water or ground/water: 5.800 EUR per dwelling unit.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_ii",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category II water/water or ground/water: 6.150 EUR per dwelling unit.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_iii",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Category III water/water or ground/water: 6.500 EUR per dwelling unit.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_depends_on_income_category",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "For residential buildings the amount varies with the income category.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_non_residential_35_percent",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Non-residential: 35% of eligible invoice costs.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_j9_heat_pump_boiler",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The page names J9 - heat pump boiler (not combinable with J4 for the same installation).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_irisbox_counter",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The passage mentions the IRISbox counter for declaring received aid, not as the place to check eligibility before works.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_twelve_months_after_final_invoice",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Apply after the works, at the latest 12 months after the final invoice.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_contact_supplier_in_writing_first",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The Ombudsman requires prior steps with the company; 'in writing' and keeping the reply are not stated on the fetched federal or Brussels pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_required_before_ombudsman",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Steps with the company are required before filing with the Ombudsman.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_geschillendienst_for_brussels_rules",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "BRUGEL's dispute service handles unresolved disputes about applying the Brussels electricity and gas ordinances.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_geschillendienst_free",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The dispute service helps free of charge.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_suppliers_and_sibelga",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Disputes with suppliers or the DSO Sibelga.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_decisions_binding",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The dispute service's decisions are binding.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_ombudsman_for_other_complaints",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The federal Ombudsman handles complaints about the functioning of the electricity and gas market.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_network_use_tariff",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Not a tax but a tariff for using the transmission and distribution networks.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_not_a_tax",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Explicitly 'il ne s'agit pas d'une taxe'.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_applies_to_solar_owners",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Prosumers with decentralised production such as PV up to 10 kVA.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_two_methods",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Capacity/flat-rate and proportional/actual tariffs.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_capacity_on_net_power",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The capacity tariff is in EUR/kWe of net developable power, for customers without a double-flow smart meter.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_standard_self_consumption_share",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "A standard self-consumption share is assumed. Note the official pages disagree on the figure (SPW 37.76%, ORES 40.26%); the answer gives none.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_proportional_on_actual_offtake",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "With a double-flow meter the amount is based on gross kWh actually taken from the grid.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_capped_at_capacity_tariff",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The SPW passage limits the cap statement to the 2020-2023 network tariffs; current validity is not shown.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_cwape_publishes_per_dso",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "SPW says the prosumer tariff is CWaPE's competence; publication per distribution operator is not shown because the CWaPE page was blocked.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_depends_on_location_and_installation",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Dependence on installation power is supported; dependence on location (operator) is not shown on the fetched pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_self_consumption_favours_proportional",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Higher self-consumption than the standard share can make the proportional tariff more attractive.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_domestic_gas_every_three_years",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Every three years for small domestic gas boilers.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_certified_gas_technician",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "By a technician certified for gaseous or liquid fuels.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_maintenance_recommended_not_regulated",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Maintenance is not regulated by Walloon law but recommended.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_no_fee_with_one_month_notice",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG: consumers can terminate at any time with one month's notice and no termination fee.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_households_and_smes",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "SMEs are included on the Brussels BRUGEL page only; the federal CREG passage speaks of consumers. The answer applies it to all of Belgium.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_fixed_and_indefinite_term_nationwide",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG: regardless of fixed-term or indefinite contracts.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_fee_possible_without_notice",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Only the Brussels BRUGEL page states that a fee can be charged when notice is not respected; generalised to Belgium.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_not_cut_off_immediately",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Vlaanderen.be states no customer is cut off immediately, but only for Flanders; the answer generalises.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_flanders_fluvius_emergency_supplier",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Fluvius temporarily acts as emergency supplier for affected customers.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_flanders_choose_new_supplier",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The passage is general switching guidance, not specific to a bankruptcy.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_brussels_dso_letter_and_deadline",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The passage describes one 2021 bankruptcy (Energy2Business: a DSO letter and 25 days); the answer presents it as the general procedure.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_brussels_emergency_supplier",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Same 2021 case-specific news item, presented as the general rule.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_creditor_claim_with_curator",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "FOD Economie: a creditor claim can be filed with the curator for paid advances.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_refund_not_guaranteed",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Repayment only after higher-ranking creditors are paid in full.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_complain_to_fluvius_first",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Step 1: file a complaint with Fluvius.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_fluvius_is_the_dso",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "In Flanders, Fluvius is the network operator.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_via_complaint_form",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The online complaint-form passage sits in the Fluvius premium complaints section; the Fluvius complaint page itself returned HTTP 403.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_ask_to_reopen",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "If dissatisfied, ask Fluvius to reopen the complaint.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_flemish_ombudsman",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Still dissatisfied: file with the Vlaamse Ombudsdienst.",
+    "reviewed_on": "2026-10-13"
   }
 ]

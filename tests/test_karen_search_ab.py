@@ -147,6 +147,7 @@ def test_fetch_rejects_bot_challenge_served_with_status_200(monkeypatch):
     with pytest.raises(providers.SearchError, match="bot-challenge"):
         benchmark.retrieve_official_page("https://economie.fgov.be/nl/themas/energie",
                                          api_key="test-key", registry=benchmark.load_domains())
+    assert benchmark.is_bot_challenge("Loader\nPlease wait while your request is being verified...")
     assert not benchmark.is_bot_challenge("# Sociaal tarief voor energie\nDe CREG stelt het bedrag vast.")
 
 

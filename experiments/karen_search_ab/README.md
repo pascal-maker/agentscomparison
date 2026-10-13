@@ -19,6 +19,13 @@ nog inhoudelijk beoordeeld worden. Zonder de lokale, Git-genegeerde
 pilotresultaten is die CLI niet uitvoerbaar; de synthetische fouttests draaien
 wel zonder netwerk of proefresultaten.
 
+**Vervolg 13 oktober 2026:** de claimcontrole dekt nu elk antwoord volledig
+(`pilot_claims.json`, `pilot_non_claims.json`). Er is een onafhankelijkheidsregel
+voor semantische reviews (`semantic_reviews.json`), en tien extra publieke
+vragen zijn beoordeeld via `agent_eval.py`, `eval_claims.json` en
+`eval_non_claims.json`. Resultaat: 0 van 15 antwoorden vrijgegeven. Zie
+[`docs/karen-claim-evaluation-2026-10-13.md`](../../docs/karen-claim-evaluation-2026-10-13.md).
+
 ## Bestaande route
 
 `gemma_answer.py` gebruikt voor bepaalde publieke vragen `search_energy_pages()` uit `luminus_harness/browserbase_sources.py`. Die roept Browserbase Search aan met `site:`-termen uit een scope en `numResults=5`, filtert op vertrouwde domeinen, houdt maximaal drie kandidaten over en haalt normaal maximaal twee pagina's met Browserbase Fetch als Markdown op. Voor een gekende URL gebruikt Karen `fetch_energy_page()` zonder zoekrequest. De productieroute wordt hier niet veranderd.
