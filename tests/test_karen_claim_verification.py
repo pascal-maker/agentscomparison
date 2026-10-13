@@ -10,6 +10,7 @@ from experiments.karen_search_ab.benchmark import HERE
 from experiments.karen_search_ab.claim_verification import (
     ClaimEvidence,
     NonClaim,
+    RegimeStatus,
     SemanticReview,
     _load,
     apply_reviews,
@@ -17,6 +18,7 @@ from experiments.karen_search_ab.claim_verification import (
     coverage,
     evaluate_case,
     load_snapshots,
+    regime_validity,
     uncovered_text,
     verify_claim,
     verify_claims,
@@ -69,6 +71,72 @@ def test_tariff_period_and_retrieval_freshness() -> None:
     assert verify_claim(claim(), answer, [page(stamp="2026-09-01")], on_date=TODAY)["status"] == "SOURCE_STALE"
     assert verify_claim(claim(), answer, [page(stamp="")], on_date=TODAY)["status"] == "RETRIEVAL_TIME_UNKNOWN"
     assert verify_claim(claim(), answer, [page()], on_date=date(2027, 1, 1))["status"] == "OUTSIDE_SOURCE_PERIOD"
+
+
+def regime(**changes) -> RegimeStatus:
+    data = {
+        "scheme_id": "flanders_mijn_verbouwpremie_heat_pump", "region": "flanders",
+        "description": "Vlaamse Mijn VerbouwPremie voor warmtepompen",
+        "current_status": "open", "valid_from": None, "valid_until": date(2027, 12, 31),
+        "source_url": "https://www.vlaanderen.be/", "checked_by": "pascal-maker",
+        "checked_on": date(2026, 10, 13),
+        "note": "Confirmed on a separate official page than the one the claim cites.",
+    }
+    return RegimeStatus.model_validate({**data, **changes})
+
+
+def test_regime_validity_without_a_tracked_record_defers_to_the_old_heuristic() -> None:
+    assert regime_validity(None, {"x": regime()}, TODAY) is None
+    assert regime_validity("untracked_scheme", {"flanders_mijn_verbouwpremie_heat_pump": regime()}, TODAY) is None
+
+
+def test_regime_validity_suspended_closed_and_window() -> None:
+    by_id = {"r": regime()}
+    assert regime_validity("r", {"r": regime(current_status="suspended")}, TODAY)["status"] == "SCHEME_SUSPENDED"
+    assert regime_validity("r", {"r": regime(current_status="closed")}, TODAY)["status"] == "EXPIRED_DEADLINE"
+    assert regime_validity("r", {"r": regime(valid_from=date(2027, 1, 1))}, TODAY)["status"] == "SCHEME_NOT_YET_OPEN"
+    assert regime_validity("r", {"r": regime(valid_until=date(2026, 1, 1))}, TODAY)["status"] == "EXPIRED_DEADLINE"
+    assert regime_validity("r", by_id, TODAY) is None  # open and on_date within [valid_from, valid_until]
+
+
+def test_regime_status_rejects_an_inverted_validity_window() -> None:
+    with pytest.raises(ValidationError):
+        regime(valid_from=date(2027, 1, 1), valid_until=date(2026, 1, 1))
+
+
+def test_a_tracked_suspended_scheme_blocks_even_without_a_textual_deadline() -> None:
+    # The product page never says "suspended" in a date pattern a regex could catch;
+    # only the separately tracked regime record knows that.
+    subsidy = claim(kind="subsidy", region="brussels", source_url="https://renolution.brussels/j4",
+                    answer_excerpt="In Brussel bestaat de RENOLUTION-premie J4.",
+                    quote="RENOLUTION J4: categorie I 4.500 euro per woning.",
+                    amount=None, unit=None, scheme_id="brussels_renolution_j4_heat_pump")
+    source = {"url": "https://renolution.brussels/j4", "content": "RENOLUTION J4: categorie I 4.500 euro per woning."}
+    suspended = {"brussels_renolution_j4_heat_pump": regime(
+        scheme_id="brussels_renolution_j4_heat_pump", region="brussels",
+        description="RENOLUTION J4", current_status="suspended", valid_from=None, valid_until=None)}
+    result = verify_claim(subsidy, "In Brussel bestaat de RENOLUTION-premie J4.", [source],
+                          on_date=TODAY, regime_status=suspended)
+    assert result["status"] == "SCHEME_SUSPENDED"
+    # Without the tracked record, the old heuristic cannot see the suspension at all.
+    assert verify_claim(subsidy, "In Brussel bestaat de RENOLUTION-premie J4.", [source],
+                        on_date=TODAY)["status"] == "VALIDITY_UNKNOWN"
+
+
+def test_a_tracked_open_scheme_lets_review_proceed_past_validity_unknown() -> None:
+    subsidy = claim(kind="subsidy", region="flanders", source_url="https://www.vlaanderen.be/premie",
+                    answer_excerpt="| Geothermisch | €6.000 |", amount="6.000", unit="EUR",
+                    quote="- geothermisch warmtepomp: 6.000 euro voor categorie 3",
+                    scheme_id="flanders_mijn_verbouwpremie_heat_pump")
+    source = {"url": "https://www.vlaanderen.be/premie",
+             "content": "- geothermisch warmtepomp: 6.000 euro voor categorie 3",
+             "retrieved_at": "2026-10-13"}
+    open_scheme = {"flanders_mijn_verbouwpremie_heat_pump": regime()}
+    assert verify_claim(subsidy, "| Geothermisch | €6.000 |", [source], on_date=TODAY,
+                        regime_status=open_scheme)["status"] == "PASSAGE_MATCH_NEEDS_REVIEW"
+    # Without the tracked record, the page's silence on a deadline is conservatively unknown.
+    assert verify_claim(subsidy, "| Geothermisch | €6.000 |", [source],
+                        on_date=TODAY)["status"] == "VALIDITY_UNKNOWN"
 
 
 def test_conflicting_current_official_amounts_are_flagged() -> None:

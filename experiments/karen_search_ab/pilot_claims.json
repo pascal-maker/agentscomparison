@@ -26,7 +26,8 @@
     "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
     "quote": "App. Prod. chaleur et eau chaude sanitaire - Pompe à chaleur pour le chauffage ou combinée 600 €/appareil",
     "amount": "600",
-    "unit": "EUR"
+    "unit": "EUR",
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026"
   },
   {
     "case_id": "wa-05",
@@ -37,7 +38,8 @@
     "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
     "quote": "App. Prod. chaleur et eau chaude sanitaire - Pompe à chaleur pour la production exclusive d'eau chaude sanitaire 280 €/appareil",
     "amount": "280",
-    "unit": "EUR"
+    "unit": "EUR",
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026"
   },
   {
     "case_id": "be-01",
@@ -241,7 +243,8 @@
     "answer_excerpt": "In Wallonië bestaat de Prime Habitation voor warmtepompen",
     "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
     "quote": "App. Prod. chaleur et eau chaude sanitaire - Pompe à chaleur pour le chauffage ou combinée",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026"
   },
   {
     "case_id": "wa-05",
@@ -251,7 +254,8 @@
     "answer_excerpt": "Volgens de actuele Waalse regeling is de basispremie",
     "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
     "quote": "Le Gouvernement wallon a décidé d’adopter le 13 février 2025 un régime de soutien temporaire (2025-2026) qui est entré en vigueur le 14 février 2025.",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026"
   },
   {
     "case_id": "wa-05",
@@ -261,7 +265,8 @@
     "answer_excerpt": "Het bedrag kan worden vermenigvuldigd op basis van het gezinsinkomen",
     "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
     "quote": "le montant de base de la prime peut être multiplié par 2, 3, 4 ou 6 en fonction de vos revenus et de la composition de votre ménage.",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026"
   },
   {
     "case_id": "wa-05",
@@ -271,7 +276,8 @@
     "answer_excerpt": "voor aanvragen vanaf 1 januari 2026 is dat 2, 3, 4 of 6 keer de basispremie",
     "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
     "quote": "Revenu de référence du ménage pour les demandes introduites à partir du 01/01/26",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026"
   },
   {
     "case_id": "wa-05",
@@ -281,7 +287,8 @@
     "answer_excerpt": "Er gelden ook voorwaarden rond de woning, de werken en de installatie",
     "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
     "quote": "Vous devez respecter plusieurs conditions pour pouvoir bénéficier des primes.",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026"
   },
   {
     "case_id": "wa-05",
@@ -291,7 +298,8 @@
     "answer_excerpt": "bovendien is de premie begrensd als percentage van de subsidiabele factuurkosten",
     "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
     "quote": "le montant de la prime sera limité à 70% du montant TVAC des postes éligibles repris dans les factures pour les catégories de revenus R1 et R2 et 50% pour les catégories de revenus R3 et R4.",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026"
   },
   {
     "case_id": "be-01",

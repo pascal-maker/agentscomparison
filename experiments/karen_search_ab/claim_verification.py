@@ -36,6 +36,10 @@ Region = Literal["flanders", "brussels", "wallonia", "federal"]
 Kind = Literal["general", "subsidy", "tariff"]
 Unit = Literal["EUR", "CENT_PER_KWH", "KW"]
 Verdict = Literal["SUPPORTED", "PARTIALLY_SUPPORTED", "NOT_SUPPORTED", "CONTRADICTED"]
+# A regime's own current state, kept by a human who watches the authority's status/news
+# page -- not inferred from date patterns on the cited product page, which cannot show
+# a suspension or a deadline published elsewhere.
+RegimeStatusValue = Literal["open", "suspended", "closed"]
 PILOT_EXTRACTOR = "pilot-2026-10-13"
 # Connectives may stay unattributed; every other answer word needs a claim or exemption.
 CONNECTIVES = frozenset({"en", "of", "maar", "dus"})
@@ -54,6 +58,9 @@ class ClaimEvidence(BaseModel):
     amount: str | None = None
     unit: Unit | None = None
     extracted_by: str = Field(default=PILOT_EXTRACTOR, min_length=2)
+    # Links a subsidy/tariff claim to its regime's tracked current_status/valid_until
+    # record in regime_status.json. Claims without one keep the old page-text heuristic.
+    scheme_id: str | None = Field(default=None, min_length=2)
 
     @model_validator(mode="after")
     def evidence_shape(self) -> ClaimEvidence:
@@ -75,6 +82,54 @@ class NonClaim(BaseModel):
     excerpt: str = Field(min_length=2, max_length=300)
     reason: Literal["hedge", "citation", "framing"]
     note: str = Field(default="", max_length=300)
+
+
+class RegimeStatus(BaseModel):
+    """A human-maintained status record for one subsidy or tariff regime.
+
+    Populated by checking the authority's own status/news page (e.g. Leefmilieu
+    Brussel's suspension notice, or a separate Vlaanderen.be deadline page), not
+    derived from the product page a claim cites -- that page is often silent
+    about a suspension or a deadline announced elsewhere.
+    """
+
+    scheme_id: str = Field(min_length=2)
+    region: Region
+    description: str = Field(min_length=10, max_length=300)
+    current_status: RegimeStatusValue
+    valid_from: date | None = None
+    valid_until: date | None = None
+    # scheme_id of the regime that took over, if any.
+    superseded_by: str | None = Field(default=None, min_length=2)
+    source_url: str = Field(min_length=12, max_length=2048)
+    checked_by: str = Field(min_length=2)
+    checked_on: date
+    note: str = Field(default="", max_length=500)
+
+    @model_validator(mode="after")
+    def window_shape(self) -> RegimeStatus:
+        if self.valid_from and self.valid_until and self.valid_from > self.valid_until:
+            raise ValueError("valid_from must not be after valid_until")
+        return self
+
+
+def regime_validity(scheme_id: str | None, registry: dict[str, RegimeStatus], on_date: date) -> dict | None:
+    """A blocking status from the tracked regime record, or None to defer to the old
+    page-text heuristic (no scheme_id, or the scheme is untracked)."""
+    if scheme_id is None:
+        return None
+    scheme = registry.get(scheme_id)
+    if scheme is None:
+        return None
+    if scheme.current_status == "suspended":
+        return {"status": "SCHEME_SUSPENDED"}
+    if scheme.current_status == "closed":
+        return {"status": "EXPIRED_DEADLINE"}
+    if scheme.valid_from is not None and on_date < scheme.valid_from:
+        return {"status": "SCHEME_NOT_YET_OPEN"}
+    if scheme.valid_until is not None and on_date > scheme.valid_until:
+        return {"status": "EXPIRED_DEADLINE"}
+    return None  # open, and on_date is within its window: let the passage review proceed.
 
 
 class SemanticReview(BaseModel):
@@ -122,7 +177,8 @@ def _periods(content: str) -> list[tuple[date, date]]:
 
 
 def verify_claim(
-    claim: ClaimEvidence, answer: str, pages: list[dict], *, on_date: date
+    claim: ClaimEvidence, answer: str, pages: list[dict], *, on_date: date,
+    regime_status: dict[str, RegimeStatus] | None = None,
 ) -> dict:
     """Return a conservative status and a visible original-source passage."""
     result = {"case_id": claim.case_id, "claim_key": claim.claim_key, "source_url": claim.source_url}
@@ -147,14 +203,21 @@ def verify_claim(
         return {**result, "status": "QUOTE_NOT_FOUND", "organization": organization}
     if claim.amount is not None and not _contains_amount(claim.quote, claim.amount, claim.unit):
         return {**result, "status": "AMOUNT_OR_UNIT_NOT_IN_QUOTE", "organization": organization}
-    if claim.kind == "subsidy":
+    # A tracked regime record is authoritative: it can see a suspension or a deadline
+    # published on the authority's status page, which the cited product page cannot.
+    tracked = regime_validity(claim.scheme_id, regime_status or {}, on_date)
+    if tracked is not None:
+        return {**result, **tracked, "organization": organization, "quote": claim.quote,
+                "scheme_id": claim.scheme_id}
+    scheme_confirmed_current = claim.scheme_id is not None and (regime_status or {}).get(claim.scheme_id) is not None
+    if claim.kind == "subsidy" and not scheme_confirmed_current:
         expired = past_deadlines(content, on_date)
         if expired:
             return {**result, "status": "EXPIRED_DEADLINE", "organization": organization,
                     "quote": claim.quote, "expired_deadlines": expired}
         # No explicit deadline is not evidence that applications are open.
         return {**result, "status": "VALIDITY_UNKNOWN", "organization": organization, "quote": claim.quote}
-    if claim.kind == "tariff":
+    if claim.kind == "tariff" and not scheme_confirmed_current:
         periods = _periods(content)
         if not periods:
             return {**result, "status": "VALIDITY_UNKNOWN", "organization": organization, "quote": claim.quote}
@@ -176,8 +239,10 @@ def verify_claim(
             "quote": claim.quote, "retrieved_at": page.get("retrieved_at", "")}
 
 
-def verify_claims(claims: list[ClaimEvidence], answer: str, pages: list[dict], *, on_date: date) -> list[dict]:
-    results = [verify_claim(claim, answer, pages, on_date=on_date) for claim in claims]
+def verify_claims(claims: list[ClaimEvidence], answer: str, pages: list[dict], *, on_date: date,
+                   regime_status: dict[str, RegimeStatus] | None = None) -> list[dict]:
+    results = [verify_claim(claim, answer, pages, on_date=on_date, regime_status=regime_status)
+               for claim in claims]
     # A subject key must include the relevant meter/period/eligibility context.
     # If two current official passages still disagree, require explicit review.
     for key in {claim.claim_key for claim in claims}:
@@ -340,11 +405,13 @@ def _load(name: str, model):
 
 
 def evaluate_case(row: dict, claims: list[ClaimEvidence], non_claims: list[NonClaim],
-                  reviews: list[SemanticReview], *, on_date: date) -> dict:
+                  reviews: list[SemanticReview], *, on_date: date,
+                  regime_status: dict[str, RegimeStatus] | None = None) -> dict:
     selected = [claim for claim in claims if claim.case_id == row["case_id"]]
     exempt = [item for item in non_claims if item.case_id == row["case_id"]]
     pages = pilot_pages(row, [claim.source_url for claim in selected if claim.source_url])
-    results = apply_reviews(selected, verify_claims(selected, row["answer"], pages, on_date=on_date), reviews)
+    verified = verify_claims(selected, row["answer"], pages, on_date=on_date, regime_status=regime_status)
+    results = apply_reviews(selected, verified, reviews)
     case_coverage = coverage(row["answer"], selected, exempt)
     return {"case_id": row["case_id"], "case_verdict": case_verdict(results, case_coverage),
             "coverage": case_coverage, "claims": results}
@@ -390,6 +457,7 @@ def main() -> None:
     claims = _load(args.claims, ClaimEvidence)
     non_claims = _load(args.non_claims, NonClaim)
     reviews = _load("semantic_reviews.json", SemanticReview)
+    regime_status = {scheme.scheme_id: scheme for scheme in _load("regime_status.json", RegimeStatus)}
     rows: dict[str, tuple[dict, date]] = {}
     for name in args.run or ["agent-pilot-2026-10-13.json"]:
         run = json.loads((HERE / "results" / name).read_text(encoding="utf-8"))
@@ -398,7 +466,7 @@ def main() -> None:
                 rows[row["case_id"]] = (row, date.fromisoformat(run["run_at"][:10]))
     packet = []
     for row, on_date in rows.values():
-        evaluated = evaluate_case(row, claims, non_claims, reviews, on_date=on_date)
+        evaluated = evaluate_case(row, claims, non_claims, reviews, on_date=on_date, regime_status=regime_status)
         packet.append(review_packet(row, evaluated, claims, non_claims))
         print(json.dumps(evaluated, ensure_ascii=False))
     if args.review_packet:

@@ -1,0 +1,41 @@
+[
+  {
+    "scheme_id": "wallonia_prime_habitation_heat_pump_2025_2026",
+    "region": "wallonia",
+    "description": "Tijdelijke Waalse Prime Habitation 2025-2026 voor warmtepompen (SPW Energie)",
+    "current_status": "closed",
+    "valid_from": "2025-02-14",
+    "valid_until": "2026-09-30",
+    "superseded_by": null,
+    "source_url": "https://energie.wallonie.be/",
+    "checked_by": "pascal-maker",
+    "checked_on": "2026-10-13",
+    "note": "Regime sloot voor aanvragen op 30 september 2026. Een losse overgangsmaatregel (sinds 24 september 2026) laat bepaalde projecten die vóór 14 februari 2025 startten onder voorwaarden nog tot 30 september 2027 in het oude regime toe; dat is geen reden om het huidige antwoord als actueel te presenteren."
+  },
+  {
+    "scheme_id": "flanders_mijn_verbouwpremie_heat_pump",
+    "region": "flanders",
+    "description": "Vlaamse Mijn VerbouwPremie voor warmtepompen (categorie 3 en 4)",
+    "current_status": "open",
+    "valid_from": null,
+    "valid_until": "2027-12-31",
+    "superseded_by": null,
+    "source_url": "https://www.vlaanderen.be/",
+    "checked_by": "pascal-maker",
+    "checked_on": "2026-10-13",
+    "note": "Een afzonderlijke officiële Vlaanderen.be-pagina (niet de oorspronkelijk geciteerde productpagina) bevestigt expliciet dat warmtepomp- en warmtepompboiler-premies aangevraagd kunnen worden tot en met 31 december 2027. Retrieval-miss op de oorspronkelijke bron, geen feitelijke fout in het antwoord."
+  },
+  {
+    "scheme_id": "brussels_renolution_j4_heat_pump",
+    "region": "brussels",
+    "description": "Brusselse RENOLUTION-premie J4 voor warmtepompen (Leefmilieu Brussel)",
+    "current_status": "suspended",
+    "valid_from": null,
+    "valid_until": null,
+    "superseded_by": null,
+    "source_url": "https://leefmilieu.brussels/",
+    "checked_by": "pascal-maker",
+    "checked_on": "2026-10-13",
+    "note": "Leefmilieu Brussel meldde op 14 september 2026 expliciet: 'Ces primes sont actuellement suspendues.' be.brussels bevestigt dat er voor eindfacturen van 2025 of 2026 momenteel geen premie-aanvragen kunnen worden ingediend. Op 13 oktober 2026 was er nog geen beslissing over een nieuwe regeling. De geciteerde J4-productpagina zelf vermeldt deze opschorting niet."
+  }
+]

@@ -185,3 +185,41 @@ altijd.
 
 `agent_eval.py --live` vereist de nog niet gecommitte module
 `luminus_harness/perplexity_agent.py` en doet betaalde calls.
+
+## Update 2026-10-13: validity-gate (aanbeveling #2) geïmplementeerd
+
+De eerdere `VALIDITY_UNKNOWN`-status was een regex over de geciteerde
+productpagina (`past_deadlines`/`_periods`): die ziet geen opschorting of
+deadline die elders op de site staat. Daarom is `regime_status.json`
+toegevoegd: een apart, door een mens bijgehouden record per regeling met
+`current_status` (`open`/`suspended`/`closed`), `valid_from`, `valid_until`
+en `superseded_by`. Een claim verwijst ernaar via een nieuw optioneel
+`scheme_id`-veld; zonder `scheme_id` blijft de oude heuristiek ongewijzigd
+van toepassing.
+
+Toegepast op de drie regelingen die vorige keer op `VALIDITY_UNKNOWN` of
+`EXPIRED_DEADLINE` bleven steken:
+
+- `wallonia_prime_habitation_heat_pump_2025_2026` — `closed` (30/09/2026).
+  Resultaat ongewijzigd (`EXPIRED_DEADLINE`); dit werkte al via de oude
+  regex, nu ook expliciet getrackt.
+- `flanders_mijn_verbouwpremie_heat_pump` — `open`, `valid_until` 31/12/2027.
+  **13 van de 15 `fl-06`-claims gaan van `VALIDITY_UNKNOWN` naar
+  `HUMAN_REVIEW_SUPPORTED`.** De case blijft `BLOCKED`, maar nu om een
+  eerlijke, controleerbare reden: 2 claims hebben een nog openstaand
+  meningsverschil met een eerder model-oordeel
+  (`fl06_since_march_2026_type_and_income`, `fl06_apply_until_end_2027`),
+  niet omdat het systeem de geldigheid niet kon vaststellen.
+- `brussels_renolution_j4_heat_pump` — `suspended`. **12 van de 13
+  `br-05`-claims gaan van `VALIDITY_UNKNOWN` naar de nieuwe, precieze status
+  `SCHEME_SUSPENDED`.** Case blijft terecht `BLOCKED`.
+
+Geen van de 15 cases flipte naar een hogere eindverdict — dat was ook niet
+het doel. Het doel was dat een blokkade zijn juiste, specifieke reden krijgt
+in plaats van het generieke "onbekend", zodat een volgende reviewronde weet
+waar die wél (reviewer-meningsverschil) en niet (een harde schorsing) iets
+aan kan veranderen.
+
+Nieuwe statussen: `SCHEME_SUSPENDED`, `SCHEME_NOT_YET_OPEN`. Zie
+`experiments/karen_search_ab/regime_status.json` voor het schema en
+`tests/test_karen_claim_verification.py` voor de dekking.
