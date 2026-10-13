@@ -205,8 +205,8 @@ def test_five_saved_cases_have_expected_conservative_statuses() -> None:
         verdicts[row["case_id"]] = evaluated["case_verdict"]
         if row["case_id"] == "wa-05":
             assert {result["status"] for result in evaluated["claims"]} == {"EXPIRED_DEADLINE"}
-    assert verdicts == {"fl-01": "NEEDS_HUMAN_SIGNOFF", "br-04": "NEEDS_HUMAN_SIGNOFF", "wa-05": "BLOCKED",
-                        "be-01": "BLOCKED", "be-08": "BLOCKED"}
+    assert verdicts == {"fl-01": "HUMAN_REVIEWED_SUPPORTED", "br-04": "HUMAN_REVIEWED_SUPPORTED",
+                        "wa-05": "BLOCKED", "be-01": "BLOCKED", "be-08": "BLOCKED"}
 
 
 def test_committed_claim_files_are_consistent() -> None:

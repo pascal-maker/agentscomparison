@@ -2014,5 +2014,1037 @@
     "verdict": "SUPPORTED",
     "rationale": "FOD Economie: repayment only after priority creditors.",
     "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_quarter_hour",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Fluvius bevestigt dat per kwartier het gemiddelde wordt berekend.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_part_of_network_costs",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Een deel van de netkosten wordt aangerekend op basis van het maandpiekverbruik.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_avoid_simultaneous_use",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Fluvius adviseert expliciet zo weinig mogelijk toestellen binnen hetzelfde kwartier tegelijk te gebruiken.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_digital_meter_quarter_registration",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "De digitale meter registreert per 15 minuten en levert het gemiddelde vermogen per kwartier.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_month_peak_definition",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Maandpiek = hoogste kwartiervermogen van de maand.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_twelve_month_average",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Gemiddelde van de voorafgaande twaalf maandpieken.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_price_per_kw",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Oorspronkelijke passage is zwak bewijs, maar Fluvius bevestigt elders expliciet euro per kW per jaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_minimum_2_5_kw",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "2,5 kW minimumbijdrage geldt, ook relevant bij een digitale meter.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_cannot_measure_peaks",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Klassieke meter kan kwartierpieken niet registreren; Fluvius gebruikt een vaste 2,5 kW-component.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_consumption_share",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Fluvius.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_minimum_peak",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Vaste vergoeding op basis van 2,5 kW plus verbruikscomponent.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_quarter_average_not_seconds",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Correcte gevolgtrekking uit het kwartiergemiddelde.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_limit_peaks_advice",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Passage noemt niet specifiek wasmachine/droogkast/kookplaat, maar ondersteunt het algemene advies zware verbruikers te spreiden.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_gas_boiler_inspection_interval",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Gastoestellen: om de twee jaar (leefmilieu.brussels).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_gas_boiler_inspection_scope",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door leefmilieu.brussels.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_boiler_inspection_certified_technician",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Erkende EPB-verwarmingsketeltechnicus vereist.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_boiler_inspection_after_combustion_repair",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Controle ook vereist na een interventie die de verbranding beinvloedt.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_heat_pump_heating_subsidy",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "EUR 600 was de basispremie in het tijdelijke 2025-2026-regime; dat regime is sinds 30/9/2026 gesloten voor aanvragen.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_heat_pump_hot_water_subsidy",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "EUR 280 is historisch correct voor hetzelfde gesloten tijdelijke regime.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_habitation_heat_pump_exists",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "CONTRADICTED",
+    "rationale": "Als actuele claim onjuist: het tijdelijke regime bleef slechts geldig tot 30/9/2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_habitation_current_regime",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "CONTRADICTED",
+    "rationale": "Op 13/10/2026 kan dit niet meer 'de actuele Waalse regeling' genoemd worden.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_income_multiplier",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Multiplicatoren 2x/3x/4x/6x waren correct binnen het nu gesloten regime.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_multiplier_from_2026",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct binnen het gesloten regime.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_conditions",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Correcte beschrijving van het inmiddels gesloten regime.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_invoice_cap",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Correcte beschrijving van het inmiddels gesloten regime.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_advance_invoice_change",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Vlaanderen.be.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "advance_invoice_is_estimate",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "BRUGEL noemt voorschotten expliciet ramingen.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_advance_self_service",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Vlaanderen.be: bedrag zelf aanpasbaar in online klantenzone.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "advance_settled_on_annual_bill",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Regularisatie vergelijkt betaalde voorschotten met werkelijk verbruik.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_advance_change_by_agreement",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "BRUGEL: bepaalde leveranciers zijn bereid het bedrag in overleg aan te passen; 'doorgaans' is verstandig geformuleerd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_advance_refusal_motivated",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "BRUGEL: weigering moet gemotiveerd worden.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_exclusive_night_2026q4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "20,957 c/kWh excl. btw voor uitsluitend nacht.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_single_2026q4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "25,331 c/kWh excl. btw voor enkelvoudig; CREG bevestigt de Q4-tarieven.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_gas_2026q4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "5,738 c/kWh excl. btw.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_reduced_for_eligible",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door creg.be.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_same_everywhere",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Geldt bij alle energieleveranciers hetzelfde, zoals CREG het formuleert.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_set_quarterly_by_creg",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG/FOD bevestigen berekening viermaal per jaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_2026q4_period",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "01/10/2026-31/12/2026, bevestigd door creg.be.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_depends_on_meter",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Enkelvoudig, tweevoudig en uitsluitend-nacht hebben verschillende tarieven.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_2026q4_excl_vat_basis",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door het packet-onderzoek voor Q4 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_gas_2026q4_excl_vat_basis",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door het packet-onderzoek voor Q4 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_commercial_source_for_amounts",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "NOT_SUPPORTED",
+    "rationale": "Bedragen correct, maar June Energy als bron terwijl de officiele CREG Q4-documenten bestaan en nu rechtstreeks linken.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "creg_role_social_tariff",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG stelt het bedrag vast, maar beslist niet wie recht heeft; dat nuanceverschil is geen overclaim.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_only_some_categories",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door FOD Economie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_often_automatic",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "FOD Economie: gebeurt voor de meeste rechthebbenden automatisch.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_fod_economie_referral",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG verwijst zelf naar FOD Economie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be08_agent_could_not_verify_q4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "CONTRADICTED",
+    "rationale": "Aantoonbaar onjuist: CREG publiceerde de Q4 2026-tarieven op 10/9/2026 en de CREG-pagina linkt ze.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_feed_in_for_unused_solar",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "VNR bevestigt injectie van niet-verbruikte zonneproductie en vergoeding via terugleveringscontract.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_digital_meter_measures_separately",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Passage bewijst dat injectie exact wordt gemeten, maar niet op zichzelf dat afname en injectie apart worden gemeten.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_no_netting",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Indirect bewijs, maar inhoudelijk correct: afname en teruglevering worden afzonderlijk behandeld.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_feed_in_contract",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door de Vlaamse Nutsregulator.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_terms_vary_by_supplier",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "VNR meldde 1.357 verschillende terugleveringscontracten eind 2025.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_no_fixed_amount",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door de Vlaamse Nutsregulator.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_supplier_buys_injection",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door de Vlaamse Nutsregulator.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_paid_on_settlement_bill",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "NOT_SUPPORTED",
+    "rationale": "Geen bron voor 'doorgaans verwerkt op de afrekening'; zin verwijderen tenzij bron gevonden wordt.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_amount_depends_on_contract_and_volume",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door de Vlaamse Nutsregulator.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_self_consumption_advice",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Regulator: meer zelfverbruik betekent minder aankoop van elektriciteit.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_gas_boiler_every_two_years",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Rechtstreeks ondersteund door de officiele Vlaamse bron.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_certified_technician",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door de officiele Vlaamse bron.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_below_20kw_recommended",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Niet verplicht onder 20 kW, maar aanbevolen.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_rating_plate",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Vermogen staat op het kenplaatje.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_premium_exists",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Vlaanderen.be Mijn VerbouwPremie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_since_march_2026_type_and_income",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door de officiele Vlaamse pagina.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_geothermal_category_3",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "EUR 6.000, bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_geothermal_category_4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "EUR 8.000, bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_water_category_3",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "EUR 4.500, bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_water_category_4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "EUR 6.000, bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_air_category_3",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Categorie 3 lucht-lucht: EUR 450, bevestigd door Vlaanderen.be.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_air_category_4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Categorie 4 lucht-lucht: EUR 600, bevestigd door Vlaanderen.be.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_hybrid_category_3",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "EUR 3.000, bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_hybrid_category_4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "EUR 4.000, bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_cap_category_3",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Max. 35%, bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_cap_category_4",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Max. 50%, bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_lower_for_other_categories",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door de officiele Vlaanderen.be-pagina.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_landlords_to_housing_companies",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door de officiele Vlaanderen.be-pagina.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_apply_until_end_2027",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Een andere officiele Vlaanderen.be-pagina zegt expliciet: aanvragen tot en met 31/12/2027. Retrieval-miss, geen feitelijke fout.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_complain_to_fluvius_first",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Vlaanderen.be klachtpagina.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_fluvius_is_the_dso",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Vlaanderen.be klachtpagina.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_via_complaint_form",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Vlaanderen.be klachtpagina.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_ask_to_reopen",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Vlaanderen.be klachtpagina.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_flemish_ombudsman",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Vlaanderen.be.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_fluvius_complaints_committee",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Vlaanderen.be heeft een officiele Fluvius-organisatiepagina die de Klachtencommissie expliciet noemt.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_j4_exists",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "CONTRADICTED",
+    "rationale": "Leefmilieu Brussel (14/9/2026): 'Ces primes sont actuellement suspendues.' Niet bruikbaar als actuele claim.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_i",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct (EUR 4.500/woning), momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_ii",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct (EUR 4.750/woning), momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_iii",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct (EUR 5.000/woning), momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_i",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct (EUR 5.800/woning), momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_ii",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct (EUR 6.150/woning), momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_iii",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct (EUR 6.500/woning), momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_depends_on_income_category",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct, momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_non_residential_35_percent",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct, momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_j9_heat_pump_boiler",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historisch correct, momenteel niet beschikbaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_page_updated_july_2025",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "NOT_SUPPORTED",
+    "rationale": "Geen officiele bron voor deze claim.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_irisbox_counter",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "CONTRADICTED",
+    "rationale": "Misleidend als actueel advies: normale RENOLUTION-aanvragen voor 2025/2026 kunnen nu niet ingediend worden.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_twelve_months_after_final_invoice",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historische regeling klopt, maar niet bruikbaar als actuele aanvraaginstructie nu de regeling is opgeschort.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_contact_supplier_in_writing_first",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Ombudsdienst eist voorafgaande stappen via brief/e-mail met aantoonbare correspondentie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_required_before_ombudsman",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door Ombudsman Energie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_geschillendienst_for_brussels_rules",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door BRUGEL/Ombudsman Energie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_geschillendienst_free",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door BRUGEL/Ombudsman Energie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_suppliers_and_sibelga",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door BRUGEL/Ombudsman Energie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_decisions_binding",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "BRUGEL: beslissingen van de Geschillendienst zijn bindend.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_ombudsman_for_other_complaints",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "'Andere klachten' is wat breed, maar inhoudelijk correct voor facturatie/contractuele/federale kwesties.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_network_use_tariff",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door CWaPE-pagina's.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_not_a_tax",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "'Il ne s'agit pas d'une taxe', expliciet bevestigd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_applies_to_solar_owners",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door CWaPE-pagina's.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_two_methods",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door CWAPE.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_capacity_on_net_power",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd door CWaPE-pagina's.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_proportional_on_actual_offtake",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bij een meter die afname/injectie apart meet, netkosten op bruto-afname.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_capped_at_capacity_tariff",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Plafonneringsmechanisme blijft bestaan in de tarifaire methodologie 2026-2029.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_cwape_publishes_per_dso",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "CWaPE publiceert capacitaire tarieven per GRD voor 2025/2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_standard_self_consumption_share",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "CONTRADICTED",
+    "rationale": "Verouderde parameter: 37,76% was ouder; de huidige tarifaire methodologie 2025-2029 gebruikt 40,26% (ook ORES actueel).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_self_consumption_favours_proportional",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Klopt in principe, consistent met de CWaPE-methodologie.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_domestic_gas_every_three_years",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Kleine huishoudelijke gasketel: controle om de drie jaar.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_certified_gas_technician",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Door erkend technicus.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_maintenance_recommended_not_regulated",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Onderhoud niet wettelijk gereglementeerd, maar regelmatig aanbevolen.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_no_fee_with_one_month_notice",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG: opzeggen op elk moment met 1 maand opzegtermijn, zonder vergoeding.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_households_and_smes",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "BRUGEL ondersteunt dezelfde regel expliciet voor residentiele klanten en kmo's in Brussel.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_fixed_and_indefinite_term_nationwide",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Geldt voor bepaalde en onbepaalde duur, voor consumenten.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_fee_possible_without_notice",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Bevestigd; kleine kanttekening dat kmo-dekking via BRUGEL (Brussel) en niet de landelijke CREG-bron loopt.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_not_cut_off_immediately",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Vlaanderen.be: geen enkele klant valt meteen zonder elektriciteit of aardgas.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_depends_on_region",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Als synthese: de drie gewesten hebben aantoonbaar eigen nood-/substitutieregelingen.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_flanders_fluvius_emergency_supplier",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Wettelijk actueel onder het (in 2026 aangepaste) Vlaamse Energiedecreet.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_flanders_choose_new_supplier",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Goede praktische raad, maar de gebruikte passage is algemene wisselinformatie, niet faillissement-specifiek.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_brussels_dso_letter_and_deadline",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Bron is het specifieke Energy2Business-faillissement (2021, 25 dagen); niet zomaar een universele procedure.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_brussels_emergency_supplier",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Zelfde historische, case-specifieke bron overgegeneraliseerd.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_wallonia_substitute_supplier",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "CWaPE heeft een expliciete regeling voor 'fourniture de substitution'.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_practical_checklist",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "NOT_SUPPORTED",
+    "rationale": "Redelijk advies, maar niet voorstellen als een door de overheid voorgeschreven checklist.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_creditor_claim_with_curator",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "FOD Economie: schuldvordering kan bij de curator worden ingediend.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_refund_not_guaranteed",
+    "reviewer": "pascal-maker",
+    "reviewer_type": "human",
+    "verdict": "SUPPORTED",
+    "rationale": "Terugbetaling enkel na prioritaire schuldeisers.",
+    "reviewed_on": "2026-10-13"
   }
 ]
