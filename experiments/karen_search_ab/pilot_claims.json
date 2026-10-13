@@ -1,0 +1,84 @@
+[
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_quarter_hour",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Fluvius meet je elektriciteitsafname per kwartier",
+    "source_url": "https://prepaid.fluvius.be/mijn-factuur/wat-kost-energie-bij-fluvius/capaciteitstarief",
+    "quote": "Tijdens een kwartier zijn er hogere of lagere pieken. Per kwartier wordt het gemiddelde berekend."
+  },
+  {
+    "case_id": "br-04",
+    "claim_key": "brussels_gas_boiler_inspection_interval",
+    "region": "brussels",
+    "kind": "general",
+    "answer_excerpt": "minstens om de 2 jaar een EPB-periodieke controle",
+    "source_url": "https://leefmilieu.brussels/verwarmingsketel",
+    "quote": "Voor een verwarmingsketel of boiler op aardgas moet om de 2 jaar een EPB-periodieke controle worden uitgevoerd."
+  },
+  {
+    "case_id": "wa-05",
+    "claim_key": "wallonia_heat_pump_heating_subsidy",
+    "region": "wallonia",
+    "kind": "subsidy",
+    "answer_excerpt": "€600 voor een warmtepomp voor verwarming of een combitoestel",
+    "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
+    "quote": "App. Prod. chaleur et eau chaude sanitaire - Pompe à chaleur pour le chauffage ou combinée 600 €/appareil",
+    "amount": "600",
+    "unit": "EUR"
+  },
+  {
+    "case_id": "wa-05",
+    "claim_key": "wallonia_heat_pump_hot_water_subsidy",
+    "region": "wallonia",
+    "kind": "subsidy",
+    "answer_excerpt": "€280 voor een warmtepomp die uitsluitend sanitair warm water maakt",
+    "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
+    "quote": "App. Prod. chaleur et eau chaude sanitaire - Pompe à chaleur pour la production exclusive d'eau chaude sanitaire 280 €/appareil",
+    "amount": "280",
+    "unit": "EUR"
+  },
+  {
+    "case_id": "be-01",
+    "claim_key": "flanders_advance_invoice_change",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "In Vlaanderen kunt u uw leverancier contacteren om het bedrag te bespreken",
+    "source_url": "https://www.vlaanderen.be/bouwen-wonen-en-energie/elektriciteit-en-aardgas/factuur-voor-elektriciteit-en-aardgas/energiefactuur-voor-elektriciteit-of-aardgas",
+    "quote": "Gaat u niet akkoord met het voorschotbedrag? Dan neemt u best contact op met uw leverancier en bespreekt u de mogelijkheden voor een eventuele aanpassing van de factuur."
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_electricity_exclusive_night_2026q4",
+    "region": "federal",
+    "kind": "tariff",
+    "answer_excerpt": "20,957–25,331 cent/kWh excl. btw",
+    "source_url": "https://www.creg.be/sites/default/files/assets/Tarifs/Social/E-TSS-NL-2026-Q4.pdf",
+    "quote": "SOCIAAL TARIEF EXCLUSIEF NACHT Energiecomponent (c€/kWh) 12,849 13,620 Netwerkcomponent (c€/kWh) 8,108 8,594 Totaal (€cent/kWh) 20,957 22,214",
+    "amount": "20,957",
+    "unit": "CENT_PER_KWH"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_electricity_single_2026q4",
+    "region": "federal",
+    "kind": "tariff",
+    "answer_excerpt": "20,957–25,331 cent/kWh excl. btw",
+    "source_url": "https://www.creg.be/sites/default/files/assets/Tarifs/Social/E-TSS-NL-2026-Q4.pdf",
+    "quote": "SOCIAAL TARIEF ENKELVOUDIG Energiecomponent (c€/kWh) 14,268 15,124 Netwerkcomponent (c€/kWh) 11,063 11,727 Totaal (€cent/kWh) 25,331 26,851",
+    "amount": "25,331",
+    "unit": "CENT_PER_KWH"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_gas_2026q4",
+    "region": "federal",
+    "kind": "tariff",
+    "answer_excerpt": "5,738 cent/kWh excl. btw",
+    "source_url": "https://www.creg.be/sites/default/files/assets/Tarifs/Social/G-TSS-NL-2026-Q4.pdf",
+    "quote": "SOCIAAL TARIEF Energiecomponent (c€/kWh) 4,750 5,035 Distributiecomponent (c€/kWh) 0,832 0,882 Transmissiecomponent (c€/kWh) 0,156 0,165 Totaal (c€/kWh) 5,738 6,082",
+    "amount": "5,738",
+    "unit": "CENT_PER_KWH"
+  }
+]

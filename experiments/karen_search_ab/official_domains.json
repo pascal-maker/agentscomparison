@@ -1,0 +1,22 @@
+{
+  "federal": {
+    "CREG": ["creg.be"],
+    "FOD Economie": ["economie.fgov.be"],
+    "Belgische overheid": ["belgium.be"]
+  },
+  "flanders": {
+    "Vlaamse Nutsregulator": ["vlaamsenutsregulator.be"],
+    "Vlaanderen/VEKA": ["vlaanderen.be"],
+    "Fluvius": ["fluvius.be"]
+  },
+  "brussels": {
+    "BRUGEL": ["brugel.brussels"],
+    "Leefmilieu Brussel": ["leefmilieu.brussels", "environnement.brussels"],
+    "Sibelga": ["sibelga.be"]
+  },
+  "wallonia": {
+    "CWaPE": ["cwape.be"],
+    "SPW Energie": ["energie.wallonie.be", "wallonie.be"],
+    "ORES": ["ores.be"]
+  }
+}
