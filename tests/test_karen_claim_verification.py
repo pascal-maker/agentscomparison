@@ -259,4 +259,4 @@ def test_held_out_eval_is_fully_covered_and_fails_closed() -> None:
         assert not {result["status"] for result in evaluated["claims"]} & {
             "QUOTE_NOT_FOUND", "SOURCE_MISSING", "CLAIM_NOT_IN_ANSWER", "WRONG_REGION_OR_SOURCE"}
         verdicts[case_id] = evaluated["case_verdict"]
-    assert sorted(case for case, verdict in verdicts.items() if verdict != "BLOCKED") == ["fl-05", "wa-04"]
+    assert sorted(case for case, verdict in verdicts.items() if verdict != "BLOCKED") == ["br-08", "fl-05", "wa-04"]

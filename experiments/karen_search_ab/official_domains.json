@@ -13,7 +13,8 @@
   "brussels": {
     "BRUGEL": ["brugel.brussels", "litigesenergie.brussels"],
     "Leefmilieu Brussel": ["leefmilieu.brussels", "environnement.brussels", "renolution.brussels"],
-    "Sibelga": ["sibelga.be"]
+    "Sibelga": ["sibelga.be"],
+    "Brussels Gewest": ["be.brussels"]
   },
   "wallonia": {
     "CWaPE": ["cwape.be"],

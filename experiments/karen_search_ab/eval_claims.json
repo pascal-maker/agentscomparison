@@ -292,8 +292,9 @@
     "region": "flanders",
     "kind": "subsidy",
     "answer_excerpt": "De premie kan worden aangevraagd tot en met 31 december 2027",
-    "evidence_note": "The cited Vlaanderen.be page contains no 31 December 2027 application deadline; no other official source was cited.",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "source_url": "https://www.vlaanderen.be/bouwen-wonen-en-energie/bouwen-en-verbouwen/premies-voor-renovatie/mijn-verbouwpremie/wijzigingen-mijn-verbouwpremie-vanaf-2026",
+    "quote": "De premies voor warmtepomp en warmtepompboiler kunnen aangevraagd worden tot en met 31 december 2027."
   },
   {
     "case_id": "fl-06",
@@ -452,8 +453,8 @@
     "region": "federal",
     "kind": "general",
     "answer_excerpt": "Neem eerst schriftelijk contact op met uw energieleverancier en bewaar uw klacht en het antwoord",
-    "source_url": "https://www.ombudsmanenergie.be/nl",
-    "quote": "Alvorens een klacht in te dienen bij de Ombudsdienst voor Energie moet u eerst stappen hebben ondernomen bij het elektriciteits- of aardgasbedrijf.",
+    "source_url": "https://www.ombudsmanenergie.be/nl/faq/hoe-wend-ik-me-tot-de-ombudsdienst-voor-energie",
+    "quote": "Alvorens de Ombudsdienst voor Energie aan te schrijven moet u al stappen (per gewone of aangetekende brief, e-mail, fax …) ondernomen hebben bij het (de) betrokken energiebedrijf (bedrijven) om tot een oplossing te komen.",
     "extracted_by": "claude-opus-5-5"
   },
   {
@@ -572,8 +573,8 @@
     "region": "wallonia",
     "kind": "general",
     "answer_excerpt": "Daarbij wordt een standaardpercentage aangenomen voor directe zelfconsumptie",
-    "source_url": "https://wallonie.be/fr/demarches/photovoltaique-sinformer-sur-le-tarif-prosumer",
-    "quote": "On considère que vous auto-consommez 37.76 % de votre production d'électricité",
+    "source_url": "https://www.ores.be/faq/tarifs",
+    "quote": "De manière générale, la CWaPE considère que **40,26 % de l’énergie produite est directement consommée par votre habitation**.",
     "extracted_by": "claude-opus-5-5"
   },
   {
@@ -839,8 +840,9 @@
     "region": "flanders",
     "kind": "general",
     "answer_excerpt": "of leg ze voor aan de Klachtencommissie Fluvius",
-    "evidence_note": "Not on the Vlaanderen.be complaint page; the Fluvius complaint page returned HTTP 403 to Fetch.",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "source_url": "https://www.vlaanderen.be/organisaties/fluvius",
+    "quote": "Wie niet tevreden is over het antwoord van Fluvius op een vraag of klacht kan terecht bij de [Fluvius-Klachtencommissie"
   },
   {
     "case_id": "fl-09",

@@ -476,7 +476,7 @@
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
     "verdict": "PARTIALLY_SUPPORTED",
-    "rationale": "Amounts depend on type and income category, but the 1 March 2026 change applies to categories 1-2 and non-residential buildings; categories 3-4 have no such date split. The date is misattributed.",
+    "rationale": "The change page confirms the 1 March 2026 reform targets categories 1-2, other investors and non-residential buildings: 'Voor eigenaar-bewoners uit inkomenscategorie 3 en 4 verandert er niets.'",
     "reviewed_on": "2026-10-13"
   },
   {
@@ -579,8 +579,8 @@
     "claim_key": "br05_j4_exists",
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
-    "verdict": "SUPPORTED",
-    "rationale": "The Renolution page describes premium J4 for heating with a heat pump.",
+    "verdict": "CONTRADICTED",
+    "rationale": "Present-tense 'bestaat' is wrong for applicants on 13 October 2026: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
     "reviewed_on": "2026-10-13"
   },
   {
@@ -659,8 +659,8 @@
     "claim_key": "br05_irisbox_counter",
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
-    "verdict": "PARTIALLY_SUPPORTED",
-    "rationale": "The passage mentions the IRISbox counter for declaring received aid, not as the place to check eligibility before works.",
+    "verdict": "CONTRADICTED",
+    "rationale": "Advising users to check or apply via RENOLUTION/IRISbox is wrong as current advice: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
     "reviewed_on": "2026-10-13"
   },
   {
@@ -675,8 +675,8 @@
     "claim_key": "br08_contact_supplier_in_writing_first",
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
-    "verdict": "PARTIALLY_SUPPORTED",
-    "rationale": "The Ombudsman requires prior steps with the company; 'in writing' and keeping the reply are not stated on the fetched federal or Brussels pages.",
+    "verdict": "SUPPORTED",
+    "rationale": "The Ombudsman FAQ requires prior steps by letter, e-mail or fax and a file with the correspondence (found via the external review).",
     "reviewed_on": "2026-10-13"
   },
   {
@@ -772,7 +772,7 @@
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
     "verdict": "SUPPORTED",
-    "rationale": "A standard self-consumption share is assumed. Note the official pages disagree on the figure (SPW 37.76%, ORES 40.26%); the answer gives none.",
+    "rationale": "ORES states the CWaPE assumes 40.26% direct self-consumption. The answer gives no percentage; the earlier 37.76% came only from the evidence quote.",
     "reviewed_on": "2026-10-13"
   },
   {
@@ -1349,6 +1349,670 @@
     "reviewer_type": "model",
     "verdict": "CONTRADICTED",
     "rationale": "Demonstrably wrong: CREG published the Q4 2026 tariffs and its page links them.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_apply_until_end_2027",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Vlaanderen.be states the 31 December 2027 deadline for income categories 1-2 and other investors; the same page says nothing changes for categories 3-4, which the answer is describing.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_fluvius_complaints_committee",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Vlaanderen.be's Fluvius organisation page names the Fluvius-Klachtencommissie for those dissatisfied with Fluvius' answer (found via the external review).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_feed_in_for_unused_solar",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "VNR confirms compensation for injected surplus with a feed-in contract; a digital meter is required.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_digital_meter_measures_separately",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The cited passage proves injection is measured exactly, not on its own that offtake and injection are measured separately; the content is correct.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_no_netting",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Correct; the cited passage is indirect evidence.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_feed_in_contract",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_terms_vary_by_supplier",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "VNR reported 1,357 different feed-in contracts at end 2025.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_no_fixed_amount",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the cited official source (reviewer gave no further detail).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_supplier_buys_injection",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the cited official source (reviewer gave no further detail).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_paid_on_settlement_bill",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "NOT_SUPPORTED",
+    "rationale": "Not supported by cited evidence; remove unless an official or supplier source is found.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_amount_depends_on_contract_and_volume",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the cited official source (reviewer gave no further detail).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl03_self_consumption_advice",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "VNR: more self-consumption means buying less electricity.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_gas_boiler_every_two_years",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Directly supported by the Vlaanderen.be maintenance page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_certified_technician",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Directly supported by the Vlaanderen.be maintenance page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_below_20kw_recommended",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Directly supported by the Vlaanderen.be maintenance page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl05_rating_plate",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Directly supported by the Vlaanderen.be maintenance page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_premium_exists",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_since_march_2026_type_and_income",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_geothermal_category_3",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_geothermal_category_4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_water_category_3",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_water_category_4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_air_category_3",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_air_air_category_4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_hybrid_category_3",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_hybrid_category_4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_cap_category_3",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_cap_category_4",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_lower_for_other_categories",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_landlords_to_housing_companies",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the Vlaanderen.be Mijn VerbouwPremie page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl06_apply_until_end_2027",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The Vlaanderen.be 2026 changes page states heat pump premiums can be requested until 31 December 2027.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_complain_to_fluvius_first",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be complaint and organisation pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_fluvius_is_the_dso",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be complaint and organisation pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_via_complaint_form",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be complaint and organisation pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_ask_to_reopen",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be complaint and organisation pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_flemish_ombudsman",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by Vlaanderen.be complaint and organisation pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "fl09_fluvius_complaints_committee",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Vlaanderen.be's Fluvius page names the Klachtencommissie; do not present it and reopening as mandatory consecutive steps.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_j4_exists",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "CONTRADICTED",
+    "rationale": "Contradicted as current availability: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_i",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_ii",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_air_water_category_iii",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_i",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_ii",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_ground_water_category_iii",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_depends_on_income_category",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_non_residential_35_percent",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_j9_heat_pump_boiler",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_twelve_months_after_final_invoice",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Historically supported but currently not available: Leefmilieu Brussel (14 September 2026): 'Ces primes sont actuellement suspendues'; be.brussels: no applications with a 2025 or 2026 final invoice can currently be submitted. The J4 page itself does not say so.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_page_updated_july_2025",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "NOT_SUPPORTED",
+    "rationale": "Not supported by any official source (reviewer gave no further detail).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br05_irisbox_counter",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "CONTRADICTED",
+    "rationale": "Misleading as current advice: normal RENOLUTION applications for 2025/2026 cannot be filed.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_contact_supplier_in_writing_first",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Ombudsman, BRUGEL and the BRUGEL dispute service.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_required_before_ombudsman",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Ombudsman, BRUGEL and the BRUGEL dispute service.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_geschillendienst_for_brussels_rules",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Ombudsman, BRUGEL and the BRUGEL dispute service.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_geschillendienst_free",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Ombudsman, BRUGEL and the BRUGEL dispute service.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_suppliers_and_sibelga",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Ombudsman, BRUGEL and the BRUGEL dispute service.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_decisions_binding",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Ombudsman, BRUGEL and the BRUGEL dispute service.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "br08_ombudsman_for_other_complaints",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by the Ombudsman, BRUGEL and the BRUGEL dispute service.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_network_use_tariff",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_not_a_tax",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_applies_to_solar_owners",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_two_methods",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_capacity_on_net_power",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_proportional_on_actual_offtake",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_capped_at_capacity_tariff",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_cwape_publishes_per_dso",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_self_consumption_favours_proportional",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported by CWaPE pages and the 2026-2029 tariff methodology (not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_domestic_gas_every_three_years",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the SPW Energie boiler page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_certified_gas_technician",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the SPW Energie boiler page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa04_maintenance_recommended_not_regulated",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Confirmed on the SPW Energie boiler page.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_no_fee_with_one_month_notice",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG for consumers; BRUGEL for households and SMEs in Brussels.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_households_and_smes",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG for consumers; BRUGEL for households and SMEs in Brussels.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_fixed_and_indefinite_term_nationwide",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG for consumers; BRUGEL for households and SMEs in Brussels.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be03_fee_possible_without_notice",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG for consumers; BRUGEL for households and SMEs in Brussels.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_not_cut_off_immediately",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Vlaanderen.be: no customer is immediately left without electricity or gas.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_depends_on_region",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported as a synthesis: the three regions have their own emergency or substitution schemes.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_flanders_fluvius_emergency_supplier",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Supported and current under the Flemish Energy Decree.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_flanders_choose_new_supplier",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Good advice, but the passage is general switching guidance, not bankruptcy-specific.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_brussels_dso_letter_and_deadline",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Overgeneralised from the 2021 Energy2Business case (25 days); Elexys 2022 used the same mechanism, but it is not a universal 2026 procedure.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_brussels_emergency_supplier",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Overgeneralised from specific historical cases.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_wallonia_substitute_supplier",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CWaPE publishes a 'fourniture de substitution' arrangement (page not retrievable by Fetch here).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_practical_checklist",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "NOT_SUPPORTED",
+    "rationale": "Reasonable but unsourced; do not present it as an official checklist.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_creditor_claim_with_curator",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "FOD Economie: file a claim with the curator.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "be12_refund_not_guaranteed",
+    "reviewer": "external-review-2026-10-13",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "FOD Economie: repayment only after priority creditors.",
     "reviewed_on": "2026-10-13"
   }
 ]

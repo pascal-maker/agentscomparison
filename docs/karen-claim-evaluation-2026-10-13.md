@@ -103,6 +103,44 @@ een commerciële site gecontroleerd. Daarom staat die review in
 Resultaat pilot: `fl-01` en `br-04` zijn `NEEDS_HUMAN_SIGNOFF`; `wa-05`,
 `be-01` en `be-08` blijven `BLOCKED`.
 
+### Tweede externe review: de tien nieuwe vragen
+
+Elke nieuwe bron die de reviewer noemde, is eerst zelf via Fetch opgehaald
+en gecontroleerd.
+
+- **`br-05` is fout als actueel antwoord.** Leefmilieu Brussel (14 september
+  2026): “Ces primes sont actuellement suspendues.” be.brussels: “Op dit moment
+  kunnen er geen premie-aanvragen met eindfactuur 2025 of 2026 worden
+  ingediend.” **De J4-pagina en de homepage van renolution.brussels vermelden
+  dat niet.** Een controle per pagina op termijnen kan dit dus nooit
+  opvangen. `be.brussels` is toegevoegd aan de officiële domeinen.
+- **Bevestigd en verwerkt.** Er bestaat een Fluvius-Klachtencommissie
+  (Vlaanderen.be-organisatiepagina). De Ombudsdienst eist voorafgaande stappen
+  per brief, e-mail of fax. Mijn oordelen zijn aangepast.
+- **Deels bevestigd.** De termijn van 31 december 2027 (`fl-06`) bestaat, maar
+  staat bij inkomenscategorie 1–2 en andere investeerders. Dezelfde pagina zegt:
+  “Voor eigenaar-bewoners uit inkomenscategorie 3 en 4 verandert er niets”, en
+  het antwoord gaat net over categorie 3–4. Dat bevestigt ook dat
+  “Sinds 1 maart 2026” verkeerd is toegeschreven.
+- **Niet overgenomen.** Volgens de reviewer gebruikt `wa-02` het verouderde
+  percentage van 37,76 %. Het antwoord noemt echter geen percentage; dat cijfer
+  kwam uit mijn bewijsquote. Die verwijst nu naar ORES (40,26 %). Het negatieve
+  oordeel op de oude quote is daarom niet opgenomen.
+- **Niet te verifiëren.** De CWaPE-bronnen (tariefmethodologie 2026–2029,
+  vervangingslevering) gaven opnieuw een bot-challenge. De oordelen van de
+  reviewer staan erin, maar de claims blijven zonder eigen passage.
+
+Resultaat nieuwe vragen: `fl-05`, `br-08` en `wa-04` zijn
+`NEEDS_HUMAN_SIGNOFF`; de andere zeven blijven `BLOCKED`.
+
+**Architectuurconclusie.** Beide reviews bevestigen hetzelfde: retrieval vindt
+de inhoud meestal wel, maar de geldigheid in de tijd faalt. Een premie of
+tarief mag pas als actueel worden gebracht na een aparte statuscontrole per
+regeling (`current_status`, `valid_from`, `valid_until`, `superseded_by`). Die
+controle moet gevoed worden door door mensen bijgehouden statusbronnen per
+regeling, zoals de nieuwspagina van Leefmilieu Brussel of SPW. De
+productpagina zelf volstaat niet.
+
 ## Besluit
 
 **Geen productie- of Framer-migratie voorstellen.** Houd `KEEP_BROWSERBASE`
