@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -82,6 +83,18 @@ def source_priority(candidate: dict, *, region: str, topic: str, registry: dict)
     return priority, candidate["round"], candidate["rank"]
 
 
+_BOT_CHALLENGE = re.compile(
+    r"testing whether you are a human visitor|what code is in the image|verify (?:that )?you are (?:a )?human"
+    r"|checking your browser|enable javascript and cookies to continue|\bcaptcha\b",
+    re.IGNORECASE,
+)
+
+
+def is_bot_challenge(content: str) -> bool:
+    """FOD Economie answers Fetch with HTTP 200 and an image CAPTCHA; never treat that as a source."""
+    return bool(_BOT_CHALLENGE.search(content[:3000]))
+
+
 def retrieve_official_page(url: str, *, api_key: str, registry: dict, max_chars: int = 10000) -> dict:
     """Use Browserbase Fetch Extract on a configured official HTTPS domain only."""
     if not any(official_organization(url, scope, registry) for scope in registry):
@@ -95,6 +108,8 @@ def retrieve_official_page(url: str, *, api_key: str, registry: dict, max_chars:
         raise SearchError(f"Browserbase Fetch returned unusable content (status {status})")
     if "pdf" in str(payload.get("contentType", "")).casefold():
         raise SearchError("Browserbase Fetch cannot verify a PDF passage")
+    if is_bot_challenge(content):
+        raise SearchError("Browserbase Fetch returned a bot-challenge page, not the original content")
     return {
         "content": content[:max_chars],
         "retrieved_at": datetime.now(timezone.utc).isoformat(),

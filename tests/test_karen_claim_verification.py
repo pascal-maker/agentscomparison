@@ -9,8 +9,15 @@ from pydantic import ValidationError
 from experiments.karen_search_ab.benchmark import HERE
 from experiments.karen_search_ab.claim_verification import (
     ClaimEvidence,
+    NonClaim,
+    SemanticReview,
+    _load,
+    apply_reviews,
     case_verdict,
-    pilot_pages,
+    coverage,
+    evaluate_case,
+    load_snapshots,
+    uncovered_text,
     verify_claim,
     verify_claims,
 )
@@ -76,9 +83,102 @@ def test_conflicting_current_official_amounts_are_flagged() -> None:
 
 
 def test_a_passage_match_never_auto_approves_an_answer() -> None:
-    result = verify_claim(claim(), "Het tarief bedraagt 5,738 cent/kWh.", [page()], on_date=TODAY)
-    assert case_verdict([result]) == "SELECTED_CLAIMS_NEED_REVIEW"
+    answer = "Het tarief bedraagt 5,738 cent/kWh."
+    result = verify_claim(claim(), answer, [page()], on_date=TODAY)
+    assert case_verdict([result]) == "INCOMPLETE_COVERAGE"
+    assert case_verdict([result], coverage(answer, [claim()], [])) == "NEEDS_SEMANTIC_REVIEW"
     assert case_verdict([]) == "UNASSESSED"
+
+
+def test_every_answer_word_needs_a_claim_or_an_explicit_exemption() -> None:
+    answer = "Het tarief bedraagt 5,738 cent/kWh. Het geldt ook voor warmte.\n\nBron: [CREG](https://www.creg.be/x)"
+    result = coverage(answer, [claim()], [])
+    assert not result["complete"]
+    assert result["uncovered"] == ["het geldt ook voor warmte", "bron creg"]
+    exempt = [NonClaim(case_id="be-08", excerpt="Bron: CREG", reason="citation")]
+    assert coverage(answer, [claim()], exempt)["uncovered"] == ["het geldt ook voor warmte"]
+    stale = [NonClaim(case_id="be-08", excerpt="Niet in het antwoord", reason="hedge")]
+    assert coverage(answer, [claim()], stale)["exemptions_not_in_answer"] == ["Niet in het antwoord"]
+    # Bare connectives may remain unattributed; negations and content words may not.
+    assert uncovered_text("Het tarief bedraagt 5,738 cent/kWh en niet meer.", [claim().answer_excerpt]) == ["niet meer"]
+
+
+def test_claim_without_official_passage_fails_closed() -> None:
+    with pytest.raises(ValidationError):
+        claim(source_url=None, quote=None)
+    with pytest.raises(ValidationError):
+        claim(evidence_note="A note is only allowed when no official passage exists.")
+    unsupported = claim(source_url=None, quote=None, amount=None, unit=None,
+                        evidence_note="Only a commercial blog lists this amount.")
+    result = verify_claim(unsupported, "Het tarief bedraagt 5,738 cent/kWh.", [page()], on_date=TODAY)
+    assert result["status"] == "NO_OFFICIAL_PASSAGE"
+    assert case_verdict([result], {"complete": True}) == "BLOCKED"
+
+
+def test_bot_challenge_page_is_never_a_source() -> None:
+    captcha = {"url": "https://www.creg.be/gas.pdf", "retrieved_at": "2026-10-13",
+               "content": "This question is for testing whether you are a human visitor. What code is in the image?"}
+    assert verify_claim(claim(), "Het tarief bedraagt 5,738 cent/kWh.", [captcha], on_date=TODAY)["status"] == "SOURCE_MISSING"
+
+
+def test_kw_amounts_need_the_unit() -> None:
+    general = {"kind": "general", "source_url": "https://www.fluvius.be/cap", "region": "flanders",
+                   "quote": "Er wordt altijd minimaal 2,5 kW aangerekend voor het capaciteitstarief.",
+                   "answer_excerpt": "Er geldt een minimum van 2,5 kW", "amount": "2,5", "unit": "KW"}
+    assert claim(**general).unit == "KW"
+    with pytest.raises(ValidationError):
+        claim(**{**general, "answer_excerpt": "Er geldt een minimum van 2,5 kWh"})
+
+
+def review(verdict="SUPPORTED", reviewer="independent-reviewer", reviewer_type="model") -> SemanticReview:
+    return SemanticReview(claim_key="social_gas_2026q4", reviewer=reviewer, reviewer_type=reviewer_type,
+                          verdict=verdict, rationale="The passage states the same amount and period.",
+                          reviewed_on=TODAY)
+
+
+def test_semantic_review_must_be_independent_and_negative_findings_block() -> None:
+    answer = "Het tarief bedraagt 5,738 cent/kWh."
+    full = coverage(answer, [claim()], [])
+    matched = [verify_claim(claim(), answer, [page()], on_date=TODAY)]
+
+    def status(reviews, extracted_by="claim-author"):
+        return apply_reviews([claim(extracted_by=extracted_by)], matched, reviews)
+
+    assert status([])[0]["status"] == "NEEDS_INDEPENDENT_REVIEW"
+    assert status([review(reviewer="claim-author")])[0]["status"] == "NEEDS_INDEPENDENT_REVIEW"
+    model = status([review()])
+    assert model[0]["status"] == "MODEL_REVIEW_SUPPORTED"
+    assert case_verdict(model, full) == "NEEDS_HUMAN_SIGNOFF"
+    human = status([review(reviewer_type="human")])
+    assert case_verdict(human, full) == "HUMAN_REVIEWED_SUPPORTED"
+    # A self-review cannot approve, but its negative finding still blocks.
+    negative = status([review(), review("PARTIALLY_SUPPORTED", reviewer="claim-author")])
+    assert negative[0]["status"] == "REVIEW_PARTIALLY_SUPPORTED"
+    assert case_verdict(negative, full) == "BLOCKED"
+    # A review never rescues a failed deterministic check.
+    expired = [{**matched[0], "status": "EXPIRED_DEADLINE"}]
+    assert apply_reviews([claim()], expired, [review(reviewer_type="human")])[0]["status"] == "EXPIRED_DEADLINE"
+
+
+def test_snapshot_fetch_skips_existing_and_reports_failures(tmp_path, monkeypatch) -> None:
+    import experiments.karen_search_ab.claim_verification as module
+    from experiments.karen_search_ab.providers import SearchError
+
+    monkeypatch.setattr(module, "SOURCES", tmp_path)
+    calls = []
+
+    def fetcher(url, **kwargs):
+        calls.append(url)
+        if "fail" in url:
+            raise SearchError("bot-challenge")
+        return {"content": "Originele tekst", "retrieved_at": "2026-10-13T10:00:00+00:00"}
+
+    urls = ["https://www.creg.be/a", "https://www.creg.be/fail"]
+    assert module.fetch_snapshots(urls, api_key="k", fetcher=fetcher) == ["https://www.creg.be/fail: bot-challenge"]
+    assert module.fetch_snapshots(urls, api_key="k", fetcher=fetcher) == ["https://www.creg.be/fail: bot-challenge"]
+    assert calls.count("https://www.creg.be/a") == 1
+    assert module.load_snapshots(urls) == [{"url": "https://www.creg.be/a", "content": "Originele tekst",
+                                            "retrieved_at": "2026-10-13T10:00:00+00:00"}]
 
 
 def test_five_saved_cases_have_expected_conservative_statuses() -> None:
@@ -89,20 +189,30 @@ def test_five_saved_cases_have_expected_conservative_statuses() -> None:
         HERE / "results" / "creg-q4-2026-electricity.txt",
         HERE / "results" / "creg-q4-2026-gas.txt",
     ]
-    if not all(path.exists() for path in required):
-        pytest.skip("local, Git-ignored pilot evidence is unavailable")
+    claims = _load("pilot_claims.json", ClaimEvidence)
+    snapshots = {claim.source_url for claim in claims if claim.source_url and "/Tarifs/" not in claim.source_url}
+    if not all(path.exists() for path in required) or len(load_snapshots(snapshots)) < 6:
+        pytest.skip("local pilot evidence and source snapshots are unavailable")
     pilot = json.loads((HERE / "results" / "agent-pilot-2026-10-13.json").read_text(encoding="utf-8"))
-    claims = [ClaimEvidence.model_validate(item) for item in json.loads(
-        (HERE / "pilot_claims.json").read_text(encoding="utf-8")
-    )]
-    expected = {
-        "fl-01": ["PASSAGE_MATCH_NEEDS_REVIEW"],
-        "br-04": ["PASSAGE_MATCH_NEEDS_REVIEW"],
-        "wa-05": ["EXPIRED_DEADLINE", "EXPIRED_DEADLINE"],
-        "be-01": ["PASSAGE_MATCH_NEEDS_REVIEW"],
-        "be-08": ["PASSAGE_MATCH_NEEDS_REVIEW"] * 3,
-    }
+    non_claims = _load("pilot_non_claims.json", NonClaim)
+    reviews = _load("semantic_reviews.json", SemanticReview)
+    verdicts = {}
     for row in pilot["rows"]:
-        selected = [claim for claim in claims if claim.case_id == row["case_id"]]
-        results = verify_claims(selected, row["answer"], pilot_pages(row), on_date=TODAY)
-        assert [result["status"] for result in results] == expected[row["case_id"]]
+        evaluated = evaluate_case(row, claims, non_claims, reviews, on_date=TODAY)
+        assert evaluated["coverage"]["complete"], (row["case_id"], evaluated["coverage"])
+        assert not {result["status"] for result in evaluated["claims"]} & {
+            "QUOTE_NOT_FOUND", "SOURCE_MISSING", "CLAIM_NOT_IN_ANSWER", "WRONG_REGION_OR_SOURCE"}
+        verdicts[row["case_id"]] = evaluated["case_verdict"]
+        if row["case_id"] == "wa-05":
+            assert {result["status"] for result in evaluated["claims"]} == {"EXPIRED_DEADLINE"}
+    assert verdicts == {"fl-01": "BLOCKED", "br-04": "NEEDS_SEMANTIC_REVIEW", "wa-05": "BLOCKED",
+                        "be-01": "BLOCKED", "be-08": "BLOCKED"}
+
+
+def test_committed_claim_files_are_consistent() -> None:
+    claims = _load("pilot_claims.json", ClaimEvidence)
+    reviews = _load("semantic_reviews.json", SemanticReview)
+    _load("pilot_non_claims.json", NonClaim)
+    keys = [claim.claim_key for claim in claims]
+    assert len(keys) == len(set(keys))
+    assert {review.claim_key for review in reviews} <= set(keys)

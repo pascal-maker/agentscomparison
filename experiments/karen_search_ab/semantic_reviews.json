@@ -1,0 +1,362 @@
+[
+  {
+    "claim_key": "flanders_capacity_quarter_hour",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The Prepaid page computes an average per quarter hour; the cited invoice page adds that the digital meter registers every 15 minutes, so per-quarter measurement is supported.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_gas_boiler_inspection_interval",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Leefmilieu Brussel requires an EPB periodic inspection every 2 years for a natural-gas boiler; 'minstens' does not change the obligation.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_heat_pump_heating_subsidy",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "EUR 600 per appliance is the base amount for a heating or combined heat pump in the 2025-2026 regime table. Currency is handled separately by the deadline check.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_heat_pump_hot_water_subsidy",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "EUR 280 per appliance is the base amount for a domestic-hot-water-only heat pump in the 2025-2026 regime table. Currency is handled separately by the deadline check.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_advance_invoice_change",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Vlaanderen.be advises contacting the supplier to discuss adjusting the advance; the answer restates this faithfully for Flanders.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_exclusive_night_2026q4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "20,957 c/kWh excl. VAT is the Q4 2026 total for the exclusive-night meter, the low end of the stated range.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_single_2026q4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "25,331 c/kWh excl. VAT is the Q4 2026 total for single-rate and for the day register of dual-rate meters, the high end of the stated range; the dual-rate night value 24,208 lies inside it.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_gas_2026q4",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "5,738 c/kWh excl. VAT is the Q4 2026 social tariff total for natural gas (and heat).",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_part_of_network_costs",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Prepaid page: part of the network costs is billed on the (monthly) peak, and that is the capacity tariff.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_avoid_simultaneous_use",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Invoice page advises using as few appliances as possible within the same quarter hour.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_digital_meter_quarter_registration",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The digital meter registers consumption every 15 minutes and reports the average power per quarter.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_month_peak_definition",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Month peak is defined as the highest quarter-hour power in the month.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_twelve_month_average",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The average month peak over the preceding 12 months is the value used to compute the capacity tariff. The page also defines a billing peak (weighted average over the settlement period) that the answer omits; acceptable simplification.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_price_per_kw",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The only passage is an explicitly indicative Prepaid example (EUR 40 per kW/year). It is consistent with a per-kW tariff but is not a rule statement for regular customers.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_minimum_2_5_kw",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The 'always at least 2.5 kW' passage sits under Prepaid customers, and the other 2.5 kW passages concern classic meters. The answer puts the minimum under digital meters; the fetched pages do not state it for regular digital-meter customers.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_cannot_measure_peaks",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The classic meter cannot measure peaks, so Fluvius works with an average peak of 2.5 kW.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_consumption_share",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "For classic meters, a larger share of network costs is still based on consumption.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_classic_meter_minimum_peak",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Classic meter: a fixed amount based on a minimum peak of 2.5 kW, plus a higher consumption-based charge.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_quarter_average_not_seconds",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Follows from the definition of the quarter peak as average power per quarter hour; the 'seconds' illustration is an inference, not a quote.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_capacity_limit_peaks_advice",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "General advice consistent with limiting consumption per quarter hour; the appliance list is illustrative.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_gas_boiler_inspection_scope",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The cited professional page: every 2 years for gas boilers and water heaters in the Brussels-Capital Region.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_boiler_inspection_certified_technician",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The periodic EPB inspection must be done by a certified EPB boiler technician; the answer shortens the title.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_boiler_inspection_after_combustion_repair",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "An inspection is also required after repairs to the combustion part, e.g. replacing or adjusting the burner.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_habitation_heat_pump_exists",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The 2025-2026 Prime Habitation lists heat pumps, but applications closed on 30 September 2026; 'bestaat' in the present tense is misleading on 13 October 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_habitation_current_regime",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "CONTRADICTED",
+    "rationale": "The page describes a temporary 2025-2026 regime whose applications, including final invoices, had to be submitted by 30 September 2026. Calling it the current regime on 13 October 2026 is contradicted.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_income_multiplier",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The base amount can be multiplied by 2, 3, 4 or 6 depending on income and household composition.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_multiplier_from_2026",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The 01/01/26 date heads the income-threshold table, not a change in the multipliers, which apply to the whole regime. The answer misattributes the date.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_conditions",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The page lists conditions on the applicant, the building and the works; the answer's 'woning, werken en installatie' is a fair summary.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wallonia_prime_invoice_cap",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "The prime is capped at 70% (R1-R2) or 50% (R3-R4) of eligible VAT-inclusive invoice items.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "advance_invoice_is_estimate",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "BRUGEL states advances are always based on an estimate, but only for Brussels; the answer states it generally without a Flemish or Walloon passage.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "flanders_advance_self_service",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Vlaanderen.be: the advance can also be adjusted in the supplier's online customer zone.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "advance_settled_on_annual_bill",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "BRUGEL explains that the regularisation bill offsets advances against actual consumption, but only for Brussels; the answer generalises to all of Belgium.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_advance_change_by_agreement",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "BRUGEL says certain suppliers are willing to adjust by agreement; 'doorgaans' (usually) overstates this.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "brussels_advance_refusal_motivated",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "BRUGEL: a supplier that refuses to reduce the advance must justify the refusal.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_reduced_for_eligible",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG: the social tariff helps persons or households through a reduced electricity and gas tariff.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_same_everywhere",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "Vlaanderen.be confirms it is the same with all suppliers across Belgium; 'ongeacht netbeheerder' is not stated on the fetched pages.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_set_quarterly_by_creg",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG calculates the social tariff every 3 months.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_2026q4_period",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Both CREG Q4 PDFs state the period 1 October 2026 - 31 December 2026.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_depends_on_meter",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Separate social tariffs exist for single-rate, dual-rate and exclusive-night meters.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_electricity_2026q4_excl_vat_basis",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The amounts are excl. VAT, but CREG also excludes the energy contribution, special excise and (in Flanders) the energy fund levy. 'excl. btw' alone suggests an otherwise all-in price.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_gas_2026q4_excl_vat_basis",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The amount is excl. VAT, but CREG also excludes the energy contribution, special excise and (in Wallonia) the connection fee. 'excl. btw' alone suggests an otherwise all-in price.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "creg_role_social_tariff",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "CREG sets the amount and its quarterly calculation, but explicitly does not decide who receives it; 'officiële bron voor de regeling' overstates CREG's role.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_only_some_categories",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Granted only to persons or households receiving certain benefits or allowances.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_often_automatic",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "Eligible categories receive it automatically, with stated exceptions (e.g. category 4), so 'in veel gevallen' is accurate.",
+    "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "social_tariff_fod_economie_referral",
+    "reviewer": "claude-opus-5-5",
+    "reviewer_type": "model",
+    "verdict": "SUPPORTED",
+    "rationale": "CREG refers to the FOD Economie page for conditions and how to apply.",
+    "reviewed_on": "2026-10-13"
+  }
+]

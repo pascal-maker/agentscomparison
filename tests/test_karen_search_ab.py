@@ -139,6 +139,17 @@ def test_fetch_refuses_unconfigured_or_non_https_url():
             benchmark.retrieve_official_page(url, api_key="test-key", registry=registry)
 
 
+def test_fetch_rejects_bot_challenge_served_with_status_200(monkeypatch):
+    challenge = ("This question is for testing whether you are a human visitor and to prevent automated "
+                 "spam submission.\n**What code is in the image?**\nsubmit")
+    monkeypatch.setattr(benchmark, "_post_json_fetch", lambda url, key: {
+        "statusCode": 200, "content": challenge, "contentType": "text/html"})
+    with pytest.raises(providers.SearchError, match="bot-challenge"):
+        benchmark.retrieve_official_page("https://economie.fgov.be/nl/themas/energie",
+                                         api_key="test-key", registry=benchmark.load_domains())
+    assert not benchmark.is_bot_challenge("# Sociaal tarief voor energie\nDe CREG stelt het bedrag vast.")
+
+
 def test_verified_review_needs_exact_original_passage():
     row = {"case_id": "x", "provider": "browserbase", "error": "", "search_rounds": 1,
            "search_latency_ms": 3, "estimated_search_usd": 0.007, "candidates": [],

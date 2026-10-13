@@ -80,5 +80,390 @@
     "quote": "SOCIAAL TARIEF Energiecomponent (c€/kWh) 4,750 5,035 Distributiecomponent (c€/kWh) 0,832 0,882 Transmissiecomponent (c€/kWh) 0,156 0,165 Totaal (c€/kWh) 5,738 6,082",
     "amount": "5,738",
     "unit": "CENT_PER_KWH"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_part_of_network_costs",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "In Vlaanderen bestaat een deel van de elektriciteitsnetkosten uit het capaciteitstarief",
+    "source_url": "https://prepaid.fluvius.be/mijn-factuur/wat-kost-energie-bij-fluvius/capaciteitstarief",
+    "quote": "Je betaalt een deel van de netkosten op basis van je (maand)piekverbruik. Dat is het capaciteitstarief.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_avoid_simultaneous_use",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Dat moedigt aan om zware toestellen niet allemaal tegelijk te gebruiken",
+    "source_url": "https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief/gezinnen-en-kleine-ondernemingen/op-mijn-factuur",
+    "quote": "Om de kosten te drukken, is het belangrijk om binnen hetzelfde kwartier zo weinig mogelijk toestellen tegelijkertijd te gebruiken.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_digital_meter_quarter_registration",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Met een digitale meter: Fluvius meet je elektriciteitsafname per kwartier",
+    "source_url": "https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief/gezinnen-en-kleine-ondernemingen/op-mijn-factuur",
+    "quote": "Je digitale meter registreert namelijk elke 15 minuten je verbruik (in kWh) en geeft voor elk kwartier het gemiddelde vermogen door.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_month_peak_definition",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Je maandpiek is het hoogste gemiddelde vermogen in één kwartier van die maand",
+    "source_url": "https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief/gezinnen-en-kleine-ondernemingen/op-mijn-factuur",
+    "quote": "Maandpiek: het hoogste kwartiervermogen in de maand (in kW)",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_twelve_month_average",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Voor de berekening neemt Fluvius het gemiddelde van je maandpieken over de voorafgaande 12 maanden",
+    "source_url": "https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief/gezinnen-en-kleine-ondernemingen/op-mijn-factuur",
+    "quote": "Gemiddelde maandpiek: het gemiddelde van de pieken van de voorafgaande 12 maanden. Deze waarde gebruiken we om het capaciteitstarief te berekenen.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_price_per_kw",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "en rekent dat aan tegen een tarief per kW",
+    "source_url": "https://prepaid.fluvius.be/mijn-factuur/wat-kost-energie-bij-fluvius/capaciteitstarief",
+    "quote": "Prijs netbeheerder = 40 euro per kW/jaar (louter indicatief)",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_minimum_2_5_kw",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Er geldt een minimum van 2,5 kW",
+    "source_url": "https://prepaid.fluvius.be/mijn-factuur/wat-kost-energie-bij-fluvius/capaciteitstarief",
+    "quote": "We nemen de laatst gekende maandpiek. Dat is meestal de gemiddelde maandpiek van de vorige maand. Er wordt altijd minimaal 2,5 kW aangerekend.",
+    "amount": "2,5",
+    "unit": "KW",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_classic_meter_cannot_measure_peaks",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Met een klassieke meter: die kan geen kwartierpieken meten",
+    "source_url": "https://prepaid.fluvius.be/mijn-factuur/wat-kost-energie-bij-fluvius/capaciteitstarief",
+    "quote": "De klassieke meter kan geen pieken meten. Daarom werken we met een gemiddelde piek van 2,5 kW.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_classic_meter_consumption_share",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Je netkosten worden daarom anders verdeeld: een groter deel hangt af van je verbruik",
+    "source_url": "https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief/gezinnen-en-kleine-ondernemingen/op-mijn-factuur",
+    "quote": "Voor wie nog een klassieke meter heeft, worden de netkosten nog voor een groter deel berekend op basis van het verbruik.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_classic_meter_minimum_peak",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "met een minimum-piek als basis voor het capaciteitstarief",
+    "source_url": "https://prepaid.fluvius.be/mijn-factuur/wat-kost-energie-bij-fluvius/capaciteitstarief",
+    "quote": "Heb je een klassieke meter? We rekenen een vast bedrag aan op basis van een minimumpiek van 2,5 kW en je betaalt meer voor je verbruik.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_quarter_average_not_seconds",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Een korte toestelpiek van enkele seconden is dus niet hetzelfde als een hoge maandpiek: het gaat om het gemiddelde verbruik binnen een kwartier",
+    "source_url": "https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief/gezinnen-en-kleine-ondernemingen/op-mijn-factuur",
+    "quote": "Kwartierpiek: het gemiddelde vermogen op kwartierbasis (in kW)",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "fl-01",
+    "claim_key": "flanders_capacity_limit_peaks_advice",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Je kunt pieken beperken door bijvoorbeeld wasmachine, droogkast en kookplaat niet tegelijk te laten werken",
+    "source_url": "https://www.fluvius.be/nl/factuur-en-tarieven/capaciteitstarief/gezinnen-en-kleine-ondernemingen/op-mijn-factuur",
+    "quote": "Een lage maandpiek bekomen is dus mogelijk door je verbruik per kwartier te beperken.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "br-04",
+    "claim_key": "brussels_gas_boiler_inspection_scope",
+    "region": "brussels",
+    "kind": "general",
+    "answer_excerpt": "In het Brussels Hoofdstedelijk Gewest moet een gasketel minstens om de 2 jaar een EPB-periodieke controle krijgen",
+    "source_url": "https://leefmilieu.brussels/pro/regelgeving-en-inspectie/verplichtingen-en-vergunningen/technische-installaties-epb-controles-en-onderhoud",
+    "quote": "om de 2 jaar voor verwarmingsketels en waterverwarmingstoestellen op gas;",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "br-04",
+    "claim_key": "brussels_boiler_inspection_certified_technician",
+    "region": "brussels",
+    "kind": "general",
+    "answer_excerpt": "Die controle moet worden uitgevoerd door een erkende EPB-verwarmingstechnicus",
+    "source_url": "https://leefmilieu.brussels/pro/regelgeving-en-inspectie/verplichtingen-en-vergunningen/technische-installaties-epb-controles-en-onderhoud",
+    "quote": "De EPB-periodieke controle moet worden uitgevoerd door een erkende EPB-verwarmingsketeltechnicus.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "br-04",
+    "claim_key": "brussels_boiler_inspection_after_combustion_repair",
+    "region": "brussels",
+    "kind": "general",
+    "answer_excerpt": "Na een ingreep aan het verbrandingsgedeelte is ook een controle nodig",
+    "source_url": "https://leefmilieu.brussels/verwarmingsketel",
+    "quote": "maar ook als er reparaties worden uitgevoerd aan het verbrandingsgedeelte van de ketel (bv. het vervangen of afstellen van de brander)",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "wa-05",
+    "claim_key": "wallonia_prime_habitation_heat_pump_exists",
+    "region": "wallonia",
+    "kind": "subsidy",
+    "answer_excerpt": "In Wallonië bestaat de Prime Habitation voor warmtepompen",
+    "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
+    "quote": "App. Prod. chaleur et eau chaude sanitaire - Pompe à chaleur pour le chauffage ou combinée",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "wa-05",
+    "claim_key": "wallonia_prime_habitation_current_regime",
+    "region": "wallonia",
+    "kind": "subsidy",
+    "answer_excerpt": "Volgens de actuele Waalse regeling is de basispremie",
+    "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
+    "quote": "Le Gouvernement wallon a décidé d’adopter le 13 février 2025 un régime de soutien temporaire (2025-2026) qui est entré en vigueur le 14 février 2025.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "wa-05",
+    "claim_key": "wallonia_prime_income_multiplier",
+    "region": "wallonia",
+    "kind": "subsidy",
+    "answer_excerpt": "Het bedrag kan worden vermenigvuldigd op basis van het gezinsinkomen",
+    "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
+    "quote": "le montant de base de la prime peut être multiplié par 2, 3, 4 ou 6 en fonction de vos revenus et de la composition de votre ménage.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "wa-05",
+    "claim_key": "wallonia_prime_multiplier_from_2026",
+    "region": "wallonia",
+    "kind": "subsidy",
+    "answer_excerpt": "voor aanvragen vanaf 1 januari 2026 is dat 2, 3, 4 of 6 keer de basispremie",
+    "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
+    "quote": "Revenu de référence du ménage pour les demandes introduites à partir du 01/01/26",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "wa-05",
+    "claim_key": "wallonia_prime_conditions",
+    "region": "wallonia",
+    "kind": "subsidy",
+    "answer_excerpt": "Er gelden ook voorwaarden rond de woning, de werken en de installatie",
+    "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
+    "quote": "Vous devez respecter plusieurs conditions pour pouvoir bénéficier des primes.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "wa-05",
+    "claim_key": "wallonia_prime_invoice_cap",
+    "region": "wallonia",
+    "kind": "subsidy",
+    "answer_excerpt": "bovendien is de premie begrensd als percentage van de subsidiabele factuurkosten",
+    "source_url": "https://energie.wallonie.be/home/soutiens-financiers/particuliers/primes-pour-la-renovation/prime-habitation/prime-pour-son-habitation-a-partir-du-14-fevrier-2025.html",
+    "quote": "le montant de la prime sera limité à 70% du montant TVAC des postes éligibles repris dans les factures pour les catégories de revenus R1 et R2 et 50% pour les catégories de revenus R3 et R4.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-01",
+    "claim_key": "advance_invoice_is_estimate",
+    "region": "brussels",
+    "kind": "general",
+    "answer_excerpt": "het voorschot is een raming",
+    "source_url": "https://brugel.brussels/nl_BE/themes/consumenten-7/mijn-factuur-begrijpen-13",
+    "quote": "Aangezien de bedragen van de voorschotfacturen altijd gebaseerd zijn op een raming",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-01",
+    "claim_key": "flanders_advance_self_service",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "of het zelf aanpassen in de online klantenzone",
+    "source_url": "https://www.vlaanderen.be/bouwen-wonen-en-energie/elektriciteit-en-aardgas/factuur-voor-elektriciteit-en-aardgas/energiefactuur-voor-elektriciteit-of-aardgas",
+    "quote": "U kunt het voorschotbedrag ook zelf aanpassen in de online klantenzone van de leverancier.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-01",
+    "claim_key": "advance_settled_on_annual_bill",
+    "region": "brussels",
+    "kind": "general",
+    "answer_excerpt": "Een hoger of lager voorschot verandert niet wat u uiteindelijk verschuldigd bent: dat wordt verrekend op uw jaarafrekening",
+    "source_url": "https://brugel.brussels/nl_BE/themes/consumenten-7/mijn-factuur-begrijpen-13",
+    "quote": "De regularisatiefactuur dient om het verschil te compenseren tussen de bedragen op basis van de schatting (tussentijdse facturen) en het te betalen bedrag op basis van het werkelijke verbruik",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-01",
+    "claim_key": "brussels_advance_change_by_agreement",
+    "region": "brussels",
+    "kind": "general",
+    "answer_excerpt": "In Brussel is aanpassing doorgaans in overleg met de leverancier",
+    "source_url": "https://brugel.brussels/nl_BE/themes/consumenten-7/mijn-factuur-begrijpen-13",
+    "quote": "zijn bepaalde leveranciers bereid het bedrag van deze facturen in overleg met u aan te passen",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-01",
+    "claim_key": "brussels_advance_refusal_motivated",
+    "region": "brussels",
+    "kind": "general",
+    "answer_excerpt": "Als die een verzoek om verlaging weigert, moet hij zijn weigering motiveren",
+    "source_url": "https://brugel.brussels/nl_BE/themes/consumenten-7/mijn-factuur-begrijpen-13",
+    "quote": "Indien de leverancier er niet mee instemt het bedrag van de voorschotten te verminderen, moet hij zijn weigering motiveren.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_tariff_reduced_for_eligible",
+    "region": "federal",
+    "kind": "general",
+    "answer_excerpt": "Het sociaal tarief is een verlaagd energietarief voor wie ervoor in aanmerking komt",
+    "source_url": "https://www.creg.be/nl/consumenten/prijzen-en-tarieven/sociaal-tarief/sociaal-tarief-voor-energie",
+    "quote": "Het sociaal tarief voor energie is een maatregel om personen of gezinnen te helpen via een verminderd tarief voor elektriciteit en aardgas.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_tariff_same_everywhere",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Het is in heel België hetzelfde, ongeacht leverancier of netbeheerder",
+    "source_url": "https://www.vlaanderen.be/sociaal-tarief-voor-energie-elektriciteit-aardgas-warmte",
+    "quote": "Het sociaal tarief voor energie is in heel België bij alle energieleveranciers hetzelfde.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_tariff_set_quarterly_by_creg",
+    "region": "federal",
+    "kind": "general",
+    "answer_excerpt": "De CREG stelt het elk kwartaal vast",
+    "source_url": "https://www.creg.be/nl/consumenten/prijzen-en-tarieven/sociaal-tarief/sociaal-tarief-voor-energie",
+    "quote": "De CREG berekent het bedrag van het sociaal tarief voor elektriciteit en aardgas om de 3 maanden.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_tariff_2026q4_period",
+    "region": "federal",
+    "kind": "tariff",
+    "answer_excerpt": "Voor 1 oktober tot en met 31 december 2026 vermeldt de gevonden tarieventabel",
+    "source_url": "https://www.creg.be/sites/default/files/assets/Tarifs/Social/E-TSS-NL-2026-Q4.pdf",
+    "quote": "4de kwartaal 2026 (1 oktober 2026 - 31 december 2026)",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_electricity_depends_on_meter",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Elektriciteit: afhankelijk van je meter",
+    "source_url": "https://www.vlaanderen.be/sociaal-tarief-voor-energie-elektriciteit-aardgas-warmte",
+    "quote": "Voor elektriciteit bestaat er een sociaal tarief voor het enkelvoudig tarief (dagteller), het tweevoudig tarief (dag- en nachtteller) en het exclusief nachttarief (enkel nachtteller).",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_electricity_2026q4_excl_vat_basis",
+    "region": "federal",
+    "kind": "tariff",
+    "answer_excerpt": "afhankelijk van je meter, 20,957–25,331 cent/kWh excl. btw",
+    "source_url": "https://www.creg.be/sites/default/files/assets/Tarifs/Social/E-TSS-NL-2026-Q4.pdf",
+    "quote": "exclusief BTW inclusief BTW 6% SOCIAAL TARIEF EXCLUSIEF NACHT Energiecomponent (c€/kWh) 12,849 13,620 Netwerkcomponent (c€/kWh) 8,108 8,594 Totaal (€cent/kWh) 20,957 22,214",
+    "amount": "20,957",
+    "unit": "CENT_PER_KWH",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_gas_2026q4_excl_vat_basis",
+    "region": "federal",
+    "kind": "tariff",
+    "answer_excerpt": "Aardgas: 5,738 cent/kWh excl. btw",
+    "source_url": "https://www.creg.be/sites/default/files/assets/Tarifs/Social/G-TSS-NL-2026-Q4.pdf",
+    "quote": "exclusief BTW inclusief BTW 6% SOCIAAL TARIEF Energiecomponent (c€/kWh)* 4,750 5,035 Distributiecomponent (c€/kWh) 0,832 0,882 Transmissiecomponent (c€/kWh) 0,156 0,165 Totaal (c€/kWh) 5,738 6,082",
+    "amount": "5,738",
+    "unit": "CENT_PER_KWH",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_tariff_commercial_source_for_amounts",
+    "region": "federal",
+    "kind": "tariff",
+    "answer_excerpt": "De bedragen inclusief btw en de verschillende elektriciteitstarieven staan in de tarieventabel van June Energy",
+    "evidence_note": "The answer sends users to a commercial blog for VAT-inclusive amounts; the official CREG Q4 PDFs contain them but the answer does not cite them.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "creg_role_social_tariff",
+    "region": "federal",
+    "kind": "general",
+    "answer_excerpt": "De CREG is de officiële bron voor de regeling en kwartaalberekening",
+    "source_url": "https://www.creg.be/nl/consumenten/prijzen-en-tarieven/sociaal-tarief/sociaal-tarief-voor-energie",
+    "quote": "De CREG stelt het bedrag van het sociaal tarief vast. Ze bepaalt echter niet aan wie het wordt toegekend.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_tariff_only_some_categories",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "Het tarief geldt alleen voor bepaalde categorieën personen of huishoudens",
+    "source_url": "https://www.vlaanderen.be/sociaal-tarief-voor-energie-elektriciteit-aardgas-warmte",
+    "quote": "Het wordt alleen toegekend aan personen of gezinnen die bepaalde uitkeringen of tegemoetkomingen krijgen.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_tariff_often_automatic",
+    "region": "flanders",
+    "kind": "general",
+    "answer_excerpt": "in veel gevallen wordt het recht automatisch toegekend",
+    "source_url": "https://www.vlaanderen.be/sociaal-tarief-voor-energie-elektriciteit-aardgas-warmte",
+    "quote": "Als u onder één van de categorieën valt, hebt u automatisch recht op het sociaal tarief voor energie.",
+    "extracted_by": "claude-opus-5-5"
+  },
+  {
+    "case_id": "be-08",
+    "claim_key": "social_tariff_fod_economie_referral",
+    "region": "federal",
+    "kind": "general",
+    "answer_excerpt": "Zie de FOD Economie voor wie ervoor in aanmerking komt en hoe de toekenning werkt",
+    "source_url": "https://www.creg.be/nl/consumenten/prijzen-en-tarieven/sociaal-tarief/sociaal-tarief-voor-energie",
+    "quote": "vindt u alle informatie over de voorwaarden en hoe u het sociaal tarief kunt aanvragen",
+    "extracted_by": "claude-opus-5-5"
   }
 ]
