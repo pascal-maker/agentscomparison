@@ -790,8 +790,9 @@
     "region": "wallonia",
     "kind": "general",
     "answer_excerpt": "Wallonië: er geldt een regeling met een vervangingsleverancier; sluit zo snel mogelijk zelf een contract af",
-    "evidence_note": "The cited CWaPE document returned a bot-verification interstitial to Fetch; no Walloon passage was retrieved.",
-    "extracted_by": "claude-opus-5-5"
+    "extracted_by": "claude-opus-5-5",
+    "source_url": "https://www.cwape.be/docs/?doc=3518",
+    "quote": "Pour garantir la continuité de la fourniture à un utilisateur du réseau de distribution dont le fournisseur est subitement défaillant, le gestionnaire du réseau de distribution prend anticipativement les mesures nécessaires pour pouvoir le remplacer immédiatement par un fournisseur de substitution"
   },
   {
     "case_id": "be-12",

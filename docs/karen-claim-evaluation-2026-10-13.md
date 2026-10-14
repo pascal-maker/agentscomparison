@@ -223,3 +223,36 @@ aan kan veranderen.
 Nieuwe statussen: `SCHEME_SUSPENDED`, `SCHEME_NOT_YET_OPEN`. Zie
 `experiments/karen_search_ab/regime_status.json` voor het schema en
 `tests/test_karen_claim_verification.py` voor de dekking.
+
+## Update 2026-10-14: CWaPE/FOD Economie-blokkade (aanbeveling #3) onderzocht
+
+Geen van de CWaPE-pagina's die vandaag getest zijn (`cwape.be/node/4178`, de
+`docs/?doc=`-wrapper, directe PDF-routes) gaf nog een bot-challenge via
+Browserbase Fetch terug — die kon dus niet gereproduceerd worden. Er is
+**geen poging gedaan om een CAPTCHA of bot-detectie te omzeilen**; dat was
+ook niet nodig.
+
+Wel gevonden: twee onschuldige, al correct afgehandelde mankementen, geen
+bugs om te fixen:
+- `allowRedirects: false` laat een 301-redirect als een nutteloze
+  "Redirecting to [...]"-stub terugkomen in plaats van de echte pagina —
+  maar `retrieve_official_page` verwerpt die al terecht op `statusCode`,
+  en `luminus_harness/browserbase_sources.py` filtert die stub-tekst ook al
+  explciet weg.
+- Browserbase Fetch gaf HTTP 400 op een directe PDF-downloadroute van
+  cwape.be — ook al correct afgevangen als fout, geen silent failure.
+
+Eén concrete claim is wel opgelost: `be12_wallonia_substitute_supplier`
+(Waalse "fourniture de substitution"-regeling) had geen passage
+(`NO_OFFICIAL_PASSAGE`). Via een directe fetch (niet Browserbase, wegens de
+PDF/redirect-mankementen hierboven) is CWaPE-advies CD-18c29-CWaPE-1778
+(10/04/2018, art. 124 §3 règlement technique électricité) opgehaald en als
+snapshot opgeslagen. De claim heeft nu een echte `source_url` + `quote` en
+staat, samen met de al bestaande human review, op `HUMAN_REVIEW_SUPPORTED`.
+`be-12` blijft `BLOCKED` op de overige 4 claims.
+
+De bredere "ondersteuning voor officiële PDF's" uit aanbeveling #3 is
+hiermee **niet** generiek automatisch gebouwd — dit was een eenmalige,
+handmatige snapshot voor één claim, geen nieuwe pijplijnfunctionaliteit.
+Die blijft openstaan als apart werk.
+
