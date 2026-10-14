@@ -1355,9 +1355,9 @@
     "claim_key": "fl06_apply_until_end_2027",
     "reviewer": "claude-opus-5-5",
     "reviewer_type": "model",
-    "verdict": "PARTIALLY_SUPPORTED",
-    "rationale": "Vlaanderen.be states the 31 December 2027 deadline for income categories 1-2 and other investors; the same page says nothing changes for categories 3-4, which the answer is describing.",
-    "reviewed_on": "2026-10-13"
+    "verdict": "SUPPORTED",
+    "rationale": "Revised: the cited quote was replaced (2026-10-14) with a page that states the 31 December 2027 deadline generically for heat pump and heat-pump-boiler premiums, with no income-category qualifier. The original PARTIALLY_SUPPORTED verdict was reviewing an earlier, category-1-2-specific quote that no longer backs this claim; against the current quote the concern does not apply.",
+    "reviewed_on": "2026-10-14"
   },
   {
     "claim_key": "fl09_fluvius_complaints_committee",
