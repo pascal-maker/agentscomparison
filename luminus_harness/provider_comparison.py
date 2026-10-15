@@ -79,7 +79,7 @@ class Comparator:# used to create a data class
 COMPARATORS: dict[str, Comparator] = {
     "flanders": Comparator(
         "V-test (Vlaamse Nutsregulator)",
-        "https://www.vlaamsenutsregulator.be/elektriciteit-en-aardgas/energiecontracten-en-leveranciers/doe-de-v-testr",
+        "https://www.vtest.be/",
     ),
     "brussels": Comparator(
         "BruSim (BRUGEL)",
@@ -92,7 +92,7 @@ COMPARATORS: dict[str, Comparator] = {
 }
 OFFICIAL_SOURCE_HOSTS = {
     "flanders": {"vtest.be", "vlaamsenutsregulator.be"},
-    "brussels": {"brugel.brussels"},
+    "brussels": {"brugel.brussels", "brugel.brusim.be", "app.brusim.be"},
     "wallonia": {"compacwape.be"},
 }
 
@@ -159,20 +159,20 @@ def _build_task(
     unit = "electricity" if energy_type == "electricity" else "natural gas"# used to build the task
     workflow_hint = ""
     if region == "flanders":
-        workflow_hint = """V-test form guidance (use the visible controls, not JavaScript that mutates form values):
-1. In 'Zoek een contract voor', open 'Postcode of gemeente', type the postcode and SELECT the matching suggestion. Keep 'Mijn woning'.
-2. Select only the requested energy type: uncheck 'Gas' for electricity or uncheck 'Elektriciteit' for gas. Advance using the visible button.
-3. Under 'Ken je je verbruik?', select 'Ik ken mijn verbruik'. Enter the supplied annual kWh with period 'Eén jaar'. For electricity, use the supplied digital/analogue and enkelvoudig/dag-nacht meter details when asked.
-4. Choose 'Sla deze stap over en doe de V-test®' to compare without creating a personal profile. Read prices from the results page, not from an earlier form or a generic price table.
+        workflow_hint = f"""V-test form guidance (use the visible controls, not JavaScript that mutates form values):
+1. On https://www.vtest.be/, 'Postcode of gemeente' is a Select2 dropdown. Click the displayed field to expand it. Type {postcode} into the separate Search input inside the opened dropdown, not into the displayed selection. Click the exact {postcode} - municipality result and verify the collapsed field shows {postcode}. If it does not, stop after two attempts and return unavailable. Keep 'Mijn woning'.
+2. Select only the requested energy type: uncheck 'Gas' for electricity or uncheck 'Elektriciteit' for gas. The 'Ken je je verbruik?' section appears automatically; there is no Next button here.
+3. In 'Ken je je verbruik?', click 'Ik ken mijn verbruik'. In 'Vul je verbruik in', set only meter details supplied by the user, enter the supplied annual kWh in 'Verbruik', and keep period 'Eén jaar'. If the form defaults a missing meter detail, treat it as unknown and return needs_input rather than accepting that default.
+4. Click 'SLA DEZE STAP OVER EN DOE DE V-TEST®' to compare without creating a personal profile. Verify the results page shows the requested postcode and annual kWh. Read prices only from complete result cards on that page.
 If a control does not advance after two attempts, return unavailable with a short explanation. Never reset already accepted inputs to retry the form.
 """
     return f"""Use the official regional energy-price comparison tool below for a residential user.
 
-Comparator: {comparator.name}# used to get the comparator name
-Official starting page: {comparator.url}# used to get the comparator url
-Region: {region}# used to get the region
-Belgian postcode: {postcode}# used to get the postcode
-Energy: {unit}# used to get the energy type
+Comparator: {comparator.name}
+Official starting page: {comparator.url}
+Region: {region}
+Belgian postcode: {postcode}
+Energy: {unit}
 Annual use: {annual_consumption_kwh:g} kWh
 Additional explicit user inputs (JSON; omitted fields are unknown): {json.dumps(additional_inputs or {}, ensure_ascii=False)}
 Meter type values: single_rate = enkelvoudig, dual_rate = tweevoudig, exclusive_night = uitsluitend nacht.
@@ -368,6 +368,19 @@ async def compare_energy_offers(
     error = validate_extra_inputs({"annual_consumption_kwh": consumption, **additional})
     if error:
         return error
+
+    if normalized_region == "flanders" and normalized_energy == "electricity":
+        # V-test preselects meter options. Those defaults are not user answers.
+        required = ["meter_technology", "meter_type", "is_prosumer"]
+        if meter_type == "dual_rate":
+            required.extend(("annual_day_consumption_kwh", "annual_night_consumption_kwh"))
+        missing = [name for name in required if name not in additional]
+        if missing:
+            return json.dumps({
+                "status": "needs_input", "offers": [], "notes": [],
+                "required_fields": missing,
+                "required_information": ["De V-test toont standaard meterkeuzes; bevestig deze gegevens zelf voordat Karen aanbiedingen opzoekt."],
+            }, ensure_ascii=False)
 
     api_key = os.getenv("BROWSER_USE_API_KEY", "").strip()
     if not api_key:

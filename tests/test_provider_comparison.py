@@ -35,7 +35,7 @@ async def test_optional_inputs_reach_browser_use_payload_with_existing_cost_cap(
     assert '"meter_type": "dual_rate"' in payload["task"]
     assert '"meter_technology": "digital"' in payload["task"]
     assert provider.COMPARATORS["flanders"].url in payload["task"]
-    assert "SELECT the matching suggestion" in payload["task"]
+    assert "separate Search input inside the opened dropdown" in payload["task"]
     assert "not JavaScript that mutates form values" in payload["task"]
     assert "never default to variable" in payload["task"]
     assert payload["outputSchema"]["properties"]["required_fields"]["items"]["enum"] == list(provider.EXTRA_FIELDS)
@@ -70,6 +70,32 @@ def test_assumed_prosumer_status_never_returns_offers():
     assert result["required_fields"] == ["is_prosumer"]
 
 
+def test_flemish_task_targets_live_select2_postcode_search():
+    task = provider._build_task(comparator=provider.COMPARATORS["flanders"], **BASE)
+    assert provider.COMPARATORS["flanders"].url == "https://www.vtest.be/"
+    assert "separate Search input inside the opened dropdown" in task
+    assert "verify the collapsed field shows 9000" in task
+    assert "there is no Next button here" in task
+    assert "click 'Ik ken mijn verbruik'" in task
+    assert "If the form defaults a missing meter detail" in task
+    assert "# used to" not in task
+
+
+@pytest.mark.asyncio
+async def test_vtest_requires_explicit_meter_answers_before_paid_lookup(monkeypatch):
+    monkeypatch.setenv("BROWSER_USE_API_KEY", "test-key")
+    monkeypatch.setattr(provider, "_run_browser_use_lookup", lambda **_kwargs: pytest.fail("Paid lookup started"))
+
+    first = json.loads(await provider.compare_energy_offers(**BASE))
+    assert first["status"] == "needs_input"
+    assert first["required_fields"] == ["meter_technology", "meter_type", "is_prosumer"]
+
+    dual = json.loads(await provider.compare_energy_offers(
+        **BASE, meter_technology="digital", meter_type="dual_rate", is_prosumer=False,
+    ))
+    assert dual["required_fields"] == ["annual_day_consumption_kwh", "annual_night_consumption_kwh"]
+
+
 def test_success_requires_official_comparator_source():
     with pytest.raises(RuntimeError, match="official comparator source"):
         provider._validate_result({
@@ -78,6 +104,30 @@ def test_success_requires_official_comparator_source():
                                              "source_url": "https://example.com/offer"}],
             "notes": [], "required_information": [],
         }, "flanders", "electricity", 3500)
+
+
+@pytest.mark.parametrize("source_url", [
+    "https://brugel.brusim.be/nl/",
+    "https://app.brusim.be/nl-BE/customer?theme=light",
+])
+def test_brussels_official_brusim_hosts_are_accepted(source_url):
+    result = provider._validate_result({
+        "status": "success", "offers": [{"supplier": "Example", "product": "Gas",
+                                         "estimated_annual_cost_eur": 100,
+                                         "source_url": source_url}],
+        "notes": [], "required_information": [],
+    }, "brussels", "gas", 200)
+    assert result["offers"][0]["source_url"] == source_url
+
+
+def test_brusim_lookalike_host_is_rejected():
+    with pytest.raises(RuntimeError, match="official comparator source"):
+        provider._validate_result({
+            "status": "success", "offers": [{"supplier": "Example", "product": "Gas",
+                                             "estimated_annual_cost_eur": 100,
+                                             "source_url": "https://app.brusim.be.evil.example/offer"}],
+            "notes": [], "required_information": [],
+        }, "brussels", "gas", 200)
 
 
 def test_local_timeout_stops_remote_session(monkeypatch):
