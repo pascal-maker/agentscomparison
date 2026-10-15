@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties } from "react"
+import { useEffect, useRef, useState, type CSSProperties } from "react"
 import { addPropertyControls, ControlType } from "framer"
 
 type SpeechResult = { transcript: string }
@@ -18,7 +18,7 @@ type SpeechRecognizer = {
 type SpeechWindow = Window & { SpeechRecognition?: new () => SpeechRecognizer; webkitSpeechRecognition?: new () => SpeechRecognizer }
 
 type Source = { title: string; detail?: string; url?: string; excerpt?: string }
-type Reply = { answer: string; sources?: Source[]; suggested_sources?: Source[]; audio_url?: string; processing?: string; live_source_status?: "checked" | "failed" | "not-needed"; comparison_session_id?: string | null; comparison_status?: string }
+type Reply = { answer: string; sources?: Source[]; suggested_sources?: Source[]; petra_speech_token?: string; processing?: string; live_source_status?: "checked" | "failed" | "not-needed"; comparison_session_id?: string | null; comparison_status?: string }
 
 type Props = {
     apiEndpoint: string
@@ -85,12 +85,14 @@ const css = `
   .ea-source small { display:block; margin-top:3px; color:#718076; font-size:10px; }
   .ea-excerpt { margin-top:9px!important; padding:10px 11px; border-left:2px solid #9bc294; border-radius:0 9px 9px 0; color:#48594d!important; background:#f2f7ef; font-size:10px!important; }
   .ea-audio { margin-top:10px; width:100%; height:34px; }
+  .ea-voice-play { margin-top:10px; padding:8px 12px; border:1px solid #c9d9c8; border-radius:10px; color:#234f38; background:#f4f8f2; font:inherit; font-size:12px; cursor:pointer; }
+  .ea-voice-play:disabled { opacity:.6; cursor:wait; }
   @media (max-width:680px) { .ea { grid-template-columns:1fr; min-height:0; padding:10px; gap:10px; } .ea-main { min-height:490px; padding:18px; } .ea-rail { display:grid; grid-template-columns:1fr; } }
 `
 
 export default function EnergyAgentConversation({
-    apiEndpoint,
-    sampleQuestion,
+    apiEndpoint = "",
+    sampleQuestion = DEMO_QUESTION,
     style,
 }: Props) {
     const [question, setQuestion] = useState("")
@@ -105,11 +107,24 @@ export default function EnergyAgentConversation({
     const [uploadName, setUploadName] = useState("")
     const [uploadError, setUploadError] = useState("")
     const [listening, setListening] = useState(false)
+    const [voiceDraft, setVoiceDraft] = useState(false)
     const [voiceError, setVoiceError] = useState("")
+    const [petraBusy, setPetraBusy] = useState(false)
+    const [petraError, setPetraError] = useState("")
+    const [petraAudioUrl, setPetraAudioUrl] = useState("")
     const [recognition, setRecognition] = useState<SpeechRecognizer | null>(null)
     const voiceTimeout = useRef<number | null>(null)
+    const petraAbort = useRef<AbortController | null>(null)
+    const petraPlayer = useRef<HTMLAudioElement | null>(null)
+    const petraAudioUrlRef = useRef("")
 
-    function endpointFor(path: "upload" | "session" | "comparison-session"): string {
+    useEffect(() => () => {
+        petraAbort.current?.abort()
+        petraPlayer.current?.pause()
+        if (petraAudioUrlRef.current) URL.revokeObjectURL(petraAudioUrlRef.current)
+    }, [])
+
+    function endpointFor(path: "upload" | "session" | "comparison-session" | "petra-speech"): string {
         const url = new URL(apiEndpoint.trim())
         url.pathname = url.pathname.replace(/\/api\/answer\/?$/, `/api/${path}`)
         if (!url.pathname.endsWith(`/api/${path}`)) {
@@ -119,9 +134,60 @@ export default function EnergyAgentConversation({
         return url.toString().replace(/\/$/, "")
     }
 
+    function clearPetra() {
+        petraAbort.current?.abort()
+        petraAbort.current = null
+        petraPlayer.current?.pause()
+        petraPlayer.current = null
+        if (petraAudioUrlRef.current) URL.revokeObjectURL(petraAudioUrlRef.current)
+        petraAudioUrlRef.current = ""
+        setPetraAudioUrl("")
+        setPetraBusy(false)
+        setPetraError("")
+    }
+
+    async function playPetra(token: string) {
+        clearPetra()
+        const controller = new AbortController()
+        petraAbort.current = controller
+        setPetraBusy(true)
+        try {
+            const response = await fetch(endpointFor("petra-speech"), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token }),
+                signal: controller.signal,
+            })
+            if (!response.ok) throw new Error(`Petra is niet beschikbaar (${response.status})`)
+            const blob = await response.blob()
+            if (controller.signal.aborted || !blob.type.includes("audio/")) return
+            const url = URL.createObjectURL(blob)
+            petraAudioUrlRef.current = url
+            setPetraAudioUrl(url)
+            const player = new Audio(url)
+            petraPlayer.current = player
+            try {
+                await player.play()
+            } catch {
+                setPetraError("Druk op afspelen om Karen te horen.")
+            }
+        } catch {
+            if (!controller.signal.aborted) {
+                setPetraError("Karens stem is nu niet beschikbaar. Je kunt het antwoord hierboven lezen.")
+            }
+        } finally {
+            if (petraAbort.current === controller) {
+                petraAbort.current = null
+                setPetraBusy(false)
+            }
+        }
+    }
+
     async function uploadPdf(file?: File) {
         if (!file) return
+        clearPetra()
         if (listening) stopVoice()
+        setVoiceDraft(false)
         setUploadError("")
         if (!apiEndpoint.trim()) {
             setUploadError("Verbind eerst Karen’s backend om een PDF te analyseren.")
@@ -167,6 +233,7 @@ export default function EnergyAgentConversation({
     }
 
     async function clearPdf() {
+        clearPetra()
         if (sessionId && apiEndpoint.trim()) {
             try {
                 await fetch(`${endpointFor("session")}/${encodeURIComponent(sessionId)}`, { method: "DELETE" })
@@ -178,36 +245,24 @@ export default function EnergyAgentConversation({
         setUploadName("")
         setUploadError("")
         setVoiceError("")
+        setVoiceDraft(false)
         setReply(null)
         setAsked("")
         setStatus("PDF-sessie gewist")
     }
 
-    function speak(text: string) {
-        if (!("speechSynthesis" in window)) return
-        const utterance = new SpeechSynthesisUtterance(text)
-        utterance.lang = "nl-BE"
-        const dutchVoice = window.speechSynthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith("nl-be"))
-            || window.speechSynthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith("nl"))
-        if (dutchVoice) utterance.voice = dutchVoice
-        window.speechSynthesis.speak(utterance)
-    }
-
-    async function ask(text: string, speakAnswer = false) {
+    async function ask(text: string) {
         const clean = text.trim()
         if (!clean || busy || uploading) return
+        clearPetra()
         if (listening) stopVoice()
         setAnswerError("")
         setAsked(clean)
         setQuestion("")
+        setVoiceDraft(false)
         setReply(null)
         setBusy(true)
         setStatus("Karen haalt relevante bronpassages op…")
-        if (speakAnswer && !sessionId) {
-            window.speechSynthesis?.cancel()
-            speak("Ik zoek het even op.")
-        }
-
         try {
             if (apiEndpoint.trim()) {
                 const response = await fetch(apiEndpoint, {
@@ -223,7 +278,10 @@ export default function EnergyAgentConversation({
                 if (!data.answer) throw new Error("Het antwoord ontbreekt in de API-respons")
                 if ("comparison_session_id" in data) setComparisonSessionId(data.comparison_session_id || "")
                 setReply(data)
-                if (speakAnswer && !sessionId) speak(data.answer)
+                if (!sessionId && data.processing !== "local-only") {
+                    if (data.petra_speech_token) void playPetra(data.petra_speech_token)
+                    else setPetraError("Voor dit antwoord is geen audio beschikbaar. Je kunt het antwoord hierboven lezen.")
+                }
                 setStatus(data.comparison_status === "collecting"
                     ? "Vergelijking actief · Karen vraagt ontbrekende gegevens"
                     : data.processing === "local-only"
@@ -240,10 +298,6 @@ export default function EnergyAgentConversation({
                 setStatus("Voorbeeldweergave · geen live AI-antwoord")
             }
         } catch (error) {
-            if (speakAnswer) {
-                window.speechSynthesis?.cancel()
-                speak("Dat lukt nu niet. Typ je vraag of probeer het opnieuw.")
-            }
             setAnswerError(error instanceof Error ? error.message : "Karen kon de vraag niet beantwoorden.")
         } finally {
             setBusy(false)
@@ -252,6 +306,7 @@ export default function EnergyAgentConversation({
 
     function startVoice() {
         setVoiceError("")
+        setVoiceDraft(false)
         if (sessionId) {
             setVoiceError("Schakel de PDF-sessie uit voor je spreekt. Deel geen factuurgegevens via voice.")
             return
@@ -262,7 +317,7 @@ export default function EnergyAgentConversation({
             setVoiceError("Spraakherkenning is niet beschikbaar in deze browser. Typ je vraag hieronder.")
             return
         }
-        window.speechSynthesis?.cancel()
+        clearPetra()
         const nextRecognition = new SpeechRecognitionCtor()
         nextRecognition.lang = "nl-BE"
         nextRecognition.interimResults = false
@@ -279,9 +334,9 @@ export default function EnergyAgentConversation({
             voiceTimeout.current = null
             nextRecognition.stop()
             setListening(false)
-            setAsked(transcript)
-            setStatus("Vraag herkend · Karen haalt bronnen op…")
-            void ask(transcript, true)
+            setQuestion(transcript)
+            setVoiceDraft(true)
+            setStatus("Controleer de herkende vraag en druk op verzenden. Je kunt woorden zoals CREG eerst verbeteren.")
         }
         nextRecognition.onaudiostart = () => {
             setStatus("Microfoon actief · spreek je publieke vraag in…")
@@ -343,24 +398,25 @@ export default function EnergyAgentConversation({
             <section className="ea-panel ea-main">
                 <div className="ea-brand"><img className="ea-mark" src={KAREN_LOGO} alt="Karen-logo" /><span><strong>EnergyAgent</strong><br />EEN HELDERE KIJK OP ENERGIE</span></div>
                 <div className="ea-kicker">Energy co-pilot</div>
-                <h1>Praat met Karen.<br />Begrijp je energiefactuur.</h1>
-                <p className="ea-sub">Vraag wat je factuur betekent. Karen laat zien waarop haar antwoord steunt.</p>
+                <h1>Praat met Karen.<br />Begrijp je energie.</h1>
+                <p className="ea-sub">Vraag naar je factuur, energieverbruik of verwarming. Karen laat zien waarop haar antwoord steunt.</p>
                 <div className="ea-thread" aria-live="polite">
                     {asked && <div className="ea-question">{asked}</div>}
                     {(busy || uploading || listening) && <div className="ea-state"><span className="ea-dot" />{status}</div>}
-                    {reply && <><div className="ea-answer">{reply.answer}</div>{!apiEndpoint.trim() && <div className="ea-foot">Gesimuleerd antwoord om de interface te bekijken.</div>}{reply.audio_url && <audio className="ea-audio" controls src={reply.audio_url} />}</>}
+                    {reply && <><div className="ea-answer">{reply.answer}</div>{!apiEndpoint.trim() && <div className="ea-foot">Gesimuleerd antwoord om de interface te bekijken.</div>}{reply.petra_speech_token && !sessionId && !petraAudioUrl && (petraBusy ? <p className="ea-foot" role="status">Antwoord klaar. Audio wordt voorbereid; dit kan even duren.</p> : <button className="ea-voice-play" onClick={() => void playPetra(reply.petra_speech_token!)}>Beluister Karen</button>)}{petraAudioUrl && <audio className="ea-audio" controls src={petraAudioUrl} />}{petraError && <p className="ea-foot" role="status">{petraError}</p>}</>}
                 </div>
                 {!asked && <button className="ea-source" onClick={() => void ask(sampleQuestion)} style={{ border: 0, background: "#f2f7ef", borderRadius: 12, padding: 12, marginBottom: 12, textAlign: "left", cursor: "pointer" }}><strong>Probeer de voorbeeldvraag</strong><small>{sampleQuestion}</small></button>}
                 <button className="ea-mic" type="button" data-listening={listening} onClick={() => listening ? stopVoice() : startVoice()} disabled={busy || uploading || Boolean(sessionId)} aria-label={listening ? "Stop luisteren" : "Stel je vraag met je stem"}>
                     <span aria-hidden="true">{listening ? "■" : "🎙"}</span>{listening ? "Stop luisteren" : "Stel je vraag met je stem"}
                 </button>
                 {voiceError && <p className="ea-foot" role="alert" style={{ color: "#a13333" }}>{voiceError}</p>}
+                {voiceDraft && <p className="ea-foot" role="status">Controleer de herkende vraag hieronder. Je kunt die aanpassen voordat Karen zoekt.</p>}
                 <div className="ea-controls">
                     <input className="ea-input" value={question} onChange={(event) => setQuestion(event.target.value)} onKeyDown={(event) => event.key === "Enter" && void ask(question)} placeholder="Vraag aan Karen…" aria-label="Vraag aan Karen" disabled={busy || uploading} />
                     <button className="ea-button" onClick={() => void ask(question)} disabled={busy || uploading || !question.trim()} aria-label="Verstuur vraag">↗</button>
                 </div>
                 {answerError && <p className="ea-foot" role="alert" style={{ color: "#a13333" }}>{answerError}</p>}
-                <p className="ea-foot">Voice herkent je vraag via de spraakdienst van je browser en spreekt Karen’s antwoord uit. Voor aanbiedingen deelt Karen je gewest, postcode, energietype, jaarverbruik en eventueel expliciet opgegeven meter- en prosumentgegevens met Browser Use en de officiële vergelijker; deze invoer blijft maximaal 60 minuten in sessiegeheugen. Deel geen factuurgegevens via voice. Voice is uitgeschakeld bij een actieve PDF. Publieke FAQ-antwoorden gebruiken Gemma; PDF-tekst wordt alleen tijdelijk op Karen’s backend verwerkt.</p>
+                <p className="ea-foot">Je browser herkent je gesproken vraag. Controleer de tekst voor je die verstuurt; Karen verwerkt en beantwoordt de vraag. Voor aanbiedingen deelt Karen je gewest, postcode, energietype, jaarverbruik en eventueel expliciet opgegeven meter- en prosumentgegevens met Browser Use en de officiële vergelijker; deze invoer blijft maximaal 60 minuten in sessiegeheugen. Deel geen factuurgegevens via voice. Voice is uitgeschakeld bij een actieve PDF. Publieke energievragen gebruiken Gemma en zo nodig officiële webbronnen via Browserbase. Alleen om Karens publieke antwoord uit te spreken gaat de antwoordtekst naar de Babbeldoos-stemservice, met de Vlaamse Petra-stem; PDF-antwoorden blijven op Karen’s backend.</p>
             </section>
             <aside className="ea-rail">
                 <section className="ea-card"><h2>Jouw factuur</h2><p>Optioneel · PDF naar Karen’s backend; tekst tijdelijk in sessiegeheugen (max. 60 min), zonder extern model. Maximaal 15 MB en 30 pagina’s.</p>
@@ -382,12 +438,7 @@ export default function EnergyAgentConversation({
     )
 }
 
-EnergyAgentConversation.defaultProps = {
-    apiEndpoint: "",
-    sampleQuestion: DEMO_QUESTION,
-}
-
 addPropertyControls(EnergyAgentConversation, {
-    apiEndpoint: { title: "Backend URL", type: ControlType.String, placeholder: "https://…" },
-    sampleQuestion: { title: "Voorbeeldvraag", type: ControlType.String },
+    apiEndpoint: { title: "Backend URL", type: ControlType.String, placeholder: "https://…", defaultValue: "" },
+    sampleQuestion: { title: "Voorbeeldvraag", type: ControlType.String, defaultValue: DEMO_QUESTION },
 })
