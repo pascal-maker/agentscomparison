@@ -124,6 +124,18 @@ def test_cli_context_json_output() -> None:
     }
 
 
+def test_unknown_scenario_is_explicit() -> None:
+    with pytest.raises(ValueError, match="Unknown scenario"):
+        get_scenario("does_not_exist")
+
+
+def test_customer_lookup_is_case_insensitive() -> None:
+    # Both an ID (get_customer uppercases it) and a bare name (find_customer
+    # lowercases both sides) resolve regardless of case.
+    assert "Marc" in billing_explanation("lum-1002")
+    assert "Marc" in billing_explanation("marc")
+
+
 def test_scenario_registry_exposes_canonical_inputs() -> None:
     scenarios = list_scenarios()
 
