@@ -4,6 +4,7 @@ from __future__ import annotations# used for type hints
 
 import json# used for json parsing
 import os # used to get the API key
+import re
 import threading
 import time
 from collections import OrderedDict
@@ -36,6 +37,9 @@ ENERGY_SOURCES = {
     "wallonia_heating": ("Wallonië · controle des chaudières", "https://energie.wallonie.be/home/performance-energetique-des-batiments/batiments-residentiels/renovation-walloreno/conseils-pratiques/se-chauffer-1/controle-periodique-et-diagnostic-approfondi-des-chaudieres.html"),
     "engie_help": ("ENGIE klantendienst en veelgestelde vragen", "https://www.engie.be/nl/contact/"),
     "totalenergies_help": ("TotalEnergies veelgestelde vragen", "https://totalenergies.be/nl/particulieren/hulp-en-contact/veelgestelde-vragen"),
+    "mega_help": ("Mega contact en klantendienst", "https://www.mega.be/nl/energie/contact"),
+    "bolt_help": ("Bolt hulp en contact", "https://www.boltenergie.be/nl/help"),
+    "energyvision_help": ("EnergyVision support", "https://support.energyvision.be/nl/support/home"),
 }
 
 ENERGY_SOURCE_SCOPES = {
@@ -44,6 +48,9 @@ ENERGY_SOURCE_SCOPES = {
     "eneco": ["eneco.be"],
     "engie": ["engie.be"],
     "totalenergies": ["totalenergies.be"],
+    "mega": ["mega.be"],
+    "bolt": ["boltenergie.be"],
+    "energyvision": ["energyvision.be"],
     "flanders_regulator": ["vlaamsenutsregulator.be"],
     "creg": ["creg.be"],
     "brussels_public": ["leefmilieu.brussels", "brugel.brussels"],
@@ -53,6 +60,7 @@ ENERGY_SOURCE_SCOPES = {
                         "leefmilieu.brussels", "brugel.brussels", "energie.wallonie.be", "cwape.be"],
     "trusted_energy": [
         "luminus.be", "elegant.be", "eneco.be", "engie.be", "totalenergies.be",
+        "mega.be", "boltenergie.be", "energyvision.be",
         "vlaamsenutsregulator.be", "creg.be", "mijnenergie.be", "test-aankoop.be",
     ],
 }
@@ -71,6 +79,9 @@ _SUPPLIER_ALIASES: dict[str, str] = {
     "electrabel": "engie",
     "totalenergies": "totalenergies",
     "total energies": "totalenergies",
+    "mega": "mega",
+    "bolt": "bolt",
+    "energyvision": "energyvision",
 }
 
 SUPPLIER_SOURCES: dict[str, dict[str, str]] = {
@@ -79,16 +90,20 @@ SUPPLIER_SOURCES: dict[str, dict[str, str]] = {
     "eneco": {"help": "eneco_contact", "invoice": "eneco_settlement"},
     "engie": {"help": "engie_help", "cancellation": "engie_help"},
     "totalenergies": {"help": "totalenergies_help", "cancellation": "totalenergies_help"},
+    "mega": {"help": "mega_help", "cancellation": "mega_help"},
+    "bolt": {"help": "bolt_help"},
+    "energyvision": {"help": "energyvision_help"},
 }
 
 
 def named_supplier(question: str) -> str | None:
     """The canonical key of the first known supplier explicitly named in the
     question, or None if none is named. Checked longest-alias-first so
-    'total energies' is not shadowed by a shorter, coincidental match."""
+    'total energies' is not shadowed by a shorter, coincidental match. Word
+    boundaries matter: "mega" must not match inside "megawattuur"."""
     normalized = question.casefold()
     for alias in sorted(_SUPPLIER_ALIASES, key=len, reverse=True):
-        if alias in normalized:
+        if re.search(r"\b" + re.escape(alias) + r"\b", normalized):
             return _SUPPLIER_ALIASES[alias]
     return None
 

@@ -117,3 +117,30 @@ async def test_no_named_supplier_does_not_default_to_luminus(monkeypatch) -> Non
     assert not any(source.get("url", "").startswith("https://www.luminus.be/") for source in result["sources"])
     assert searched_scopes  # the generic public-source search ran instead
 
+@pytest.mark.asyncio
+async def test_a_newly_added_supplier_is_fetched_not_assumed(monkeypatch) -> None:
+    """Mega only has 'help'/'cancellation' sources registered, no 'invoice'
+    page -- a cancellation question naming it should fetch that page as an
+    unverified suggested source, not show Luminus content or stay silent."""
+    async def fetch(key):
+        from luminus_harness.browserbase_sources import ENERGY_SOURCES
+        title, url = ENERGY_SOURCES[key]
+        content = (
+            "Voor consumenten, zelfstandigen en kleine bedrijven is de verbrekingsvergoeding afgeschaft.\n"
+            "Zij kunnen hun contract op gelijk welk moment stopzetten."
+        ) if key == "creg_cancellation" else "Je kunt je Mega-contract opzeggen via het contactformulier."
+        return {"title": title, "url": url, "content": content}
+
+    monkeypatch.setattr(gemma_answer, "fetch_energy_page", fetch)
+    result = await gemma_answer.answer_energy_question("Ik wil mijn Mega-contract opzeggen", [])
+
+    assert any(source.get("url", "") == "https://www.mega.be/nl/energie/contact" for source in result["suggested_sources"])
+    assert "Luminus" not in result["answer"]
+
+
+def test_named_supplier_ignores_megawattuur() -> None:
+    from luminus_harness.browserbase_sources import named_supplier
+
+    assert named_supplier("Hoeveel megawattuur verbruikt mijn huis per jaar?") is None
+    assert named_supplier("Ik zit bij Mega en wil opzeggen") == "mega"
+
