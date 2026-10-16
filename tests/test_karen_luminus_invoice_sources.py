@@ -28,7 +28,7 @@ async def test_advance_question_uses_luminus_page_four_and_only_checked_luminus_
     monkeypatch.setattr(gemma_answer, "_generate", lambda _prompt: "De afrekening verrekent je voorschotten met je werkelijke kosten.")
 
     result = await gemma_answer.answer_energy_question(
-        "Waarom verschilt mijn voorschot van mijn jaarafrekening?",
+        "Waarom verschilt mijn Luminus-voorschot van mijn jaarafrekening?",
         [page_four, eneco_page],
     )
 
@@ -54,10 +54,66 @@ async def test_failed_luminus_fetch_is_not_shown_as_used_source(monkeypatch) -> 
     prompts: list[str] = []
     monkeypatch.setattr(gemma_answer, "_generate", lambda prompt: prompts.append(prompt) or "De bron is beperkt.")
 
-    result = await gemma_answer.answer_energy_question("Waarom verschilt mijn voorschot?", [page_four])
+    result = await gemma_answer.answer_energy_question("Waarom verschilt mijn Luminus-voorschot?", [page_four])
 
     assert result["live_source_status"] == "failed"
     luminus_source = next(source for source in result["sources"] if "luminus.be" in source.get("url", ""))
     assert luminus_source["detail"] == "Gecurateerde officiële uitleg · pagina niet live opgehaald"
     assert "werkelijke kosten verrekend met de voorschotten" in prompts[0]
     assert any(source["detail"] == "PDF · pagina 4" for source in result["sources"])
+
+@pytest.mark.asyncio
+async def test_naming_a_different_supplier_never_shows_luminus_content(monkeypatch) -> None:
+    """The bug karen-architecture-audit-2026-10-01.md flagged: a question
+    naming a different supplier must not be answered with Luminus's page."""
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    page_four = KnowledgeChunk(
+        page=4,
+        text="Luminus werkt met voorschotfacturen en afrekeningen; het ideale voorschot kan op basis van digitale meterdata worden herberekend.",
+        urls=(),
+    )
+
+    async def fetch_page(source_key: str):
+        assert source_key == "eneco_settlement"
+        return {
+            "title": "Eneco afrekening",
+            "url": "https://eneco.be/nl/contact/alles-over-je-afrekening-van-energie/",
+            "content": "Eneco verrekent de werkelijke kosten met de betaalde voorschotten op de jaarafrekening.",
+        }
+
+    monkeypatch.setattr(gemma_answer, "fetch_energy_page", fetch_page)
+    monkeypatch.setattr(gemma_answer, "_generate", lambda _prompt: "Eneco verrekent je voorschotten op de jaarafrekening.")
+
+    result = await gemma_answer.answer_energy_question(
+        "Leg mijn Eneco jaarafrekening uit", [page_four]
+    )
+
+    assert not any(source.get("url", "").startswith("https://www.luminus.be/") for source in result["sources"])
+    assert any(source.get("url", "").startswith("https://eneco.be/") for source in result["sources"])
+    assert not any(source["detail"] == "PDF · pagina 4" for source in result["sources"])
+
+
+@pytest.mark.asyncio
+async def test_no_named_supplier_does_not_default_to_luminus(monkeypatch) -> None:
+    """A generic invoice question with no supplier named must not assume
+    Luminus -- it falls through to the general public-source search."""
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    page_four = KnowledgeChunk(
+        page=4,
+        text="Luminus werkt met voorschotfacturen en afrekeningen.",
+        urls=(),
+    )
+    searched_scopes: list[str] = []
+
+    async def search_pages(_query: str, scope: str, *, max_pages: int = 2):
+        searched_scopes.append(scope)
+        return []
+
+    monkeypatch.setattr(gemma_answer, "search_energy_pages", search_pages)
+    monkeypatch.setattr(gemma_answer, "_generate", lambda _prompt: "Algemene uitleg.")
+
+    result = await gemma_answer.answer_energy_question("Wat is een jaarafrekening?", [page_four])
+
+    assert not any(source.get("url", "").startswith("https://www.luminus.be/") for source in result["sources"])
+    assert searched_scopes  # the generic public-source search ran instead
+
