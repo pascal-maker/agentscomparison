@@ -30,16 +30,20 @@ def test_unknown_customer_context_is_explicit() -> None:
         customer_context("LUM-9999")
 
 
-def test_every_customer_tool_fails_the_same_way_for_an_unknown_customer() -> None:
-    for tool in (
+@pytest.mark.parametrize(
+    "tool",
+    [
         lambda: customer_context("LUM-9999"),
         lambda: billing_explanation("LUM-9999"),
         lambda: energy_insights("LUM-9999"),
         lambda: energy_advice("LUM-9999"),
         lambda: propose_appointment("LUM-9999", "inspection", "2026-08-12"),
-    ):
-        with pytest.raises(CustomerNotFoundError, match="LUM-9999"):
-            tool()
+    ],
+    ids=["customer_context", "billing_explanation", "energy_insights", "energy_advice", "propose_appointment"],
+)
+def test_every_customer_tool_fails_the_same_way_for_an_unknown_customer(tool) -> None:
+    with pytest.raises(CustomerNotFoundError, match="LUM-9999"):
+        tool()
 
 
 def test_demo_narratives_are_not_mistaken_for_account_specific_data() -> None:
@@ -68,6 +72,18 @@ def test_appointment_proposal_accepts_customer_name() -> None:
 
     assert "APPT-LUM-1002-20260813" in proposal
     assert "Marc" in proposal
+
+
+def test_cli_customer_lookup_is_case_insensitive() -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "luminus_harness", "billing", "marc"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert "Marc" in result.stdout
+    assert "LUM-1002" in result.stdout
 
 
 def test_cli_unknown_customer_reports_error_and_exit_code() -> None:
