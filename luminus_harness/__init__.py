@@ -10,6 +10,7 @@ _CORE_EXPORTS = {
     "LUMINUS_INSTRUCTIONS",
     "SAVING_TIPS",
     "Customer",
+    "CustomerNotFoundError",
     "Scenario",
     "billing_explanation",
     "customer_context",
@@ -21,6 +22,7 @@ _CORE_EXPORTS = {
     "list_scenarios",
     "luminus_fact",
     "propose_appointment",
+    "require_customer",
 }
 
 __all__ = sorted(_CORE_EXPORTS)
