@@ -29,6 +29,8 @@ def main() -> None:
         "luminus_harness/rate_limit.py": repo_root / "luminus_harness" / "rate_limit.py",
         "luminus_harness/comparison_session.py": repo_root / "luminus_harness" / "comparison_session.py",
         "luminus_harness/provider_comparison.py": repo_root / "luminus_harness" / "provider_comparison.py",
+        "luminus_harness/perplexity_agent.py": repo_root / "luminus_harness" / "perplexity_agent.py",
+        "luminus_harness/petra_tts.py": repo_root / "luminus_harness" / "petra_tts.py",
         "luminus_harness/voice_agent.py": repo_root / "luminus_harness" / "voice_agent.py",
     }
     operations = [
