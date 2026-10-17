@@ -249,6 +249,57 @@ def test_snapshot_fetch_skips_existing_and_reports_failures(tmp_path, monkeypatc
                                             "retrieved_at": "2026-10-13T10:00:00+00:00"}]
 
 
+def test_official_pdf_is_extracted_with_pypdf(monkeypatch) -> None:
+    import base64
+    import experiments.karen_search_ab.benchmark as module
+
+    class Page:
+        def extract_text(self):
+            return "Het officiële PDF-tarief bedraagt 5,738 cent per kWh."
+
+    class Reader:
+        pages = [Page()]
+
+    monkeypatch.setattr(module, "PdfReader", lambda _stream: Reader())
+    monkeypatch.setattr(
+        module,
+        "_post_json_fetch",
+        lambda _url, _api_key: {
+            "statusCode": 200,
+            "contentType": "application/pdf",
+            "content": base64.b64encode(b"%PDF-1.7\nfixture").decode("ascii"),
+        },
+    )
+
+    page = module.retrieve_official_page(
+        "https://www.creg.be/official.pdf", api_key="k", registry=module.load_domains()
+    )
+    assert page["retrieval"] == "browserbase_fetch_pdf_pypdf"
+    assert "5,738 cent per kWh" in page["content"]
+
+
+def test_official_pdf_without_extractable_text_is_reported_as_failure(monkeypatch) -> None:
+    import base64
+    import experiments.karen_search_ab.benchmark as module
+    from experiments.karen_search_ab.providers import SearchError
+
+    monkeypatch.setattr(
+        module,
+        "_post_json_fetch",
+        lambda _url, _api_key: {
+            "statusCode": 200,
+            "contentType": "application/pdf",
+            "content": base64.b64encode(b"%PDF-1.7\nfixture").decode("ascii"),
+        },
+    )
+    monkeypatch.setattr(module, "PdfReader", lambda _stream: type("Reader", (), {"pages": []})())
+
+    with pytest.raises(SearchError, match="no readable text"):
+        module.retrieve_official_page(
+            "https://www.creg.be/official.pdf", api_key="k", registry=module.load_domains()
+        )
+
+
 def test_five_saved_cases_have_expected_conservative_statuses() -> None:
     required = [
         HERE / "results" / "agent-pilot-2026-10-13.json",

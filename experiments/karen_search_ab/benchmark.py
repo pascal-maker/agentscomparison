@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import re
 from collections import defaultdict
 from datetime import datetime, timezone
+from io import BytesIO
 from pathlib import Path
 from urllib.parse import urlparse
+
+from pypdf import PdfReader
 
 from .providers import BrowserbaseSearch, PerplexitySearch, SearchError, SearchProvider
 
@@ -96,6 +100,32 @@ def is_bot_challenge(content: str) -> bool:
     return bool(_BOT_CHALLENGE.search(content[:3000]))
 
 
+def _extract_pdf_text(payload: dict, *, max_chars: int) -> str:
+    """Decode Browserbase's PDF body and extract its text with pypdf."""
+    encoded = payload.get("contentBase64")
+    if encoded is None:
+        encoded = payload.get("content")
+    if isinstance(encoded, list) and all(isinstance(item, int) and 0 <= item <= 255 for item in encoded):
+        pdf_bytes = bytes(encoded)
+    elif isinstance(encoded, str):
+        try:
+            pdf_bytes = base64.b64decode(encoded, validate=True)
+        except (ValueError, base64.binascii.Error) as error:
+            raise SearchError("Browserbase Fetch returned a PDF without a base64 body") from error
+    else:
+        raise SearchError("Browserbase Fetch returned a PDF without an extractable body")
+    if not pdf_bytes.startswith(b"%PDF-"):
+        raise SearchError("Browserbase Fetch returned invalid PDF bytes")
+    try:
+        reader = PdfReader(BytesIO(pdf_bytes))
+        content = "\n\n".join(page.extract_text() or "" for page in reader.pages).strip()
+    except Exception as error:
+        raise SearchError("pypdf could not extract the official PDF") from error
+    if not content:
+        raise SearchError("pypdf extracted no readable text from the official PDF")
+    return content[:max_chars]
+
+
 def retrieve_official_page(url: str, *, api_key: str, registry: dict, max_chars: int = 10000) -> dict:
     """Use Browserbase Fetch Extract on a configured official HTTPS domain only."""
     if not any(official_organization(url, scope, registry) for scope in registry):
@@ -107,8 +137,13 @@ def retrieve_official_page(url: str, *, api_key: str, registry: dict, max_chars:
     content = payload.get("content")
     if status != 200 or not isinstance(content, str) or not content.strip():
         raise SearchError(f"Browserbase Fetch returned unusable content (status {status})")
-    if "pdf" in str(payload.get("contentType", "")).casefold():
-        raise SearchError("Browserbase Fetch cannot verify a PDF passage")
+    if "pdf" in str(payload.get("contentType", "")).casefold() or url.lower().split("?", 1)[0].endswith(".pdf"):
+        content = _extract_pdf_text(payload, max_chars=max_chars)
+        return {
+            "content": content,
+            "retrieved_at": datetime.now(timezone.utc).isoformat(),
+            "retrieval": "browserbase_fetch_pdf_pypdf",
+        }
     if is_bot_challenge(content):
         raise SearchError("Browserbase Fetch returned a bot-challenge page, not the original content")
     return {
