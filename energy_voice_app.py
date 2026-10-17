@@ -4,7 +4,11 @@ from __future__ import annotations # used for type hints
 
 import base64# used to encode the avatar image
 import asyncio# used to run async functions
+import binascii
+import hashlib
+import hmac
 import html# used to
+import json
 import os# used to load the environment variables
 import re# used to recognize electricity price questions
 import secrets
@@ -20,7 +24,7 @@ import numpy as np# used to handle audio data
 import uvicorn
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 from pydantic import BaseModel, Field
 from agents import Runner, TResponseInputItem, set_tracing_disabled# used to create the agent
 from agents.voice import AudioInput, VoicePipeline, VoicePipelineConfig, VoiceWorkflowBase# used to create the voice agent
@@ -49,6 +53,12 @@ from luminus_harness.gemma_answer import (
 from luminus_harness.invoice_analysis import analyze_invoice_chunks, answer_uploaded_pdf_question
 from luminus_harness.rate_limit import SlidingWindowRateLimiter
 from luminus_harness.comparison_session import ComparisonSessions, is_offer_comparison_question, pdf_comparison_reply
+from luminus_harness.petra_tts import MAX_SPEECH_CHARS, synthesize_petra
+from luminus_harness.perplexity_agent import (
+    PublicWebAgentError,
+    answer_public_web_question,
+    validate_public_question,
+)
 
 try:
     import spaces# used to deploy the app to spaces
@@ -645,6 +655,15 @@ class AnswerRequest(BaseModel):
     comparison_session_id: str | None = Field(default=None, min_length=16, max_length=128)
 
 
+class PublicWebAnswerRequest(BaseModel):
+    model_config = {"extra": "forbid"}
+    question: str = Field(min_length=2, max_length=300)
+
+
+class PetraSpeechRequest(BaseModel):
+    token: str = Field(min_length=40, max_length=8192)
+
+
 api_app = FastAPI(title="EnergyAgent Karen API", version="0.1.0")
 configured_origins = [
     origin.strip() for origin in os.getenv("FRAMER_ALLOWED_ORIGINS", "").split(",")
@@ -662,6 +681,43 @@ api_app.add_middleware(
 _api_rate_limiter = SlidingWindowRateLimiter(requests=20, window_seconds=60, max_clients=10_000)
 _upload_sessions: OrderedDict[str, dict[str, Any]] = OrderedDict()
 _comparison_sessions = ComparisonSessions()
+_petra_token_secret = secrets.token_bytes(32)
+_petra_rate_limiter = SlidingWindowRateLimiter(requests=3, window_seconds=60, max_clients=10_000)
+
+
+def _sign_public_speech(answer: str) -> str | None:
+    """Return a short-lived signed token only for public, speakable answers."""
+    if not isinstance(answer, str) or not 0 < len(answer) <= MAX_SPEECH_CHARS:
+        return None
+    payload = json.dumps(
+        {"answer": answer, "expires": int(time.time()) + 300},
+        ensure_ascii=False, separators=(",", ":"),
+    ).encode("utf-8")
+    signature = hmac.new(_petra_token_secret, payload, hashlib.sha256).digest()
+    return base64.urlsafe_b64encode(payload + signature).decode("ascii")
+
+
+def _public_speech_from_token(token: str) -> str:
+    try:
+        raw = base64.b64decode(token, altchars=b"-_", validate=True)
+        payload, signature = raw[:-32], raw[-32:]
+        expected = hmac.new(_petra_token_secret, payload, hashlib.sha256).digest()
+        if not hmac.compare_digest(signature, expected):
+            raise ValueError("invalid signature")
+        data = json.loads(payload)
+        answer = data["answer"]
+        if not isinstance(answer, str) or not 0 < len(answer) <= MAX_SPEECH_CHARS:
+            raise ValueError("invalid text")
+        if time.time() > data["expires"]:
+            raise ValueError("expired")
+        return answer
+    except (ValueError, KeyError, TypeError, binascii.Error) as error:
+        raise HTTPException(status_code=404, detail="Deze Petra-audioaanvraag is ongeldig of verlopen.") from error
+
+
+def _with_petra_speech(reply: dict[str, Any]) -> dict[str, Any]:
+    token = _sign_public_speech(reply.get("answer", ""))
+    return {**reply, **({"petra_speech_token": token} if token else {})}
 
 
 def _allow_api_request(request: Request) -> None:
@@ -776,13 +832,46 @@ async def api_answer(body: AnswerRequest, request: Request) -> dict[str, Any]:
         return {**result, "processing": "local-only", "filename": session["filename"]}
     comparison = await _comparison_sessions.answer(body.question.strip(), body.comparison_session_id)
     if comparison is not None:
-        return comparison
+        return _with_petra_speech(comparison)
     try:
         result = await answer_energy_question(body.question.strip(), BASE_KNOWLEDGE)
-        return {**result, "processing": result.get("processing", "hosted-public-knowledge"),
-                "comparison_session_id": body.comparison_session_id if body.comparison_session_id in _comparison_sessions.sessions else None}
+        return _with_petra_speech({
+            **result,
+            "processing": result.get("processing", "hosted-public-knowledge"),
+            "comparison_session_id": body.comparison_session_id if body.comparison_session_id in _comparison_sessions.sessions else None,
+        })
     except GemmaAPIError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
+
+
+@api_app.post("/api/public-web-answer")
+async def api_public_web_answer(body: PublicWebAnswerRequest, request: Request) -> dict[str, Any]:
+    """Explicit opt-in public web answer; no PDF or comparison session accepted."""
+    _allow_api_request(request)
+    if is_offer_comparison_question(body.question):
+        raise HTTPException(status_code=422, detail="Gebruik de aparte aanbodvergelijking voor leveranciersprijzen.")
+    try:
+        question = validate_public_question(body.question)
+        result = await asyncio.to_thread(answer_public_web_question, question)
+    except PublicWebAgentError as error:
+        headers = {"Retry-After": error.retry_after} if error.retry_after else None
+        raise HTTPException(status_code=error.status_code, detail=error.message, headers=headers) from error
+    return _with_petra_speech({**result, "processing": "perplexity-agent-public-web"})
+
+
+@api_app.post("/api/petra-speech")
+async def api_petra_speech(body: PetraSpeechRequest, request: Request) -> Response:
+    """Speak a recent public answer; PDF answers never receive a signed token."""
+    _allow_api_request(request)
+    client_key = request.client.host if request.client else "unknown"
+    if not _petra_rate_limiter.allow(client_key, time.monotonic()):
+        raise HTTPException(status_code=429, detail="Te veel Petra-aanvragen kort na elkaar.")
+    answer = _public_speech_from_token(body.token)
+    try:
+        audio = await asyncio.wait_for(asyncio.to_thread(synthesize_petra, answer), timeout=70)
+    except Exception as error:
+        raise HTTPException(status_code=503, detail="Petra is nu niet beschikbaar.") from error
+    return Response(content=audio, media_type="audio/wav", headers={"Cache-Control": "no-store"})
 
 
 @api_app.get("/", include_in_schema=False)
