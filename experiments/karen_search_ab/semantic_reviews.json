@@ -3054,5 +3054,13 @@
     "verdict": "PARTIALLY_SUPPORTED",
     "rationale": "The official ORES tariff FAQ says the capacitary prosumer tariff is established by CWaPE and applies to the installation's net developable electrical power; it also distinguishes calculation by meter type. The cited SPW page confirms that prosumer-tariff competence belongs to CWaPE, but neither official passage supports the answer's separate claim that the amount depends on where the household lives. Installation and meter data are supported; location is not shown.",
     "reviewed_on": "2026-10-17"
+  },
+  {
+    "claim_key": "fl06_since_march_2026_type_and_income",
+    "reviewer": "codex-2026-10-18",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The cited official warm-pump page explicitly states: 'De aanvraagdatum van Mijn VerbouwPremie bepaalt tot welke doelgroep (inkomenscategorie) u behoort en voor welk premiebedrag u in aanmerking komt.' Its category 3 and 4 sections list different amounts by heat-pump type. However, the official 'Wijzigingen Mijn VerbouwPremie vanaf 2026' page says the reform mainly impacts categories 1 and 2, other investors and non-residential buildings, and explicitly says: 'Voor eigenaar-bewoners uit inkomenscategorie 3 en 4 verandert er niets.' It therefore supports the date/category/amount mechanism and type/category dependence, but not attributing the onset of that dependence for categories 3 and 4 to 1 March 2026.",
+    "reviewed_on": "2026-10-18"
   }
 ]
