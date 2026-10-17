@@ -105,15 +105,12 @@ def _extract_pdf_text(payload: dict, *, max_chars: int) -> str:
     encoded = payload.get("contentBase64")
     if encoded is None:
         encoded = payload.get("content")
-    if isinstance(encoded, list) and all(isinstance(item, int) and 0 <= item <= 255 for item in encoded):
-        pdf_bytes = bytes(encoded)
-    elif isinstance(encoded, str):
-        try:
-            pdf_bytes = base64.b64decode(encoded, validate=True)
-        except (ValueError, base64.binascii.Error) as error:
-            raise SearchError("Browserbase Fetch returned a PDF without a base64 body") from error
-    else:
+    if not isinstance(encoded, str):
         raise SearchError("Browserbase Fetch returned a PDF without an extractable body")
+    try:
+        pdf_bytes = base64.b64decode(encoded, validate=True)
+    except (ValueError, base64.binascii.Error) as error:
+        raise SearchError("Browserbase Fetch returned a PDF without a base64 body") from error
     if not pdf_bytes.startswith(b"%PDF-"):
         raise SearchError("Browserbase Fetch returned invalid PDF bytes")
     try:
@@ -137,15 +134,17 @@ def retrieve_official_page(url: str, *, api_key: str, registry: dict, max_chars:
     content = payload.get("content")
     if status != 200 or not isinstance(content, str) or not content.strip():
         raise SearchError(f"Browserbase Fetch returned unusable content (status {status})")
-    if "pdf" in str(payload.get("contentType", "")).casefold() or url.lower().split("?", 1)[0].endswith(".pdf"):
+    is_pdf_type = "pdf" in str(payload.get("contentType", "")).casefold()
+    # A .pdf URL can still answer with an HTML challenge page; base64 PDF bodies skip this text check.
+    if not is_pdf_type and is_bot_challenge(content):
+        raise SearchError("Browserbase Fetch returned a bot-challenge page, not the original content")
+    if is_pdf_type or url.lower().split("?", 1)[0].endswith(".pdf"):
         content = _extract_pdf_text(payload, max_chars=max_chars)
         return {
             "content": content,
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
             "retrieval": "browserbase_fetch_pdf_pypdf",
         }
-    if is_bot_challenge(content):
-        raise SearchError("Browserbase Fetch returned a bot-challenge page, not the original content")
     return {
         "content": content[:max_chars],
         "retrieved_at": datetime.now(timezone.utc).isoformat(),
