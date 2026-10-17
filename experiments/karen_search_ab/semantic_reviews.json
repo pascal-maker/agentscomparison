@@ -3046,5 +3046,13 @@
     "verdict": "SUPPORTED",
     "rationale": "Terugbetaling enkel na prioritaire schuldeisers.",
     "reviewed_on": "2026-10-13"
+  },
+  {
+    "claim_key": "wa02_depends_on_location_and_installation",
+    "reviewer": "codex-2026-10-17",
+    "reviewer_type": "model",
+    "verdict": "PARTIALLY_SUPPORTED",
+    "rationale": "The official ORES tariff FAQ says the capacitary prosumer tariff is established by CWaPE and applies to the installation's net developable electrical power; it also distinguishes calculation by meter type. The cited SPW page confirms that prosumer-tariff competence belongs to CWaPE, but neither official passage supports the answer's separate claim that the amount depends on where the household lives. Installation and meter data are supported; location is not shown.",
+    "reviewed_on": "2026-10-17"
   }
 ]
