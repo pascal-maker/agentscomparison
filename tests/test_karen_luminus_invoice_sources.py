@@ -184,16 +184,30 @@ async def test_each_new_supplier_uses_only_its_registered_official_source(monkey
 
     for supplier, phrase, domain in (
         ("octaplus", "OCTA+", "octaplus.be"),
-        ("aspiravi", "Aspiravi", "aspiravi.com"),
         ("frank", "Frank Energie", "frankenergie.be"),
     ):
-        if supplier == "aspiravi":
-            from luminus_harness.browserbase_sources import ENERGY_SOURCES, SUPPLIER_SOURCES
+        result = await gemma_answer.answer_energy_question(f"Ik wil mijn {phrase}-contract opzeggen", [])
+        assert result["live_source_status"] == "failed"
+        assert any(domain in source.get("url", "") for source in result["suggested_sources"])
 
-            source_key = SUPPLIER_SOURCES[supplier]["help"]
-            assert domain in ENERGY_SOURCES[source_key][1]
-        else:
-            result = await gemma_answer.answer_energy_question(f"Ik wil mijn {phrase}-contract opzeggen", [])
-            assert result["live_source_status"] == "failed"
-            assert any(domain in source.get("url", "") for source in result["suggested_sources"])
+
+@pytest.mark.asyncio
+async def test_aspiravi_has_no_cancellation_source_and_never_leaks_another_suppliers_content(monkeypatch) -> None:
+    """Aspiravi is registered help-only (its official material is
+    B2B-oriented) -- an end-to-end check, not just a registry lookup: no
+    source is fetched for it, and no other supplier's content appears."""
+    calls: list[str] = []
+
+    async def fetch_track(source_key: str):
+        calls.append(source_key)
+        return None
+
+    monkeypatch.setattr(gemma_answer, "fetch_energy_page", fetch_track)
+
+    result = await gemma_answer.answer_energy_question("Ik wil mijn Aspiravi-contract opzeggen", [])
+
+    assert "aspiravi_help" not in calls
+    assert not any("luminus.be" in source.get("url", "") for source in result["sources"] + result["suggested_sources"])
+    assert result["sources"] == []
+    assert "nog geen officiële bron geregistreerd" in result["answer"]
 
