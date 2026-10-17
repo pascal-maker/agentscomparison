@@ -40,6 +40,9 @@ ENERGY_SOURCES = {
     "mega_help": ("Mega contact en klantendienst", "https://www.mega.be/nl/energie/contact"),
     "bolt_help": ("Bolt hulp en contact", "https://www.boltenergie.be/nl/help"),
     "energyvision_help": ("EnergyVision support", "https://support.energyvision.be/nl/support/home"),
+    "octaplus_help": ("OCTA+ klantendienst en veelgestelde vragen", "https://www.octaplus.be/nl/particulieren/contact"),
+    "aspiravi_help": ("Aspiravi contact en energieleverancier", "https://www.aspiravi.com/contact/"),
+    "frank_help": ("Frank Energie klantendienst", "https://klantenservice.frankenergie.be/hc/nl-be"),
 }
 
 ENERGY_SOURCE_SCOPES = {
@@ -51,6 +54,9 @@ ENERGY_SOURCE_SCOPES = {
     "mega": ["mega.be"],
     "bolt": ["boltenergie.be"],
     "energyvision": ["energyvision.be"],
+    "octaplus": ["octaplus.be"],
+    "aspiravi": ["aspiravi.com"],
+    "frank": ["frankenergie.be"],
     "flanders_regulator": ["vlaamsenutsregulator.be"],
     "creg": ["creg.be"],
     "brussels_public": ["leefmilieu.brussels", "brugel.brussels"],
@@ -61,6 +67,7 @@ ENERGY_SOURCE_SCOPES = {
     "trusted_energy": [
         "luminus.be", "elegant.be", "eneco.be", "engie.be", "totalenergies.be",
         "mega.be", "boltenergie.be", "energyvision.be",
+        "octaplus.be", "aspiravi.com", "frankenergie.be",
         "vlaamsenutsregulator.be", "creg.be", "mijnenergie.be", "test-aankoop.be",
     ],
 }
@@ -82,6 +89,10 @@ _SUPPLIER_ALIASES: dict[str, str] = {
     "mega": "mega",
     "bolt": "bolt",
     "energyvision": "energyvision",
+    "octa": "octaplus",
+    "octaplus": "octaplus",
+    "aspiravi": "aspiravi",
+    "frank": "frank",
 }
 
 SUPPLIER_SOURCES: dict[str, dict[str, str]] = {
@@ -93,6 +104,9 @@ SUPPLIER_SOURCES: dict[str, dict[str, str]] = {
     "mega": {"help": "mega_help", "cancellation": "mega_help"},
     "bolt": {"help": "bolt_help"},
     "energyvision": {"help": "energyvision_help"},
+    "octaplus": {"help": "octaplus_help", "cancellation": "octaplus_help"},
+    "aspiravi": {"help": "aspiravi_help"},
+    "frank": {"help": "frank_help", "cancellation": "frank_help"},
 }
 
 

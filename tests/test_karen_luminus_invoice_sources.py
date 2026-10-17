@@ -144,3 +144,43 @@ def test_named_supplier_ignores_megawattuur() -> None:
     assert named_supplier("Hoeveel megawattuur verbruikt mijn huis per jaar?") is None
     assert named_supplier("Ik zit bij Mega en wil opzeggen") == "mega"
 
+
+def test_new_supplier_aliases_are_explicit_and_collision_safe() -> None:
+    from luminus_harness.browserbase_sources import named_supplier
+
+    assert named_supplier("Mijn OCTA+ contract") == "octaplus"
+    assert named_supplier("Mijn octaplus contract") == "octaplus"
+    assert named_supplier("Ik zit bij Aspiravi") == "aspiravi"
+    assert named_supplier("Ik zit bij Frank Energie") == "frank"
+    assert named_supplier("Ik heb een octane-installatie") is None
+    assert named_supplier("Mijn aspiratie is minder verbruik") is None
+    assert named_supplier("Een frankering op mijn brief") is None
+
+
+@pytest.mark.asyncio
+async def test_each_new_supplier_uses_only_its_registered_official_source(monkeypatch) -> None:
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    async def fetch_page(source_key: str):
+        from luminus_harness.browserbase_sources import ENERGY_SOURCES
+
+        title, url = ENERGY_SOURCES[source_key]
+        return {"title": title, "url": url, "content": f"Official content for {source_key}."}
+
+    monkeypatch.setattr(gemma_answer, "fetch_energy_page", fetch_page)
+    monkeypatch.setattr(gemma_answer, "_generate", lambda _prompt: "De officiële bron is gecontroleerd.")
+
+    for supplier, phrase, domain in (
+        ("octaplus", "OCTA+", "octaplus.be"),
+        ("aspiravi", "Aspiravi", "aspiravi.com"),
+        ("frank", "Frank Energie", "frankenergie.be"),
+    ):
+        if supplier == "aspiravi":
+            from luminus_harness.browserbase_sources import ENERGY_SOURCES, SUPPLIER_SOURCES
+
+            source_key = SUPPLIER_SOURCES[supplier]["help"]
+            assert domain in ENERGY_SOURCES[source_key][1]
+        else:
+            result = await gemma_answer.answer_energy_question(f"Ik wil mijn {phrase}-contract opzeggen", [])
+            assert result["live_source_status"] == "failed"
+            assert any(domain in source.get("url", "") for source in result["suggested_sources"])
+
