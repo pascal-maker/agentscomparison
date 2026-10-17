@@ -300,6 +300,26 @@ def test_official_pdf_without_extractable_text_is_reported_as_failure(monkeypatc
         )
 
 
+def test_pdf_url_answering_with_bot_challenge_is_reported_as_bot_challenge(monkeypatch) -> None:
+    import experiments.karen_search_ab.benchmark as module
+    from experiments.karen_search_ab.providers import SearchError
+
+    monkeypatch.setattr(
+        module,
+        "_post_json_fetch",
+        lambda _url, _api_key: {
+            "statusCode": 200,
+            "contentType": "text/html",
+            "content": "Please verify you are human. What code is in the image?",
+        },
+    )
+
+    with pytest.raises(SearchError, match="bot-challenge"):
+        module.retrieve_official_page(
+            "https://www.creg.be/official.pdf", api_key="k", registry=module.load_domains()
+        )
+
+
 def test_five_saved_cases_have_expected_conservative_statuses() -> None:
     required = [
         HERE / "results" / "agent-pilot-2026-10-13.json",
