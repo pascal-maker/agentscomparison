@@ -87,12 +87,17 @@ _SUPPLIER_ALIASES: dict[str, str] = {
     "totalenergies": "totalenergies",
     "total energies": "totalenergies",
     "mega": "mega",
-    "bolt": "bolt",
     "energyvision": "energyvision",
     "octa": "octaplus",
     "octaplus": "octaplus",
     "aspiravi": "aspiravi",
-    "frank": "frank",
+    # Bare "frank" and "bolt" are common Dutch/English words (a person's
+    # first name; a door/hardware bolt) -- require the fuller brand phrase,
+    # same pattern used above for "totalenergies"/"total energies".
+    "frank energie": "frank",
+    "frankenergie": "frank",
+    "bolt energie": "bolt",
+    "boltenergie": "bolt",
 }
 
 SUPPLIER_SOURCES: dict[str, dict[str, str]] = {

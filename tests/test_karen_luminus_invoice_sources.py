@@ -151,10 +151,23 @@ def test_new_supplier_aliases_are_explicit_and_collision_safe() -> None:
     assert named_supplier("Mijn OCTA+ contract") == "octaplus"
     assert named_supplier("Mijn octaplus contract") == "octaplus"
     assert named_supplier("Ik zit bij Aspiravi") == "aspiravi"
-    assert named_supplier("Ik zit bij Frank Energie") == "frank"
     assert named_supplier("Ik heb een octane-installatie") is None
     assert named_supplier("Mijn aspiratie is minder verbruik") is None
     assert named_supplier("Een frankering op mijn brief") is None
+
+
+def test_frank_and_bolt_require_the_full_brand_not_a_common_word() -> None:
+    """"frank" is a common first name and "bolt" a common hardware word --
+    both require the fuller brand phrase, same as "total energies"."""
+    from luminus_harness.browserbase_sources import named_supplier
+
+    assert named_supplier("Frank heeft een vraag over zijn energiefactuur") is None
+    assert named_supplier("Kan je dit aan Frank doorgeven?") is None
+    assert named_supplier("Ik heb mijn deur op slot gedaan met een bolt") is None
+    assert named_supplier("Ik zit bij Frank Energie") == "frank"
+    assert named_supplier("Ik ben klant bij frankenergie") == "frank"
+    assert named_supplier("Mijn Bolt Energie-contract opzeggen") == "bolt"
+    assert named_supplier("Ik ben klant bij boltenergie") == "bolt"
 
 
 @pytest.mark.asyncio
