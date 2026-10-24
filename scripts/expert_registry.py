@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
@@ -17,6 +18,7 @@ ALLOWED_DOMAINS = {
     "energy_contracts",
     "electricity_market",
     "distribution_grids",
+    "transmission_grids",
     "capacity_tariff",
     "solar_panels",
     "home_batteries",
@@ -36,7 +38,7 @@ ALLOWED_EXPERT_TYPES = {
     "research_institute",
     "institutional",
     "journalist",
-    "commercial_consumer",
+    "consumer_organization",
 }
 
 ALLOWED_SOURCE_TYPES = {
@@ -53,6 +55,13 @@ ALLOWED_SOURCE_TYPES = {
 }
 
 CONTENT_SOURCE_TYPES = ALLOWED_SOURCE_TYPES - {"official_profile", "institutional_page"}
+
+# Wie de tekst schreef bepaalt welke uitspraken aan de expert mogen worden toegeschreven.
+CONTENT_ATTRIBUTION_SCOPES = {"authored", "coauthored", "quoted", "interviewed"}
+PROFILE_ATTRIBUTION_SCOPES = {"profile_only", "institutional_context"}
+
+PUBLISHED_AT_PRECISION = {4: "year", 7: "month", 10: "day"}
+PUBLISHED_AT_PATTERN = re.compile(r"\d{4}(-\d{2}(-\d{2})?)?")
 
 MIN_EXPERTS = 15
 MAX_EXPERTS = 20
@@ -133,7 +142,7 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
     min_experts = scope.get("min_experts")
     max_experts = scope.get("max_experts")
     max_sources = scope.get("max_sources_per_expert")
-    min_quality = scope.get("min_quality_score")
+    min_quality = scope.get("min_source_quality_score")
     if isinstance(min_experts, bool) or not isinstance(min_experts, int) or min_experts < MIN_EXPERTS:
         raise RegistryError(f"scope.min_experts mag niet lager zijn dan {MIN_EXPERTS}")
     if (
@@ -149,9 +158,9 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
         or not 1 <= max_sources <= MAX_SOURCES_PER_EXPERT
     ):
         raise RegistryError(f"scope.max_sources_per_expert mag maximaal {MAX_SOURCES_PER_EXPERT} zijn")
-    min_quality = _score(min_quality, "min_quality_score", "scope")
+    min_quality = _score(min_quality, "min_source_quality_score", "scope")
     if min_quality < MIN_QUALITY_SCORE:
-        raise RegistryError(f"scope.min_quality_score mag niet lager zijn dan {MIN_QUALITY_SCORE}")
+        raise RegistryError(f"scope.min_source_quality_score mag niet lager zijn dan {MIN_QUALITY_SCORE}")
     if not min_experts <= len(experts) <= max_experts:
         raise RegistryError(f"Het register moet {min_experts} tot {max_experts} experts bevatten")
 
@@ -196,8 +205,6 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
                 "authority_score",
                 "authority_components",
                 "public_content_score",
-                "active",
-                "source_urls",
             ),
             label,
         )
@@ -211,18 +218,14 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
             raise RegistryError(f"{expert_id} heeft een onbekend expert_type")
         if expert["selection_status"] != "pending_human_review":
             raise RegistryError(f"{expert_id} moet op menselijke selectiecontrole wachten")
-        if not isinstance(expert["active"], bool):
-            raise RegistryError(f"{expert_id}.active moet true of false zijn")
+        if "source_urls" in expert:
+            raise RegistryError(f"{expert_id}.source_urls wordt afgeleid uit sources; zet het niet in de YAML")
+        if expert.get("enabled_for_ingestion") is not False:
+            raise RegistryError(f"{expert_id}.enabled_for_ingestion moet false blijven tot na menselijke goedkeuring")
         domains = set(_string_list(expert["domains"], "domains", expert_id))
         if not domains or not domains <= ALLOWED_DOMAINS:
             raise RegistryError(f"{expert_id} bevat onbekende of lege energiedomeinen")
-        source_urls = _string_list(expert["source_urls"], "source_urls", expert_id)
-        urls = {canonical_url(url) for url in source_urls}
-        if len(urls) != len(source_urls):
-            raise RegistryError(f"{expert_id} bevat dubbele source_urls")
-        if not 1 <= len(urls) <= max_sources:
-            raise RegistryError(f"{expert_id} moet 1 tot {max_sources} unieke bronnen hebben")
-        expert_urls[expert_id] = urls
+        expert_urls[expert_id] = set()
         expert_domains[expert_id] = domains
         components = expert["authority_components"]
         if not isinstance(components, dict) or set(components) != expected_factors:
@@ -239,9 +242,7 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
         normalized["public_content_score"] = _score(
             expert["public_content_score"], "public_content_score", expert_id
         )
-        normalized["active"] = expert["active"]
         normalized["domains"] = sorted(domains)
-        normalized["source_urls"] = sorted(urls)
         normalized_experts.append(normalized)
 
     seen_urls: set[str] = set()
@@ -265,6 +266,7 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
                 "quality_score",
                 "approval_status",
                 "access_status",
+                "attribution_scope",
             ),
             label,
         )
@@ -276,8 +278,7 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
         if url in seen_urls:
             raise RegistryError(f"Dezelfde bron mag maar eenmaal voorkomen: {url}")
         seen_urls.add(url)
-        if url not in expert_urls[expert_id]:
-            raise RegistryError(f"{url} ontbreekt in source_urls van {expert_id}")
+        expert_urls[expert_id].add(url)
         if source["source_type"] not in ALLOWED_SOURCE_TYPES:
             raise RegistryError(f"{url} heeft een onbekend source_type")
         domains = set(_string_list(source["domains"], "domains", url))
@@ -286,8 +287,18 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
         if not domains <= expert_domains[expert_id]:
             raise RegistryError(f"{url} bevat domeinen buiten het profiel van {expert_id}")
         published_at = source["published_at"]
-        if published_at is not None and not isinstance(published_at, str):
-            raise RegistryError(f"{url}.published_at moet null of een string zijn")
+        if published_at is not None and (
+            not isinstance(published_at, str) or not PUBLISHED_AT_PATTERN.fullmatch(published_at)
+        ):
+            raise RegistryError(f"{url}.published_at moet null, YYYY, YYYY-MM of YYYY-MM-DD zijn")
+        attribution = source["attribution_scope"]
+        allowed_scopes = (
+            CONTENT_ATTRIBUTION_SCOPES if source["source_type"] in CONTENT_SOURCE_TYPES else PROFILE_ATTRIBUTION_SCOPES
+        )
+        if attribution not in allowed_scopes:
+            raise RegistryError(
+                f"{url}.attribution_scope moet een van {', '.join(sorted(allowed_scopes))} zijn voor {source['source_type']}"
+            )
         quality = _score(source["quality_score"], "quality_score", url)
         if quality < min_quality:
             raise RegistryError(f"{url} blijft onder de minimumkwaliteit {min_quality}")
@@ -304,11 +315,12 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
         normalized["source_url"] = url
         normalized["quality_score"] = quality
         normalized["domains"] = sorted(domains)
+        normalized["published_at_precision"] = PUBLISHED_AT_PRECISION[len(published_at)] if published_at else None
         normalized_sources.append(normalized)
 
     for expert_id in expert_ids:
-        if source_count[expert_id] != len(expert_urls[expert_id]):
-            raise RegistryError(f"Bronlijst en bronmetadata verschillen voor {expert_id}")
+        if not 1 <= source_count[expert_id] <= max_sources:
+            raise RegistryError(f"{expert_id} moet 1 tot {max_sources} unieke bronnen hebben")
         if content_count[expert_id] < MIN_CONTENT_SOURCES_PER_EXPERT:
             raise RegistryError(
                 f"{expert_id} heeft minstens {MIN_CONTENT_SOURCES_PER_EXPERT} inhoudelijke bronnen nodig "
@@ -316,6 +328,8 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
             )
 
     assign_source_use(normalized_sources)
+    for expert in normalized_experts:
+        expert["source_urls"] = sorted(expert_urls[expert["expert_id"]])
     return (
         sorted(normalized_experts, key=lambda item: item["expert_id"]),
         sorted(normalized_sources, key=lambda item: (item["expert_id"], item["source_url"])),
@@ -392,7 +406,7 @@ def coverage_report(experts: list[dict[str, Any]], sources: list[dict[str, Any]]
             f"kennis voor Karen: **{sum(source['use'] == 'karen' for source in sources)}**"
         ),
         "- Regio: **Vlaanderen**",
-        "- Minimum quality score: **0.65**",
+        "- Minimum bronkwaliteit: **0.65**",
         "",
         "## Experts",
         "",

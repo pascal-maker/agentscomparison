@@ -62,6 +62,7 @@ def test_expert_without_two_content_sources_is_rejected() -> None:
     for source in content[1:]:
         source["source_type"] = "institutional_page"
         source["quality_score"] = 0.70
+        source["attribution_scope"] = "institutional_context"
 
     with pytest.raises(RegistryError, match="inhoudelijke bronnen"):
         validate_registry(payload)
@@ -144,3 +145,31 @@ def test_benchmark_rejects_karen_and_unapproved_sources() -> None:
         validate_benchmark([_benchmark_item(knowledge)], sources, approved)
     with pytest.raises(RegistryError, match="niet menselijk is goedgekeurd"):
         validate_benchmark([_benchmark_item(holdout)], sources, set())
+
+
+def test_content_source_needs_personal_attribution() -> None:
+    payload = load_registry(ROOT / "config" / "experts.yaml")
+    source = next(source for source in payload["sources"] if source["source_type"] in CONTENT_SOURCE_TYPES)
+    source["attribution_scope"] = "institutional_context"
+
+    with pytest.raises(RegistryError, match="attribution_scope"):
+        validate_registry(payload)
+
+
+def test_source_urls_are_derived_not_curated() -> None:
+    payload = load_registry(ROOT / "config" / "experts.yaml")
+    payload["experts"][0]["source_urls"] = ["https://example.org/a"]
+
+    with pytest.raises(RegistryError, match="afgeleid uit sources"):
+        validate_registry(payload)
+
+
+def test_published_at_keeps_its_precision() -> None:
+    payload = load_registry(ROOT / "config" / "experts.yaml")
+    _, sources = validate_registry(payload)
+    precision = {source["published_at_precision"] for source in sources}
+    assert precision <= {"year", "month", "day", None}
+
+    payload["sources"][0]["published_at"] = "januari 2025"
+    with pytest.raises(RegistryError, match="YYYY-MM-DD"):
+        validate_registry(payload)

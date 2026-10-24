@@ -6,7 +6,7 @@
 - Kandidaat-bron-URL's: **50**
 - Alleen benchmark: **16**; kennis voor Karen: **34**
 - Regio: **Vlaanderen**
-- Minimum quality score: **0.65**
+- Minimum bronkwaliteit: **0.65**
 
 ## Experts
 
@@ -17,11 +17,11 @@
 | Geert Deconinck | academic | KU Leuven / EnergyVille | distribution_grids, electricity_market, energy_regulation, flexibility_demand_response, renewable_energy | 4 |
 | Gert Peersman | academic | UGent | consumer_energy_advice, electricity_prices | 2 |
 | Griet Verbeeck | academic | UHasselt | heat_pumps, renovation_energy_efficiency | 4 |
-| Hakan Ergun | academic | KU Leuven / EnergyVille | distribution_grids, electricity_market, electricity_prices, renewable_energy | 4 |
+| Hakan Ergun | academic | KU Leuven / EnergyVille | electricity_market, electricity_prices, renewable_energy, transmission_grids | 4 |
 | Joannes Laveyne | academic | UGent | distribution_grids, electricity_market, flexibility_demand_response, nuclear_energy, renewable_energy | 3 |
 | Johan Albrecht | academic | UGent / Itinera | electricity_market, flemish_energy_policy, nuclear_energy, renewable_energy | 3 |
 | Johan Driesen | academic | KU Leuven / EnergyVille | distribution_grids, electric_vehicles_charging, flexibility_demand_response, home_batteries, solar_panels | 3 |
-| Jordi Van Paemel | commercial_consumer | Testaankoop | consumer_energy_advice, distribution_grids, electricity_prices, energy_contracts, flemish_energy_policy, heat_pumps, renovation_energy_efficiency | 4 |
+| Jordi Van Paemel | consumer_organization | Testaankoop | consumer_energy_advice, distribution_grids, electricity_prices, energy_contracts, flemish_energy_policy, heat_pumps, renovation_energy_efficiency | 4 |
 | Luc Pauwels | journalist | VRT NWS | consumer_energy_advice, electricity_market, electricity_prices, energy_contracts, flemish_energy_policy, heat_pumps, nuclear_energy, solar_panels | 5 |
 | Marten Ovaere | academic | UGent | capacity_tariff, electricity_market, electricity_prices, energy_regulation, flemish_energy_policy, flexibility_demand_response, renewable_energy | 4 |
 | Ronnie Belmans | academic | KU Leuven / EnergyVille | distribution_grids, electricity_market, energy_regulation, flexibility_demand_response, nuclear_energy, renewable_energy | 3 |
@@ -51,7 +51,7 @@
 
 - **capacity_tariff:** Marten Ovaere
 - **consumer_energy_advice:** Gert Peersman, Jordi Van Paemel, Luc Pauwels, Stijn Verbeke
-- **distribution_grids:** Daan Six, Geert Deconinck, Hakan Ergun, Joannes Laveyne, Johan Driesen, Jordi Van Paemel, Ronnie Belmans
+- **distribution_grids:** Daan Six, Geert Deconinck, Joannes Laveyne, Johan Driesen, Jordi Van Paemel, Ronnie Belmans
 - **electric_vehicles_charging:** Johan Driesen
 - **electricity_market:** Daan Six, Geert Deconinck, Hakan Ergun, Joannes Laveyne, Johan Albrecht, Luc Pauwels, Marten Ovaere, Ronnie Belmans
 - **electricity_prices:** Gert Peersman, Hakan Ergun, Jordi Van Paemel, Luc Pauwels, Marten Ovaere, Sam Hamels
@@ -65,6 +65,7 @@
 - **renewable_energy:** Daan Six, Geert Deconinck, Hakan Ergun, Joannes Laveyne, Johan Albrecht, Marten Ovaere, Ronnie Belmans
 - **renovation_energy_efficiency:** Dirk Saelens, Griet Verbeeck, Jordi Van Paemel, Stijn Verbeke
 - **solar_panels:** Johan Driesen, Luc Pauwels
+- **transmission_grids:** Hakan Ergun
 
 ## Controlepunt
 
