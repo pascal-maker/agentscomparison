@@ -1,0 +1,71 @@
+from pathlib import Path
+import sys
+
+import pytest
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from expert_registry import (  # noqa: E402
+    RegistryError,
+    canonical_url,
+    coverage_report,
+    jsonl_text,
+    load_registry,
+    validate_registry,
+    write_if_changed,
+)
+
+
+def test_curated_registry_meets_review_contract() -> None:
+    experts, sources = validate_registry(load_registry(ROOT / "config" / "experts.yaml"))
+
+    assert 15 <= len(experts) <= 20
+    assert all(expert["region"] == "Vlaanderen" for expert in experts)
+    assert all(1 <= len(expert["source_urls"]) <= 5 for expert in experts)
+    assert len({source["source_url"] for source in sources}) == len(sources)
+    assert all(source["quality_score"] >= 0.65 for source in sources)
+    assert all(source["approval_status"] == "pending_human_review" for source in sources)
+    assert all(source["access_status"] == "pending_human_review" for source in sources)
+
+
+def test_materialized_outputs_match_reviewed_yaml() -> None:
+    experts, sources = validate_registry(load_registry(ROOT / "config" / "experts.yaml"))
+
+    assert (ROOT / "data" / "experts" / "experts.jsonl").read_text(encoding="utf-8") == jsonl_text(experts)
+    assert (ROOT / "data" / "sources" / "sources.jsonl").read_text(encoding="utf-8") == jsonl_text(sources)
+    assert (ROOT / "docs" / "flanders-energy-expert-coverage.md").read_text(
+        encoding="utf-8"
+    ) == coverage_report(experts, sources)
+
+
+def test_duplicate_source_url_is_rejected() -> None:
+    payload = load_registry(ROOT / "config" / "experts.yaml")
+    payload["sources"].append(dict(payload["sources"][0]))
+
+    with pytest.raises(RegistryError, match="Dezelfde bron"):
+        validate_registry(payload)
+
+
+def test_url_identity_ignores_fragment_and_trailing_slash() -> None:
+    assert canonical_url("https://Example.org/profile/#bio") == "https://example.org/profile"
+
+
+def test_existing_changed_output_is_not_silently_overwritten(tmp_path: Path) -> None:
+    output = tmp_path / "experts.jsonl"
+    output.write_text("reviewed\n", encoding="utf-8")
+
+    with pytest.raises(FileExistsError, match="--force"):
+        write_if_changed(output, "replacement\n")
+
+    assert output.read_text(encoding="utf-8") == "reviewed\n"
+
+
+def test_report_exposes_uncovered_domains() -> None:
+    experts, sources = validate_registry(load_registry(ROOT / "config" / "experts.yaml"))
+    report = coverage_report(experts, sources)
+
+    assert "# Vlaamse energie-experts" in report
+    assert "Nog niet afgedekt" not in report
+    assert "Er is nog geen broninhoud gedownload" in report
