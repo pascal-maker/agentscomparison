@@ -8,6 +8,10 @@ scope:
   discovery_date: "2026-10-24"
   ingestion_approved: false
 
+# Revisie 2026-10-24 na review (docs/review-2026-10-24.md): kapotte en foutief gelabelde bronnen vervangen,
+# Vanbrabant en Renier geschrapt op verzoek, D'haeseleer en Coosemans geschrapt wegens te weinig
+# publiek eigen materiaal, Peersman toegevoegd. Elke expert heeft nu minstens 2 inhoudelijke bronnen.
+
 scoring_rubric:
   version: 1
   method: editorial_weighted
@@ -22,18 +26,20 @@ scoring_rubric:
 experts:
   - expert_id: johan_albrecht
     name: Johan Albrecht
-    organization: UGent
-    role: Professor economie
+    organization: UGent / Itinera
+    role: Hoogleraar milieu-economie; senior fellow Itinera
     region: Vlaanderen
     expert_type: academic
-    domains: [electricity_market, electricity_prices, flemish_energy_policy, renovation_energy_efficiency, nuclear_energy, renewable_energy]
-    expertise_summary: Energie-econoom met expertise in elektriciteitsmarkten, energiebeleid, energiesystemen en de gebouwentransitie.
-    selection_rationale: Combineert academische autoriteit met veel publiek materiaal dat rechtstreeks over de Belgische en Vlaamse energietransitie gaat.
+    domains: [electricity_market, flemish_energy_policy, nuclear_energy, renewable_energy]
+    expertise_summary: Energie-econoom over energiesystemen, de Belgische elektriciteitsmix en energiebeleid.
+    selection_rationale: Langdurige publieke stem over het Belgische elektriciteitslandschap en de kernuitstap.
     selection_status: pending_human_review
-    authority_score: 0.94
-    public_content_score: 0.86
+    review_note: Publiek materiaal is grotendeels ouder dan 2020; recente bijdragen staan vooral op sociale media.
+    authority_components: {demonstrated_expertise: 0.85, institutional_position: 0.80, experience: 0.90, publications: 0.80, flanders_relevance: 0.80}
+    authority_score: 0.83
+    public_content_score: 0.62
     active: true
-    source_urls: ["https://research.ugent.be/web/person/johan-albrecht-0/en", "https://biblio.ugent.be/person/801000787070", "https://febacademy.ugent.be/lesgever/johan-albrecht"]
+    source_urls: ["https://research.ugent.be/web/person/johan-albrecht-0/en", "https://www.itinera.team/nl/publicaties/opiniestukken/zijn-we-klaar-voor-de-kernuitstap", "https://biblio.ugent.be/publication/8556955"]
 
   - expert_id: sam_hamels
     name: Sam Hamels
@@ -41,14 +47,15 @@ experts:
     role: Energie-econoom en postdoctoraal onderzoeker
     region: Vlaanderen
     expert_type: academic
-    domains: [electricity_market, electricity_prices, flexibility_demand_response, heat_pumps, renovation_energy_efficiency]
-    expertise_summary: Onderzoekt huishoudelijke elektrificatie, warmtepompen, energie-efficiëntie en vraagflexibiliteit.
-    selection_rationale: Recente empirische studies gebruiken Vlaamse huishoudens en leveren bruikbaar materiaal over elektrificatie en flexibiliteit.
+    domains: [flexibility_demand_response, heat_pumps, electricity_prices]
+    expertise_summary: Onderzoekt huishoudelijke elektrificatie, warmtepompen en vraagflexibiliteit.
+    selection_rationale: Recente empirische studies met Vlaamse huishoudens over warmtepompflexibiliteit.
     selection_status: pending_human_review
-    authority_score: 0.88
-    public_content_score: 0.82
+    authority_components: {demonstrated_expertise: 0.80, institutional_position: 0.55, experience: 0.55, publications: 0.80, flanders_relevance: 0.95}
+    authority_score: 0.74
+    public_content_score: 0.78
     active: true
-    source_urls: ["https://www.ugent.be/eb/economics/en/research/gei/gei7en", "https://www.ugent.be/eb/economics/en/research/goe", "https://wps-feb.ugent.be/Papers/wp_24_1101_REV.pdf"]
+    source_urls: ["https://wps-feb.ugent.be/Papers/wp_24_1101_REV.pdf", "https://www.ugent.be/eb/economics/en/research/gei/gei18_nl"]
 
   - expert_id: marten_ovaere
     name: Marten Ovaere
@@ -57,13 +64,14 @@ experts:
     region: Vlaanderen
     expert_type: academic
     domains: [electricity_market, electricity_prices, capacity_tariff, flexibility_demand_response, renewable_energy, energy_regulation, flemish_energy_policy]
-    expertise_summary: Onderzoekt elektriciteitsmarktontwerp, prijsprikkels, netregulering en hernieuwbare integratie.
-    selection_rationale: Zijn recente Vlaamse velddata sluiten rechtstreeks aan bij dynamische prijzen en het capaciteitstarief.
+    expertise_summary: Onderzoekt elektriciteitsmarktontwerp, dynamische prijzen, het capaciteitstarief en vraagflexibiliteit.
+    selection_rationale: Recente Vlaamse velddata en beleidspapers over dynamische prijzen en het capaciteitstarief.
     selection_status: pending_human_review
-    authority_score: 0.93
-    public_content_score: 0.86
+    authority_components: {demonstrated_expertise: 0.85, institutional_position: 0.70, experience: 0.60, publications: 0.85, flanders_relevance: 0.95}
+    authority_score: 0.80
+    public_content_score: 0.90
     active: true
-    source_urls: ["https://research.ugent.be/web/person/marten-ovaere-0/en", "https://www.ugent.be/eb/economics/en/research/gei/gei12en", "https://wps-feb.ugent.be/Papers/wp_25_1115.pdf"]
+    source_urls: ["https://research.ugent.be/web/person/marten-ovaere-0/en", "https://wps-feb.ugent.be/Papers/wp_25_1115.pdf", "https://www.ugent.be/eb/economics/en/research/gei/gei28", "https://www.ugent.be/eb/economics/en/research/gei/gei12en"]
 
   - expert_id: joannes_laveyne
     name: Joannes Laveyne
@@ -73,28 +81,47 @@ experts:
     expert_type: academic
     domains: [electricity_market, flexibility_demand_response, renewable_energy, nuclear_energy, distribution_grids]
     expertise_summary: Verbindt elektrische netkennis met techno-economische analyse van flexibiliteit en productieopties.
-    selection_rationale: Zijn doctoraat en publieke analyses behandelen expliciet het Belgische elektriciteitssysteem en zijn flexibiliteitsnoden.
+    selection_rationale: Doctoraat en beleidspaper behandelen expliciet het Belgische elektriciteitssysteem.
     selection_status: pending_human_review
-    authority_score: 0.87
-    public_content_score: 0.76
+    authority_components: {demonstrated_expertise: 0.80, institutional_position: 0.55, experience: 0.65, publications: 0.70, flanders_relevance: 0.90}
+    authority_score: 0.73
+    public_content_score: 0.70
     active: true
-    source_urls: ["https://biblio.ugent.be/person/802000593150", "https://epes.ugent.be/publications/PhDJoannesLaveyne", "https://www.ugent.be/ea/emsme/en/research/ensy/ecm/ecm-poster"]
+    source_urls: ["https://biblio.ugent.be/person/802000593150", "https://epes.ugent.be/publications/PhDJoannesLaveyne", "https://www.ugent.be/eb/economics/en/research/gei/gei7"]
+
+  - expert_id: gert_peersman
+    name: Gert Peersman
+    organization: UGent
+    role: Hoogleraar macro-economie
+    region: Vlaanderen
+    expert_type: academic
+    domains: [electricity_prices, consumer_energy_advice]
+    expertise_summary: Analyseert de impact van energieprijzen op de factuur, consumptie en het spaargedrag van Belgische gezinnen.
+    selection_rationale: Twee grootschalige analyses van echte energiefacturen tijdens de energiecrisis.
+    selection_status: pending_human_review
+    review_note: Macro-econoom; energie is geen hoofdspecialisatie. Alleen gebruiken voor de impact van prijzen op gezinnen.
+    authority_components: {demonstrated_expertise: 0.70, institutional_position: 0.80, experience: 0.80, publications: 0.80, flanders_relevance: 0.75}
+    authority_score: 0.76
+    public_content_score: 0.66
+    active: true
+    source_urls: ["https://www.ugent.be/eb/economics/en/research/gei/gei9", "https://www.ugent.be/eb/economics/en/research/gei/gei5"]
 
   - expert_id: ronnie_belmans
     name: Ronnie Belmans
     organization: KU Leuven / EnergyVille
-    role: Emeritus hoogleraar met formele opdrachten; oprichter EnergyVille
+    role: Emeritus hoogleraar; medeoprichter EnergyVille
     region: Vlaanderen
     expert_type: academic
-    domains: [electricity_market, distribution_grids, flexibility_demand_response, energy_regulation, renewable_energy]
+    domains: [electricity_market, distribution_grids, energy_regulation, nuclear_energy, renewable_energy, flexibility_demand_response]
     expertise_summary: Senior expert in slimme netten, marktliberalisering, systeemplanning en bevoorradingszekerheid.
-    selection_rationale: Zeer hoge autoriteit; geschikt als achtergrondbron, met recente bronnen voor tijdsgevoelige claims.
+    selection_rationale: Zeer hoge autoriteit en nog actief met publieke bijdragen (expert talk september 2025).
     selection_status: pending_human_review
-    review_note: Emeritusstatus maakt expliciete controle op recente activiteit nodig voordat bronnen worden goedgekeurd.
-    authority_score: 0.96
-    public_content_score: 0.72
+    review_note: Emeritus maar aantoonbaar actief in 2025; gebruik oudere bijdragen als achtergrond.
+    authority_components: {demonstrated_expertise: 0.95, institutional_position: 0.85, experience: 1.0, publications: 0.95, flanders_relevance: 0.80}
+    authority_score: 0.91
+    public_content_score: 0.70
     active: true
-    source_urls: ["https://www.esat.kuleuven.be/electa/professors/00006556/view?pubsonpage=20&pubtype=report&sortby=scdate", "https://eng.kuleuven.be/nieuws-en-agenda/nieuws/ronniebelmans"]
+    source_urls: ["https://www.esat.kuleuven.be/electa/professors/00006556/view?pubsonpage=20&pubtype=report&sortby=scdate", "https://energyville.be/en/news/expert-talk-net-zero-2050-why-technology-alone-wont-deliver-climate-neutral-europe", "https://energyville.be/en/news/university-flanders-can-we-do-without-nuclear-power-plants"]
 
   - expert_id: johan_driesen
     name: Johan Driesen
@@ -102,14 +129,16 @@ experts:
     role: Gewoon hoogleraar
     region: Vlaanderen
     expert_type: academic
-    domains: [distribution_grids, solar_panels, home_batteries, electric_vehicles_charging, flexibility_demand_response, renewable_energy]
+    domains: [distribution_grids, solar_panels, home_batteries, electric_vehicles_charging, flexibility_demand_response]
     expertise_summary: Onderzoekt decentrale productie, vermogenselektronica, elektrische voertuigen, batterijen en slimme netten.
-    selection_rationale: Leidt actuele Vlaamse projecten rond de integratie van decentrale energiebronnen in het elektriciteitsnet.
+    selection_rationale: Publieke duiding over thuisbatterijen, zelfconsumptie en de interactie met het net.
     selection_status: pending_human_review
-    authority_score: 0.95
-    public_content_score: 0.82
+    review_note: Publiek materiaal dateert van 2020-2021; prijsvoorspellingen voor batterijen zijn mogelijk achterhaald.
+    authority_components: {demonstrated_expertise: 0.90, institutional_position: 0.85, experience: 0.90, publications: 0.90, flanders_relevance: 0.80}
+    authority_score: 0.87
+    public_content_score: 0.62
     active: true
-    source_urls: ["https://www.kuleuven.be/wieiswie/nl/person/00015960", "https://energyville.be/nl/over-energyville", "https://research.kuleuven.be/portal/nl/project/3E220493"]
+    source_urls: ["https://www.kuleuven.be/wieiswie/nl/person/00015960", "https://energyville.be/en/news/expert-talk-battery-every-home", "https://installatieenbouw.be/magazine/elektrotech/elektriciteit/batterijen-de-weg-uit-de-onzekerheid-voor-de-pv-wereld"]
 
   - expert_id: geert_deconinck
     name: Geert Deconinck
@@ -117,75 +146,48 @@ experts:
     role: Gewoon hoogleraar
     region: Vlaanderen
     expert_type: academic
-    domains: [distribution_grids, electricity_market, flexibility_demand_response, home_batteries, electric_vehicles_charging, energy_regulation]
-    expertise_summary: Specialist in slimme netten, slimme meters, demand-side management en lokale energiegemeenschappen.
-    selection_rationale: Combineert een omvangrijke publicatiebasis met Vlaamse demonstratieprojecten en publieke expertduiding.
+    domains: [distribution_grids, electricity_market, flexibility_demand_response, energy_regulation, renewable_energy]
+    expertise_summary: Specialist in slimme netten, demand-side management en lokale energiegemeenschappen.
+    selection_rationale: Omvangrijke publicatiebasis en recente publieke visie op het toekomstige energiesysteem.
     selection_status: pending_human_review
-    authority_score: 0.95
-    public_content_score: 0.84
+    authority_components: {demonstrated_expertise: 0.90, institutional_position: 0.85, experience: 0.90, publications: 0.90, flanders_relevance: 0.85}
+    authority_score: 0.88
+    public_content_score: 0.66
     active: true
-    source_urls: ["https://www.kuleuven.be/wieiswie/nl/person/00004317", "https://www.esat.kuleuven.be/electa/professors/00004317", "https://energyville.be/en/projects/snippet-secure-and-privacy-friendly-peer-peer-electricity-trading"]
-
-  - expert_id: william_dhaeseleer
-    name: William D'haeseleer
-    organization: KU Leuven
-    role: Emeritus hoogleraar met formele opdrachten
-    region: Vlaanderen
-    expert_type: academic
-    domains: [electricity_market, flemish_energy_policy, energy_regulation, nuclear_energy, renewable_energy]
-    expertise_summary: Senior energiesysteemexpert in elektriciteits- en gasmarkten, technologiekeuzes, kernenergie en beleid.
-    selection_rationale: Waardevolle systeemreferentie voor Vlaanderen, maar niet de primaire bron voor snel wijzigende marktfeiten.
-    selection_status: pending_human_review
-    review_note: Emeritusprofiel; gebruik oudere publicaties als achtergrond en controleer actualiteit per claim.
-    authority_score: 0.94
-    public_content_score: 0.62
-    active: true
-    source_urls: ["https://www.kuleuven.be/wieiswie/en/person/00014331", "https://www.kuleuven.be/kiem/english/publications/team/00014331"]
+    source_urls: ["https://www.kuleuven.be/wieiswie/nl/person/00004317", "https://energyville.be/en/news/expert-talk-what-will-energy-system-future-look", "https://energyville.be/en/news/blog-how-can-electricity-shortages-be-addressed-fairer-way", "https://energyville.be/en/projects/snippet-secure-and-privacy-friendly-peer-peer-electricity-trading"]
 
   - expert_id: dirk_saelens
     name: Dirk Saelens
     organization: KU Leuven / EnergyVille
-    role: Professor energie in gebouwen
+    role: Hoogleraar bouwfysica
     region: Vlaanderen
     expert_type: academic
-    domains: [renovation_energy_efficiency, heat_pumps, flexibility_demand_response, renewable_energy]
-    expertise_summary: Onderzoekt gebouwfysica, HVAC, wijken en de flexibiliteit van gebouwen in het energiesysteem.
-    selection_rationale: Biedt academische diepgang over de wisselwerking tussen renovatie, verwarming en elektriciteit.
+    domains: [renovation_energy_efficiency, heat_pumps]
+    expertise_summary: Onderzoekt gebouwfysica, HVAC en de renovatie van het Vlaamse woningpark.
+    selection_rationale: Coördineert Vlaamse renovatie-innovatie (ConstrucThor) en duidt de renovatie-uitdaging publiek.
     selection_status: pending_human_review
-    authority_score: 0.93
-    public_content_score: 0.80
+    authority_components: {demonstrated_expertise: 0.85, institutional_position: 0.85, experience: 0.85, publications: 0.85, flanders_relevance: 0.80}
+    authority_score: 0.84
+    public_content_score: 0.66
     active: true
-    source_urls: ["https://www.kuleuven.be/wieiswie/en/person/00007961", "https://www.kuleuven.be/doctoraatsverdediging/fiches/3E21/3E210087.htm"]
+    source_urls: ["https://www.kuleuven.be/wieiswie/en/person/00007961", "https://energyville.be/en/news/flemish-innovation-partners-want-industrialise-renovation-and-construction-accelerating-design", "https://energyville.be/en/news/innovative-research-building-constructhor-106-million-euros-research-climate-neutral"]
 
   - expert_id: griet_verbeeck
     name: Griet Verbeeck
     organization: UHasselt
-    role: Professor duurzaam bouwen
+    role: Hoogleraar duurzaam bouwen
     region: Vlaanderen
     expert_type: academic
-    domains: [renovation_energy_efficiency, heat_pumps, flemish_energy_policy]
-    expertise_summary: Gespecialiseerd in duurzame gebouwen, huishoudelijke renovatie en energie-efficiëntie.
-    selection_rationale: Recente studies behandelen diepe renovaties van Belgische woningen en bewonersgerichte strategieën.
+    domains: [renovation_energy_efficiency, heat_pumps]
+    expertise_summary: Gespecialiseerd in duurzame gebouwen, bewonersgerichte renovatie en sufficiëntie.
+    selection_rationale: Studies over diepe renovaties van Belgische woningen en publieke duiding over sufficiëntie.
     selection_status: pending_human_review
-    authority_score: 0.91
-    public_content_score: 0.74
+    review_note: documentserver.uhasselt.be weigert geautomatiseerde verzoeken (HTTP 503); de fetch-fase moet dit opvangen of handmatig ophalen.
+    authority_components: {demonstrated_expertise: 0.75, institutional_position: 0.75, experience: 0.80, publications: 0.70, flanders_relevance: 0.80}
+    authority_score: 0.76
+    public_content_score: 0.64
     active: true
-    source_urls: ["https://www.uhasselt.be/nl/wie-is-wie/detail/griet-verbeeck", "https://documentserver.uhasselt.be/handle/1942/36902", "https://documentserver.uhasselt.be/bitstream/1942/44970/1/1-s2.0-S0378778824012660-main.pdf"]
-
-  - expert_id: thierry_coosemans
-    name: Thierry Coosemans
-    organization: VUB / MOBI
-    role: Professor en adjunct-directeur
-    region: Vlaanderen
-    expert_type: academic
-    domains: [electric_vehicles_charging, home_batteries, flexibility_demand_response, renewable_energy]
-    expertise_summary: Onderzoekt elektrische mobiliteit, vehicle-to-grid, batterijen en lokale energiesystemen.
-    selection_rationale: Leidt Vlaamse projecten die mobiliteit en energiesysteemflexibiliteit rechtstreeks verbinden.
-    selection_status: pending_human_review
-    authority_score: 0.92
-    public_content_score: 0.77
-    active: true
-    source_urls: ["https://mobi.research.vub.be/prof-dr-thierry-coosemans", "https://researchportal.vub.be/en/persons/thierry-coosemans", "https://mobi.research.vub.be/team"]
+    source_urls: ["https://www.uhasselt.be/nl/wie-is-wie/detail/griet-verbeeck", "https://www.vlaanderen.be/architectuur-bekeken-vanuit-het-donutmodel-een-gesprek-met-griet-verbeeck", "https://documentserver.uhasselt.be/bitstream/1942/44970/1/1-s2.0-S0378778824012660-main.pdf", "https://documentserver.uhasselt.be/handle/1942/36902"]
 
   - expert_id: daan_six
     name: Daan Six
@@ -193,29 +195,31 @@ experts:
     role: Programmamanager Grids & Energy Markets
     region: Vlaanderen
     expert_type: research_institute
-    domains: [electricity_market, distribution_grids, flexibility_demand_response, energy_regulation, renewable_energy]
-    expertise_summary: Stuurt toegepast onderzoek naar marktontwerp, flexibiliteit, netbeslissingen en systeemsturing.
-    selection_rationale: Verbindt EnergyVille-onderzoek met Vlaamse living labs en concrete noden van netbeheerders.
+    domains: [electricity_market, distribution_grids, flexibility_demand_response, renewable_energy]
+    expertise_summary: Stuurt toegepast onderzoek naar marktontwerp, flexibiliteit en netbeslissingen.
+    selection_rationale: Leidt het Open Thor living lab in Genk, dat Vlaamse netbeheerders en bedrijven verbindt.
     selection_status: pending_human_review
-    authority_score: 0.90
-    public_content_score: 0.72
+    authority_components: {demonstrated_expertise: 0.75, institutional_position: 0.65, experience: 0.75, publications: 0.55, flanders_relevance: 0.90}
+    authority_score: 0.73
+    public_content_score: 0.60
     active: true
-    source_urls: ["https://vito.be/en/applications/energy-flexibility-market-design-grid-decision-support-and-active-system-management", "https://energyville.be/en/about-energyville", "https://energyville.be/nl/nieuws/dubbelinterview-open-thor-ecosysteem-om-energiepuzzel-te-leggen"]
+    source_urls: ["https://vito.be/en/applications/energy-flexibility-market-design-grid-decision-support-and-active-system-management", "https://energyville.be/nl/nieuws/dubbelinterview-open-thor-ecosysteem-om-energiepuzzel-te-leggen", "https://energyville.be/en/news/krc-genk-joins-open-thor-living-lab-and-helps-shape-innovations-energy"]
 
   - expert_id: stijn_verbeke
     name: Stijn Verbeke
-    organization: VITO / EnergyVille
-    role: Expert gebouwen en wijken
+    organization: VITO / EnergyVille / UAntwerpen
+    role: Expert energieprestatie van gebouwen (deeltijds VITO en UAntwerpen)
     region: Vlaanderen
     expert_type: research_institute
-    domains: [renovation_energy_efficiency, heat_pumps, flexibility_demand_response]
-    expertise_summary: Toegepast onderzoek naar gebouwprestaties, renovatie en gebouwen in het energiesysteem.
-    selection_rationale: Combineert EnergyVille-onderzoek met beleidsadvies over de gebouwentransitie.
+    domains: [renovation_energy_efficiency, heat_pumps, flexibility_demand_response, consumer_energy_advice]
+    expertise_summary: Toegepast onderzoek naar EPB-regelgeving, gebouwprestaties en verwarmingskeuzes.
+    selection_rationale: Enige UAntwerpen-link in het register; concrete besparingsanalyses voor Vlaamse gezinnen.
     selection_status: pending_human_review
-    authority_score: 0.88
-    public_content_score: 0.70
+    authority_components: {demonstrated_expertise: 0.80, institutional_position: 0.60, experience: 0.75, publications: 0.65, flanders_relevance: 0.95}
+    authority_score: 0.76
+    public_content_score: 0.58
     active: true
-    source_urls: ["https://energyville.be/wp-content/uploads/2024/05/final-report-on-the-technical-support-to-the-development-MJ0320413ENN.pdf", "https://energyville.be/nl/nieuws/expert-talk-een-nieuwe-rol-voor-gebouwen-het-energiesysteem-van-de-toekomst"]
+    source_urls: ["https://www.uantwerpen.be/en/staff/stijn-verbeke/research", "https://energyville.be/en/news/energyville-calculates-de-standaard-how-save-hundreds-euros-energy-without-catching-cold", "https://energyville.be/nl/nieuws/expert-talk-een-nieuwe-rol-voor-gebouwen-het-energiesysteem-van-de-toekomst"]
 
   - expert_id: hakan_ergun
     name: Hakan Ergun
@@ -223,29 +227,16 @@ experts:
     role: Hoofddocent en groepshoofd
     region: Vlaanderen
     expert_type: academic
-    domains: [electricity_market, electricity_prices, distribution_grids, renewable_energy, flexibility_demand_response]
+    domains: [electricity_market, electricity_prices, distribution_grids, renewable_energy]
     expertise_summary: Onderzoekt netplanning, offshore wind en hybride AC/DC-netten.
-    selection_rationale: Actief expert met publieke analyses over Belgische infrastructuurkeuzes.
+    selection_rationale: Publieke analyses over Belgische offshore-infrastructuur en de kosten ervan.
     selection_status: pending_human_review
-    authority_score: 0.92
-    public_content_score: 0.78
+    review_note: Werk raakt vooral het Belgische transmissienet; Vlaamse relevantie is indirect.
+    authority_components: {demonstrated_expertise: 0.80, institutional_position: 0.65, experience: 0.70, publications: 0.85, flanders_relevance: 0.60}
+    authority_score: 0.72
+    public_content_score: 0.76
     active: true
-    source_urls: ["https://www.kuleuven.be/wieiswie/en/person/00069734", "https://energyville.be/en/news/choosing-not-choose-savings-or-delayed-bill-offshore-wind", "https://energyville.be/en/blog/expert-talk-why-are-hvdc-grids-essential-renewable-energy-transition"]
-
-  - expert_id: pieterjan_renier
-    name: Pieterjan Renier
-    organization: Vlaamse Nutsregulator
-    role: Algemeen directeur
-    region: Vlaanderen
-    expert_type: institutional
-    domains: [energy_regulation, electricity_prices, energy_contracts, capacity_tariff, consumer_energy_advice, flemish_energy_policy]
-    expertise_summary: Institutionele autoriteit voor Vlaamse tarieven, contractinformatie, markttoezicht en consumentenbescherming.
-    selection_rationale: Primaire Vlaamse regulatorbron; persoonlijke en institutionele uitspraken worden onderscheiden.
-    selection_status: pending_human_review
-    authority_score: 0.94
-    public_content_score: 0.68
-    active: true
-    source_urls: ["https://www.vlaamsenutsregulator.be/over-vnr/management-en-teams", "https://www.vlaamsenutsregulator.be/over-vnr/onze-organen", "https://www.vlaamsenutsregulator.be/sites/default/files/document/prijzenrapport_2024.pdf"]
+    source_urls: ["https://www.kuleuven.be/wieiswie/en/person/00069734", "https://energyville.be/en/news/choosing-not-choose-savings-or-delayed-bill-offshore-wind", "https://energyville.be/en/news/expert-talk-energyville-actively-supporting-belgiums-pivotal-role-north-sea", "https://energyville.be/en/blog/expert-talk-why-are-hvdc-grids-essential-renewable-energy-transition"]
 
   - expert_id: luc_pauwels
     name: Luc Pauwels
@@ -253,14 +244,15 @@ experts:
     role: Energie-expert en journalist
     region: Vlaanderen
     expert_type: journalist
-    domains: [electricity_market, electricity_prices, energy_contracts, nuclear_energy, solar_panels, heat_pumps, capacity_tariff, flemish_energy_policy, consumer_energy_advice]
-    expertise_summary: Duidt energiedossiers, prijzen, technologie en beleid voor een breed Vlaams publiek.
-    selection_rationale: Groot, toegankelijk en actueel Nederlandstalig corpus met expliciete Vlaamse relevantie.
+    domains: [electricity_market, electricity_prices, energy_contracts, nuclear_energy, solar_panels, heat_pumps, flemish_energy_policy, consumer_energy_advice]
+    expertise_summary: Duidt energiedossiers, prijzen, contracten en beleid voor een breed Vlaams publiek.
+    selection_rationale: Groot, actueel Nederlandstalig corpus met expliciete Vlaamse relevantie.
     selection_status: pending_human_review
-    authority_score: 0.84
-    public_content_score: 0.94
+    authority_components: {demonstrated_expertise: 0.70, institutional_position: 0.60, experience: 0.85, publications: 0.40, flanders_relevance: 0.95}
+    authority_score: 0.71
+    public_content_score: 0.95
     active: true
-    source_urls: ["https://www.vrt.be/vrtnws/nl/experten/luc-pauwels", "https://www.vrt.be/vrtnws/nl/tag/luc-pauwels", "https://www.vrt.be/vrtnws/nl/2021/01/15/vragen-digitale-teller-zonnepanelen", "https://www.vrt.be/vrtnws/nl/2024/10/01/elektriciteit-interessanter-maken-dan-aardgas-mission-impossibl"]
+    source_urls: ["https://www.vrt.be/vrtnws/nl/tag/luc-pauwels", "https://www.vrt.be/vrtnws/nl/2026/10/10/stijging-tot-60-een-overzicht-van-alle-energiecontracten-in-vl", "https://www.vrt.be/vrtnws/nl/2026/09/18/warmtepompen-een-aanslag-op-ons-stroomverbruik", "https://www.vrt.be/vrtnws/nl/2026/03/22/de-nieuwe-energiecrisis-vijf-vragen-en-antwoorden", "https://www.vrt.be/vrtnws/nl/2024/10/01/elektriciteit-interessanter-maken-dan-aardgas-mission-impossibl"]
 
   - expert_id: jordi_van_paemel
     name: Jordi Van Paemel
@@ -268,98 +260,78 @@ experts:
     role: Energie-expert
     region: Vlaanderen
     expert_type: commercial_consumer
-    domains: [energy_contracts, electricity_prices, solar_panels, heat_pumps, renovation_energy_efficiency, distribution_grids, consumer_energy_advice, flemish_energy_policy]
-    expertise_summary: Volgt energieprijzen, leverancierspraktijken, contracten en consumentenrechten met regionale aandacht.
-    selection_rationale: Publiceert frequente consumentenduiding; commerciële vergelijkingen blijven gescheiden van regulatorfeiten.
+    domains: [energy_contracts, electricity_prices, distribution_grids, heat_pumps, renovation_energy_efficiency, consumer_energy_advice, flemish_energy_policy]
+    expertise_summary: Volgt energieprijzen, leverancierspraktijken, contracten en consumentenrechten.
+    selection_rationale: Frequente, actuele consumentenduiding; commerciële vergelijkingen blijven gescheiden van regulatorfeiten.
     selection_status: pending_human_review
-    authority_score: 0.85
-    public_content_score: 0.95
+    authority_components: {demonstrated_expertise: 0.65, institutional_position: 0.55, experience: 0.75, publications: 0.30, flanders_relevance: 0.90}
+    authority_score: 0.64
+    public_content_score: 0.92
     active: true
     source_urls: ["https://www.test-aankoop.be/auteur/jordi-van-paemel", "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/hogere-voorschotten-voor-energie", "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/evolutie-energiekosten", "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/vlaaderen-afbouw-aardgas-gevolgen-faq"]
 
-  - expert_id: frank_vanbrabant
-    name: Frank Vanbrabant
-    organization: Fluvius
-    role: CEO
-    region: Vlaanderen
-    expert_type: institutional
-    domains: [distribution_grids, capacity_tariff, flexibility_demand_response, solar_panels, home_batteries, energy_regulation]
-    expertise_summary: Bestuurlijke stem van de Vlaamse distributienetbeheerder over netinvesteringen en elektrificatie.
-    selection_rationale: Sterk institutioneel relevant maar met beperkter persoonlijk auteurschap; vooral institutionele context.
-    selection_status: pending_human_review
-    review_note: Beperkt persoonlijk auteurschap; alleen behouden als institutionele expertise als expertprofiel gewenst is.
-    authority_score: 0.86
-    public_content_score: 0.56
-    active: true
-    source_urls: ["https://over.fluvius.be/nl/wie-zijn-we/governance/bestuursorganen/managementcomite", "https://www.fluvius.be/sites/fluvius/files/2026-03/fluvius-system-operator-jaarverslag-2025.pdf", "https://over.fluvius.be/sites/fluvius/files/2026-02/fluvius-base-information-memorandum-2026.pdf"]
-
 sources:
-  - {expert_id: johan_albrecht, source_url: "https://research.ugent.be/web/person/johan-albrecht-0/en", source_type: official_profile, title: "Johan Albrecht — UGent Research Explorer", publisher: UGent, published_at: null, language: en, domains: [electricity_market, flemish_energy_policy], quality_score: 0.95, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: johan_albrecht, source_url: "https://biblio.ugent.be/person/801000787070", source_type: institutional_page, title: "UGent Academic Bibliography — Johan Albrecht", publisher: UGent, published_at: null, language: en, domains: [electricity_market, nuclear_energy, renewable_energy], quality_score: 0.92, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: johan_albrecht, source_url: "https://febacademy.ugent.be/lesgever/johan-albrecht", source_type: official_profile, title: "Johan Albrecht — FEB Academy", publisher: UGent, published_at: null, language: nl, domains: [renovation_energy_efficiency, electricity_market], quality_score: 0.86, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: johan_albrecht, source_url: "https://research.ugent.be/web/person/johan-albrecht-0/en", source_type: official_profile, title: "Johan Albrecht — UGent Research Explorer", publisher: UGent, published_at: null, language: en, domains: [electricity_market, flemish_energy_policy], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: johan_albrecht, source_url: "https://www.itinera.team/nl/publicaties/opiniestukken/zijn-we-klaar-voor-de-kernuitstap", source_type: podcast, title: "Zijn we klaar voor de kernuitstap?", publisher: Itinera, published_at: null, language: nl, domains: [nuclear_energy, electricity_market, renewable_energy], quality_score: 0.78, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: johan_albrecht, source_url: "https://biblio.ugent.be/publication/8556955", source_type: report, title: "Energietrilemma. Een verkenning van het Belgische elektriciteitslandschap in 2030", publisher: Itinera / UGent, published_at: "2017", language: nl, domains: [electricity_market, nuclear_energy, flemish_energy_policy], quality_score: 0.80, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: sam_hamels, source_url: "https://www.ugent.be/eb/economics/en/research/gei/gei7en", source_type: official_profile, title: "Ghent Environmental Economics Institute — researchers", publisher: UGent, published_at: null, language: en, domains: [electricity_market, renovation_energy_efficiency], quality_score: 0.91, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: sam_hamels, source_url: "https://www.ugent.be/eb/economics/en/research/goe", source_type: institutional_page, title: "Gentse Economische Inzichten", publisher: UGent, published_at: null, language: nl, domains: [electricity_market, renovation_energy_efficiency], quality_score: 0.82, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: sam_hamels, source_url: "https://wps-feb.ugent.be/Papers/wp_24_1101_REV.pdf", source_type: paper, title: "Residential heat-pump flexibility field experiment", publisher: UGent, published_at: "2025", language: en, domains: [heat_pumps, flexibility_demand_response], quality_score: 0.95, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: sam_hamels, source_url: "https://wps-feb.ugent.be/Papers/wp_24_1101_REV.pdf", source_type: paper, title: "The proof of the pudding is in the heating: a field experiment on household engagement with heat pump flexibility", publisher: UGent, published_at: "2025", language: en, domains: [heat_pumps, flexibility_demand_response], quality_score: 0.92, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: sam_hamels, source_url: "https://www.ugent.be/eb/economics/en/research/gei/gei18_nl", source_type: report, title: "Flexibel verwarmen met warmtepompen — een economische pilootstudie", publisher: UGent Gentse Economische Inzichten, published_at: "2025-02-03", language: nl, domains: [heat_pumps, flexibility_demand_response, electricity_prices], quality_score: 0.90, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: marten_ovaere, source_url: "https://research.ugent.be/web/person/marten-ovaere-0/en", source_type: official_profile, title: "Marten Ovaere — UGent Research Explorer", publisher: UGent, published_at: null, language: en, domains: [electricity_market, electricity_prices, energy_regulation], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: marten_ovaere, source_url: "https://www.ugent.be/eb/economics/en/research/gei/gei12en", source_type: official_profile, title: "Marten Ovaere — GEI", publisher: UGent, published_at: null, language: en, domains: [electricity_market, renewable_energy, flemish_energy_policy], quality_score: 0.92, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: marten_ovaere, source_url: "https://wps-feb.ugent.be/Papers/wp_25_1115.pdf", source_type: paper, title: "Mind the Peak", publisher: UGent, published_at: "2025", language: en, domains: [capacity_tariff, flexibility_demand_response, electricity_prices], quality_score: 0.97, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: marten_ovaere, source_url: "https://research.ugent.be/web/person/marten-ovaere-0/en", source_type: official_profile, title: "Marten Ovaere — UGent Research Explorer", publisher: UGent, published_at: null, language: en, domains: [electricity_market, energy_regulation], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: marten_ovaere, source_url: "https://wps-feb.ugent.be/Papers/wp_25_1115.pdf", source_type: paper, title: "Mind the Peak: the role of peak demand charges and real-time pricing in residential electricity flexibility", publisher: UGent, published_at: "2025", language: en, domains: [capacity_tariff, flexibility_demand_response, electricity_prices], quality_score: 0.93, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: marten_ovaere, source_url: "https://www.ugent.be/eb/economics/en/research/gei/gei28", source_type: report, title: "Eén energietransitie, twee signalen — dynamische prijzen en het capaciteitstarief in Vlaanderen", publisher: UGent Gentse Economische Inzichten, published_at: "2025-12-08", language: nl, domains: [capacity_tariff, electricity_prices, flemish_energy_policy, energy_regulation], quality_score: 0.95, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: marten_ovaere, source_url: "https://www.ugent.be/eb/economics/en/research/gei/gei12en", source_type: report, title: "How to make electricity demand more responsive to variable renewable generation", publisher: UGent Gentse Economische Inzichten, published_at: "2024-01-18", language: en, domains: [flexibility_demand_response, renewable_energy, electricity_market], quality_score: 0.90, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: joannes_laveyne, source_url: "https://biblio.ugent.be/person/802000593150", source_type: institutional_page, title: "UGent Academic Bibliography — Joannes Laveyne", publisher: UGent, published_at: null, language: en, domains: [renewable_energy, nuclear_energy, flexibility_demand_response], quality_score: 0.93, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: joannes_laveyne, source_url: "https://epes.ugent.be/publications/PhDJoannesLaveyne", source_type: paper, title: "Potential Sources of Flexibility for the Belgian Electricity System", publisher: UGent, published_at: "2024", language: en, domains: [flexibility_demand_response, electricity_market], quality_score: 0.97, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: joannes_laveyne, source_url: "https://www.ugent.be/ea/emsme/en/research/ensy/ecm/ecm-poster", source_type: institutional_page, title: "Energy and resource management", publisher: UGent, published_at: null, language: en, domains: [distribution_grids, flexibility_demand_response, renewable_energy], quality_score: 0.82, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
+  - {expert_id: joannes_laveyne, source_url: "https://biblio.ugent.be/person/802000593150", source_type: institutional_page, title: "UGent Academic Bibliography — Joannes Laveyne", publisher: UGent, published_at: null, language: en, domains: [renewable_energy, flexibility_demand_response], quality_score: 0.70, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: joannes_laveyne, source_url: "https://epes.ugent.be/publications/PhDJoannesLaveyne", source_type: paper, title: "Potential Sources of Flexibility for the Belgian Electricity System", publisher: UGent, published_at: "2024-08-19", language: en, domains: [flexibility_demand_response, electricity_market, distribution_grids], quality_score: 0.92, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: joannes_laveyne, source_url: "https://www.ugent.be/eb/economics/en/research/gei/gei7", source_type: report, title: "Vier aanbevelingen voor een stabiele en duurzame elektriciteitsmarkt", publisher: UGent Gentse Economische Inzichten, published_at: "2023-02-24", language: nl, domains: [electricity_market, renewable_energy, nuclear_energy], quality_score: 0.86, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: ronnie_belmans, source_url: "https://www.esat.kuleuven.be/electa/professors/00006556/view?pubsonpage=20&pubtype=report&sortby=scdate", source_type: official_profile, title: "Ronnie Belmans — KU Leuven ELECTA", publisher: KU Leuven, published_at: null, language: en, domains: [distribution_grids, electricity_market, energy_regulation], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: ronnie_belmans, source_url: "https://eng.kuleuven.be/nieuws-en-agenda/nieuws/ronniebelmans", source_type: official_profile, title: "Ronnie Belmans — Faculty of Engineering", publisher: KU Leuven, published_at: null, language: nl, domains: [distribution_grids, flexibility_demand_response], quality_score: 0.88, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: gert_peersman, source_url: "https://www.ugent.be/eb/economics/en/research/gei/gei9", source_type: report, title: "Hoezo energiecrisis? Analyse van de energiefactuur van 930.000 gezinnen", publisher: UGent Gentse Economische Inzichten, published_at: "2023-03-31", language: nl, domains: [electricity_prices, consumer_energy_advice], quality_score: 0.88, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: gert_peersman, source_url: "https://www.ugent.be/eb/economics/en/research/gei/gei5", source_type: report, title: "Impact van de energiefactuur op het energieverbruik, consumptie- en spaargedrag van Belgische gezinnen", publisher: UGent Gentse Economische Inzichten, published_at: "2022-10-20", language: nl, domains: [electricity_prices, consumer_energy_advice], quality_score: 0.84, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: johan_driesen, source_url: "https://www.kuleuven.be/wieiswie/nl/person/00015960", source_type: official_profile, title: "Johan Driesen — KU Leuven Wie-is-wie", publisher: KU Leuven, published_at: null, language: nl, domains: [distribution_grids, solar_panels, electric_vehicles_charging], quality_score: 0.97, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: johan_driesen, source_url: "https://energyville.be/nl/over-energyville", source_type: institutional_page, title: "Over EnergyVille", publisher: EnergyVille, published_at: null, language: nl, domains: [renewable_energy, flexibility_demand_response, distribution_grids], quality_score: 0.87, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
-  - {expert_id: johan_driesen, source_url: "https://research.kuleuven.be/portal/nl/project/3E220493", source_type: institutional_page, title: "C-battery / EnergyVille", publisher: KU Leuven, published_at: null, language: nl, domains: [home_batteries, flexibility_demand_response, distribution_grids], quality_score: 0.91, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
+  - {expert_id: ronnie_belmans, source_url: "https://www.esat.kuleuven.be/electa/professors/00006556/view?pubsonpage=20&pubtype=report&sortby=scdate", source_type: official_profile, title: "Ronnie Belmans — KU Leuven ELECTA", publisher: KU Leuven, published_at: null, language: en, domains: [distribution_grids, electricity_market, energy_regulation], quality_score: 0.70, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: ronnie_belmans, source_url: "https://energyville.be/en/news/expert-talk-net-zero-2050-why-technology-alone-wont-deliver-climate-neutral-europe", source_type: interview, title: "Net Zero 2050: why technology alone won't deliver a climate-neutral Europe", publisher: EnergyVille, published_at: "2025-09-24", language: en, domains: [renewable_energy, electricity_market, flexibility_demand_response], quality_score: 0.88, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: ronnie_belmans, source_url: "https://energyville.be/en/news/university-flanders-can-we-do-without-nuclear-power-plants", source_type: presentation, title: "Universiteit van Vlaanderen: kunnen we zonder kerncentrales?", publisher: EnergyVille / Universiteit van Vlaanderen, published_at: "2021-02-17", language: nl, domains: [nuclear_energy, electricity_market], quality_score: 0.78, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: geert_deconinck, source_url: "https://www.kuleuven.be/wieiswie/nl/person/00004317", source_type: official_profile, title: "Geert Deconinck — KU Leuven Wie-is-wie", publisher: KU Leuven, published_at: null, language: nl, domains: [distribution_grids, flexibility_demand_response, energy_regulation], quality_score: 0.97, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: geert_deconinck, source_url: "https://www.esat.kuleuven.be/electa/professors/00004317", source_type: official_profile, title: "Geert Deconinck — KU Leuven ELECTA", publisher: KU Leuven, published_at: null, language: en, domains: [distribution_grids, flexibility_demand_response, electric_vehicles_charging], quality_score: 0.95, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: geert_deconinck, source_url: "https://energyville.be/en/projects/snippet-secure-and-privacy-friendly-peer-peer-electricity-trading", source_type: institutional_page, title: "SNIPPET — peer-to-peer electricity trading", publisher: EnergyVille, published_at: null, language: en, domains: [electricity_market, flexibility_demand_response, energy_regulation], quality_score: 0.90, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: johan_driesen, source_url: "https://www.kuleuven.be/wieiswie/nl/person/00015960", source_type: official_profile, title: "Johan Driesen — KU Leuven Wie-is-wie", publisher: KU Leuven, published_at: null, language: nl, domains: [distribution_grids, solar_panels, electric_vehicles_charging], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: johan_driesen, source_url: "https://energyville.be/en/news/expert-talk-battery-every-home", source_type: interview, title: "Expert Talk: a battery in every home?", publisher: EnergyVille, published_at: "2020-11-06", language: en, domains: [home_batteries, solar_panels, flexibility_demand_response], quality_score: 0.80, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: johan_driesen, source_url: "https://installatieenbouw.be/magazine/elektrotech/elektriciteit/batterijen-de-weg-uit-de-onzekerheid-voor-de-pv-wereld", source_type: news_article, title: "Batterijen: de weg uit de onzekerheid voor de PV-wereld?", publisher: Installatie & Bouw, published_at: "2021-04-28", language: nl, domains: [home_batteries, solar_panels, distribution_grids], quality_score: 0.75, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: william_dhaeseleer, source_url: "https://www.kuleuven.be/wieiswie/en/person/00014331", source_type: official_profile, title: "William D'haeseleer — KU Leuven Who's Who", publisher: KU Leuven, published_at: null, language: en, domains: [electricity_market, nuclear_energy, renewable_energy, flemish_energy_policy], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: william_dhaeseleer, source_url: "https://www.kuleuven.be/kiem/english/publications/team/00014331", source_type: institutional_page, title: "William D'haeseleer — KU Leuven Energy Institute", publisher: KU Leuven, published_at: null, language: en, domains: [energy_regulation, electricity_market, nuclear_energy], quality_score: 0.84, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: geert_deconinck, source_url: "https://www.kuleuven.be/wieiswie/nl/person/00004317", source_type: official_profile, title: "Geert Deconinck — KU Leuven Wie-is-wie", publisher: KU Leuven, published_at: null, language: nl, domains: [distribution_grids, flexibility_demand_response, energy_regulation], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: geert_deconinck, source_url: "https://energyville.be/en/news/expert-talk-what-will-energy-system-future-look", source_type: interview, title: "Expert Talk: what will the energy system of the future look like?", publisher: EnergyVille, published_at: "2024-04-19", language: en, domains: [renewable_energy, distribution_grids, flexibility_demand_response], quality_score: 0.88, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: geert_deconinck, source_url: "https://energyville.be/en/news/blog-how-can-electricity-shortages-be-addressed-fairer-way", source_type: interview, title: "Blog: how can electricity shortages be addressed in a fairer way?", publisher: EnergyVille, published_at: "2018-11-07", language: en, domains: [electricity_market, distribution_grids, energy_regulation], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: geert_deconinck, source_url: "https://energyville.be/en/projects/snippet-secure-and-privacy-friendly-peer-peer-electricity-trading", source_type: institutional_page, title: "SNIPPET — peer-to-peer electricity trading", publisher: EnergyVille, published_at: null, language: en, domains: [electricity_market, flexibility_demand_response], quality_score: 0.68, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
 
-  - {expert_id: dirk_saelens, source_url: "https://www.kuleuven.be/wieiswie/en/person/00007961", source_type: official_profile, title: "Dirk Saelens — KU Leuven Who's Who", publisher: KU Leuven, published_at: null, language: en, domains: [renovation_energy_efficiency, heat_pumps, flexibility_demand_response], quality_score: 0.97, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: dirk_saelens, source_url: "https://www.kuleuven.be/doctoraatsverdediging/fiches/3E21/3E210087.htm", source_type: institutional_page, title: "Residential district energy flexibility", publisher: KU Leuven, published_at: "2026", language: en, domains: [flexibility_demand_response, heat_pumps, renovation_energy_efficiency], quality_score: 0.86, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
+  - {expert_id: dirk_saelens, source_url: "https://www.kuleuven.be/wieiswie/en/person/00007961", source_type: official_profile, title: "Dirk Saelens — KU Leuven Who's Who", publisher: KU Leuven, published_at: null, language: en, domains: [renovation_energy_efficiency, heat_pumps], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: dirk_saelens, source_url: "https://energyville.be/en/news/flemish-innovation-partners-want-industrialise-renovation-and-construction-accelerating-design", source_type: news_article, title: "Flemish innovation partners want to industrialise renovation and construction", publisher: EnergyVille, published_at: "2026-06-12", language: en, domains: [renovation_energy_efficiency], quality_score: 0.82, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: dirk_saelens, source_url: "https://energyville.be/en/news/innovative-research-building-constructhor-106-million-euros-research-climate-neutral", source_type: news_article, title: "Innovative research building ConstrucThor: 10.6 million euros for research on climate-neutral construction", publisher: EnergyVille, published_at: "2023-10-17", language: en, domains: [renovation_energy_efficiency, heat_pumps], quality_score: 0.76, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: griet_verbeeck, source_url: "https://www.uhasselt.be/nl/wie-is-wie/detail/griet-verbeeck", source_type: official_profile, title: "Griet Verbeeck — UHasselt", publisher: UHasselt, published_at: null, language: nl, domains: [renovation_energy_efficiency], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: griet_verbeeck, source_url: "https://documentserver.uhasselt.be/handle/1942/36902", source_type: paper, title: "Resident-oriented sufficiency in energy renovation", publisher: UHasselt, published_at: "2021", language: en, domains: [renovation_energy_efficiency], quality_score: 0.90, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: griet_verbeeck, source_url: "https://documentserver.uhasselt.be/bitstream/1942/44970/1/1-s2.0-S0378778824012660-main.pdf", source_type: paper, title: "Deep renovations in Belgian households", publisher: UHasselt, published_at: "2025", language: en, domains: [renovation_energy_efficiency, heat_pumps], quality_score: 0.95, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: griet_verbeeck, source_url: "https://www.uhasselt.be/nl/wie-is-wie/detail/griet-verbeeck", source_type: official_profile, title: "Griet Verbeeck — UHasselt", publisher: UHasselt, published_at: null, language: nl, domains: [renovation_energy_efficiency], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: griet_verbeeck, source_url: "https://www.vlaanderen.be/architectuur-bekeken-vanuit-het-donutmodel-een-gesprek-met-griet-verbeeck", source_type: podcast, title: "Architectuur bekeken vanuit het donutmodel — een gesprek met Griet Verbeeck", publisher: Vlaamse overheid, published_at: "2024-04-03", language: nl, domains: [renovation_energy_efficiency], quality_score: 0.80, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: griet_verbeeck, source_url: "https://documentserver.uhasselt.be/bitstream/1942/44970/1/1-s2.0-S0378778824012660-main.pdf", source_type: paper, title: "Deep renovations in Belgian households", publisher: UHasselt, published_at: "2025", language: en, domains: [renovation_energy_efficiency, heat_pumps], quality_score: 0.88, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: griet_verbeeck, source_url: "https://documentserver.uhasselt.be/handle/1942/36902", source_type: paper, title: "Resident-oriented sufficiency in energy renovation", publisher: UHasselt, published_at: "2021", language: en, domains: [renovation_energy_efficiency], quality_score: 0.80, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: thierry_coosemans, source_url: "https://mobi.research.vub.be/prof-dr-thierry-coosemans", source_type: official_profile, title: "Thierry Coosemans — VUB MOBI", publisher: VUB, published_at: null, language: en, domains: [electric_vehicles_charging, home_batteries, flexibility_demand_response], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: thierry_coosemans, source_url: "https://researchportal.vub.be/en/persons/thierry-coosemans", source_type: institutional_page, title: "Thierry Coosemans — VUB Research Portal", publisher: VUB, published_at: null, language: en, domains: [electric_vehicles_charging, renewable_energy], quality_score: 0.94, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: thierry_coosemans, source_url: "https://mobi.research.vub.be/team", source_type: institutional_page, title: "MOBI team", publisher: VUB, published_at: null, language: en, domains: [electric_vehicles_charging, flexibility_demand_response], quality_score: 0.82, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
+  - {expert_id: daan_six, source_url: "https://vito.be/en/applications/energy-flexibility-market-design-grid-decision-support-and-active-system-management", source_type: institutional_page, title: "Energy flexibility, market design and grid decision support", publisher: VITO, published_at: null, language: en, domains: [electricity_market, flexibility_demand_response, distribution_grids], quality_score: 0.70, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
+  - {expert_id: daan_six, source_url: "https://energyville.be/nl/nieuws/dubbelinterview-open-thor-ecosysteem-om-energiepuzzel-te-leggen", source_type: interview, title: "Dubbelinterview Open Thor: ecosysteem om de energiepuzzel te leggen", publisher: EnergyVille, published_at: "2021-11-18", language: nl, domains: [flexibility_demand_response, distribution_grids, renewable_energy], quality_score: 0.82, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: daan_six, source_url: "https://energyville.be/en/news/krc-genk-joins-open-thor-living-lab-and-helps-shape-innovations-energy", source_type: news_article, title: "KRC Genk joins Open Thor living lab", publisher: EnergyVille, published_at: "2023-09-05", language: en, domains: [flexibility_demand_response, renewable_energy], quality_score: 0.70, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: daan_six, source_url: "https://vito.be/en/applications/energy-flexibility-market-design-grid-decision-support-and-active-system-management", source_type: official_profile, title: "Energy flexibility, market design and grid decision support", publisher: VITO, published_at: null, language: en, domains: [electricity_market, flexibility_demand_response, distribution_grids], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: daan_six, source_url: "https://energyville.be/en/about-energyville", source_type: institutional_page, title: "About EnergyVille", publisher: EnergyVille, published_at: null, language: en, domains: [electricity_market, distribution_grids], quality_score: 0.86, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
-  - {expert_id: daan_six, source_url: "https://energyville.be/nl/nieuws/dubbelinterview-open-thor-ecosysteem-om-energiepuzzel-te-leggen", source_type: interview, title: "Dubbelinterview Open Thor", publisher: EnergyVille, published_at: null, language: nl, domains: [flexibility_demand_response, distribution_grids, renewable_energy], quality_score: 0.87, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: stijn_verbeke, source_url: "https://www.uantwerpen.be/en/staff/stijn-verbeke/research", source_type: official_profile, title: "Stijn Verbeke — research (UAntwerpen)", publisher: UAntwerpen, published_at: null, language: en, domains: [renovation_energy_efficiency], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: stijn_verbeke, source_url: "https://energyville.be/en/news/energyville-calculates-de-standaard-how-save-hundreds-euros-energy-without-catching-cold", source_type: news_article, title: "EnergyVille berekent voor De Standaard hoe u honderden euro's op energie kunt besparen", publisher: EnergyVille / De Standaard, published_at: "2022-11-07", language: en, domains: [heat_pumps, renovation_energy_efficiency, consumer_energy_advice], quality_score: 0.82, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: stijn_verbeke, source_url: "https://energyville.be/nl/nieuws/expert-talk-een-nieuwe-rol-voor-gebouwen-het-energiesysteem-van-de-toekomst", source_type: interview, title: "Expert talk: een nieuwe rol voor gebouwen in het energiesysteem van de toekomst", publisher: EnergyVille, published_at: "2019-02-21", language: nl, domains: [renovation_energy_efficiency, flexibility_demand_response], quality_score: 0.74, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: stijn_verbeke, source_url: "https://energyville.be/wp-content/uploads/2024/05/final-report-on-the-technical-support-to-the-development-MJ0320413ENN.pdf", source_type: report, title: "Technical support for EU building-energy policy", publisher: "European Commission / VITO", published_at: "2024", language: en, domains: [renovation_energy_efficiency], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: stijn_verbeke, source_url: "https://energyville.be/nl/nieuws/expert-talk-een-nieuwe-rol-voor-gebouwen-het-energiesysteem-van-de-toekomst", source_type: institutional_page, title: "Een nieuwe rol voor gebouwen in het energiesysteem", publisher: EnergyVille, published_at: "2019-02-21", language: nl, domains: [renovation_energy_efficiency, flexibility_demand_response], quality_score: 0.86, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: hakan_ergun, source_url: "https://www.kuleuven.be/wieiswie/en/person/00069734", source_type: official_profile, title: "Hakan Ergun — KU Leuven Who's Who", publisher: KU Leuven, published_at: null, language: en, domains: [distribution_grids, renewable_energy], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: hakan_ergun, source_url: "https://energyville.be/en/news/choosing-not-choose-savings-or-delayed-bill-offshore-wind", source_type: interview, title: "Choosing not to choose: savings or a delayed bill for offshore wind", publisher: EnergyVille, published_at: "2025-06-06", language: en, domains: [electricity_prices, renewable_energy, electricity_market], quality_score: 0.88, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: hakan_ergun, source_url: "https://energyville.be/en/news/expert-talk-energyville-actively-supporting-belgiums-pivotal-role-north-sea", source_type: interview, title: "Expert Talk: EnergyVille supporting Belgium's pivotal role in the North Sea", publisher: EnergyVille, published_at: "2023-09-26", language: en, domains: [renewable_energy, distribution_grids], quality_score: 0.78, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: hakan_ergun, source_url: "https://energyville.be/en/blog/expert-talk-why-are-hvdc-grids-essential-renewable-energy-transition", source_type: interview, title: "Expert Talk: why are HVDC grids essential for the renewable energy transition?", publisher: EnergyVille, published_at: "2021-05-06", language: en, domains: [distribution_grids, renewable_energy], quality_score: 0.76, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: hakan_ergun, source_url: "https://www.kuleuven.be/wieiswie/en/person/00069734", source_type: official_profile, title: "Hakan Ergun — KU Leuven Who's Who", publisher: KU Leuven, published_at: null, language: en, domains: [distribution_grids, renewable_energy, flexibility_demand_response], quality_score: 0.97, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: hakan_ergun, source_url: "https://energyville.be/en/news/choosing-not-choose-savings-or-delayed-bill-offshore-wind", source_type: institutional_page, title: "Savings or delayed bill for offshore wind", publisher: EnergyVille, published_at: "2025-06-06", language: en, domains: [electricity_prices, renewable_energy, electricity_market], quality_score: 0.92, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: hakan_ergun, source_url: "https://energyville.be/en/blog/expert-talk-why-are-hvdc-grids-essential-renewable-energy-transition", source_type: institutional_page, title: "Why HVDC grids are essential", publisher: EnergyVille, published_at: "2021-05-06", language: en, domains: [distribution_grids, renewable_energy], quality_score: 0.87, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/tag/luc-pauwels", source_type: institutional_page, title: "Artikelen van Luc Pauwels", publisher: VRT NWS, published_at: null, language: nl, domains: [electricity_prices, nuclear_energy, flemish_energy_policy], quality_score: 0.70, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/2026/10/10/stijging-tot-60-een-overzicht-van-alle-energiecontracten-in-vl", source_type: news_article, title: "Stijging tot 60%: een overzicht van alle energiecontracten in Vlaanderen", publisher: VRT NWS, published_at: "2026-10-10", language: nl, domains: [energy_contracts, electricity_prices, consumer_energy_advice], quality_score: 0.90, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/2026/09/18/warmtepompen-een-aanslag-op-ons-stroomverbruik", source_type: news_article, title: "Warmtepompen: een aanslag op ons stroomverbruik?", publisher: VRT NWS, published_at: "2026-09-18", language: nl, domains: [heat_pumps, electricity_market], quality_score: 0.86, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/2026/03/22/de-nieuwe-energiecrisis-vijf-vragen-en-antwoorden", source_type: news_article, title: "De nieuwe energiecrisis: vijf vragen en antwoorden", publisher: VRT NWS, published_at: "2026-03-22", language: nl, domains: [electricity_prices, electricity_market, consumer_energy_advice], quality_score: 0.86, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/2024/10/01/elektriciteit-interessanter-maken-dan-aardgas-mission-impossibl", source_type: news_article, title: "Elektriciteit interessanter maken dan aardgas", publisher: VRT NWS, published_at: "2024-10-01", language: nl, domains: [electricity_prices, flemish_energy_policy, heat_pumps], quality_score: 0.80, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
 
-  - {expert_id: pieterjan_renier, source_url: "https://www.vlaamsenutsregulator.be/over-vnr/management-en-teams", source_type: official_profile, title: "Management en teams", publisher: Vlaamse Nutsregulator, published_at: null, language: nl, domains: [energy_regulation], quality_score: 0.98, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: pieterjan_renier, source_url: "https://www.vlaamsenutsregulator.be/over-vnr/onze-organen", source_type: institutional_page, title: "Onze organen", publisher: Vlaamse Nutsregulator, published_at: null, language: nl, domains: [energy_regulation], quality_score: 0.93, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
-  - {expert_id: pieterjan_renier, source_url: "https://www.vlaamsenutsregulator.be/sites/default/files/document/prijzenrapport_2024.pdf", source_type: report, title: "Prijzenrapport 2024", publisher: Vlaamse Nutsregulator, published_at: "2024", language: nl, domains: [electricity_prices, energy_contracts, consumer_energy_advice], quality_score: 0.98, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
-
-  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/experten/luc-pauwels", source_type: official_profile, title: "Luc Pauwels — VRT NWS", publisher: VRT NWS, published_at: null, language: nl, domains: [electricity_market, flemish_energy_policy, nuclear_energy], quality_score: 0.92, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/tag/luc-pauwels", source_type: institutional_page, title: "Artikelen van Luc Pauwels", publisher: VRT NWS, published_at: null, language: nl, domains: [electricity_prices, solar_panels, nuclear_energy, flemish_energy_policy], quality_score: 0.90, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/2021/01/15/vragen-digitale-teller-zonnepanelen", source_type: news_article, title: "Vragen over digitale meter en zonnepanelen", publisher: VRT NWS, published_at: "2021-01-15", language: nl, domains: [solar_panels, capacity_tariff, flemish_energy_policy], quality_score: 0.83, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: luc_pauwels, source_url: "https://www.vrt.be/vrtnws/nl/2024/10/01/elektriciteit-interessanter-maken-dan-aardgas-mission-impossibl", source_type: news_article, title: "Elektriciteit interessanter maken dan aardgas", publisher: VRT NWS, published_at: "2024-10-01", language: nl, domains: [electricity_prices, flemish_energy_policy, heat_pumps], quality_score: 0.87, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-
-  - {expert_id: jordi_van_paemel, source_url: "https://www.test-aankoop.be/auteur/jordi-van-paemel", source_type: official_profile, title: "Jordi Van Paemel — Testaankoop", publisher: Testaankoop, published_at: null, language: nl, domains: [energy_contracts, electricity_prices, consumer_energy_advice], quality_score: 0.93, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: jordi_van_paemel, source_url: "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/hogere-voorschotten-voor-energie", source_type: news_article, title: "Hogere energievoorschotten: rechten en tips", publisher: Testaankoop, published_at: "2026-10-22", language: nl, domains: [energy_contracts, consumer_energy_advice], quality_score: 0.90, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: jordi_van_paemel, source_url: "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/evolutie-energiekosten", source_type: news_article, title: "Stijgt of daalt je energiefactuur in 2026?", publisher: Testaankoop, published_at: "2026-01-23", language: nl, domains: [electricity_prices, distribution_grids, consumer_energy_advice], quality_score: 0.90, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-  - {expert_id: jordi_van_paemel, source_url: "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/vlaaderen-afbouw-aardgas-gevolgen-faq", source_type: news_article, title: "Afbouw aardgas in Vlaanderen", publisher: Testaankoop, published_at: "2026-09-18", language: nl, domains: [heat_pumps, renovation_energy_efficiency, flemish_energy_policy], quality_score: 0.88, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
-
-  - {expert_id: frank_vanbrabant, source_url: "https://over.fluvius.be/nl/wie-zijn-we/governance/bestuursorganen/managementcomite", source_type: official_profile, title: "Managementcomité — Fluvius", publisher: Fluvius, published_at: null, language: nl, domains: [distribution_grids, energy_regulation], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
-  - {expert_id: frank_vanbrabant, source_url: "https://www.fluvius.be/sites/fluvius/files/2026-03/fluvius-system-operator-jaarverslag-2025.pdf", source_type: report, title: "Jaarverslag Fluvius System Operator 2025", publisher: Fluvius, published_at: "2026-03", language: nl, domains: [distribution_grids, flexibility_demand_response, capacity_tariff], quality_score: 0.96, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
-  - {expert_id: frank_vanbrabant, source_url: "https://over.fluvius.be/sites/fluvius/files/2026-02/fluvius-base-information-memorandum-2026.pdf", source_type: report, title: "Fluvius Base Information Memorandum 2026", publisher: Fluvius, published_at: "2026-02", language: en, domains: [distribution_grids, energy_regulation], quality_score: 0.92, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: institutional_context}
+  - {expert_id: jordi_van_paemel, source_url: "https://www.test-aankoop.be/auteur/jordi-van-paemel", source_type: official_profile, title: "Jordi Van Paemel — Testaankoop", publisher: Testaankoop, published_at: null, language: nl, domains: [energy_contracts, electricity_prices, consumer_energy_advice], quality_score: 0.72, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: jordi_van_paemel, source_url: "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/hogere-voorschotten-voor-energie", source_type: news_article, title: "Hogere energievoorschotten: rechten en tips", publisher: Testaankoop, published_at: "2026-10-22", language: nl, domains: [energy_contracts, consumer_energy_advice], quality_score: 0.88, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: jordi_van_paemel, source_url: "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/evolutie-energiekosten", source_type: news_article, title: "Stijgt of daalt je energiefactuur in 2026?", publisher: Testaankoop, published_at: "2026-01-23", language: nl, domains: [electricity_prices, distribution_grids, consumer_energy_advice], quality_score: 0.86, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}
+  - {expert_id: jordi_van_paemel, source_url: "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/vlaaderen-afbouw-aardgas-gevolgen-faq", source_type: news_article, title: "Afbouw aardgas in Vlaanderen", publisher: Testaankoop, published_at: "2026-09-18", language: nl, domains: [heat_pumps, renovation_energy_efficiency, flemish_energy_policy], quality_score: 0.85, approval_status: pending_human_review, access_status: pending_human_review, attribution_scope: personal}

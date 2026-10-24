@@ -48,6 +48,39 @@ def test_duplicate_source_url_is_rejected() -> None:
         validate_registry(payload)
 
 
+def test_expert_without_two_content_sources_is_rejected() -> None:
+    payload = load_registry(ROOT / "config" / "experts.yaml")
+    expert = payload["experts"][0]
+    content = [
+        source
+        for source in payload["sources"]
+        if source["expert_id"] == expert["expert_id"] and source["source_type"] not in {"official_profile", "institutional_page"}
+    ]
+    for source in content[1:]:
+        source["source_type"] = "institutional_page"
+        source["quality_score"] = 0.70
+
+    with pytest.raises(RegistryError, match="inhoudelijke bronnen"):
+        validate_registry(payload)
+
+
+def test_profile_page_quality_is_capped() -> None:
+    payload = load_registry(ROOT / "config" / "experts.yaml")
+    profile = next(source for source in payload["sources"] if source["source_type"] == "official_profile")
+    profile["quality_score"] = 0.95
+
+    with pytest.raises(RegistryError, match="profiel- of instellingspagina"):
+        validate_registry(payload)
+
+
+def test_authority_score_must_follow_rubric() -> None:
+    payload = load_registry(ROOT / "config" / "experts.yaml")
+    payload["experts"][0]["authority_score"] = 0.99
+
+    with pytest.raises(RegistryError, match="scoring_rubric"):
+        validate_registry(payload)
+
+
 def test_url_identity_ignores_fragment_and_trailing_slash() -> None:
     assert canonical_url("https://Example.org/profile/#bio") == "https://example.org/profile"
 

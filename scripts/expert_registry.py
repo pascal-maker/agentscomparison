@@ -51,10 +51,14 @@ ALLOWED_SOURCE_TYPES = {
     "government_publication",
 }
 
+CONTENT_SOURCE_TYPES = ALLOWED_SOURCE_TYPES - {"official_profile", "institutional_page"}
+
 MIN_EXPERTS = 15
 MAX_EXPERTS = 20
 MAX_SOURCES_PER_EXPERT = 5
 MIN_QUALITY_SCORE = 0.65
+MIN_CONTENT_SOURCES_PER_EXPERT = 2
+MAX_PROFILE_QUALITY_SCORE = 0.75
 
 
 class RegistryError(ValueError):
@@ -158,8 +162,8 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
     }
     if not isinstance(weights, dict) or set(weights) != expected_factors:
         raise RegistryError("scoring_rubric.authority_weights mist factoren")
-    normalized_weights = [_score(value, key, "authority_weights") for key, value in weights.items()]
-    if abs(sum(normalized_weights) - 1.0) > 1e-9:
+    normalized_weights = {key: _score(value, key, "authority_weights") for key, value in weights.items()}
+    if abs(sum(normalized_weights.values()) - 1.0) > 1e-9:
         raise RegistryError("scoring_rubric.authority_weights moet optellen tot 1")
 
     expert_ids: set[str] = set()
@@ -184,6 +188,7 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
                 "selection_rationale",
                 "selection_status",
                 "authority_score",
+                "authority_components",
                 "public_content_score",
                 "active",
                 "source_urls",
@@ -213,8 +218,18 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
             raise RegistryError(f"{expert_id} moet 1 tot {max_sources} unieke bronnen hebben")
         expert_urls[expert_id] = urls
         expert_domains[expert_id] = domains
+        components = expert["authority_components"]
+        if not isinstance(components, dict) or set(components) != expected_factors:
+            raise RegistryError(f"{expert_id}.authority_components moet exact de rubricfactoren bevatten")
+        computed_authority = round(
+            sum(normalized_weights[key] * _score(value, key, expert_id) for key, value in components.items()), 2
+        )
         normalized = dict(expert)
         normalized["authority_score"] = _score(expert["authority_score"], "authority_score", expert_id)
+        if abs(normalized["authority_score"] - computed_authority) > 1e-9:
+            raise RegistryError(
+                f"{expert_id}.authority_score moet {computed_authority:.2f} zijn volgens de scoring_rubric"
+            )
         normalized["public_content_score"] = _score(
             expert["public_content_score"], "public_content_score", expert_id
         )
@@ -225,6 +240,7 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
 
     seen_urls: set[str] = set()
     source_count: Counter[str] = Counter()
+    content_count: Counter[str] = Counter()
     normalized_sources: list[dict[str, Any]] = []
     for index, source in enumerate(sources, start=1):
         label = f"bron #{index}"
@@ -269,6 +285,10 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
         quality = _score(source["quality_score"], "quality_score", url)
         if quality < min_quality:
             raise RegistryError(f"{url} blijft onder de minimumkwaliteit {min_quality}")
+        if source["source_type"] not in CONTENT_SOURCE_TYPES and quality > MAX_PROFILE_QUALITY_SCORE:
+            raise RegistryError(f"{url} is een profiel- of instellingspagina en mag maximaal {MAX_PROFILE_QUALITY_SCORE} scoren")
+        if source["source_type"] in CONTENT_SOURCE_TYPES:
+            content_count[expert_id] += 1
         if source["approval_status"] != "pending_human_review":
             raise RegistryError(f"{url} moet op menselijke controle wachten")
         if source["access_status"] not in {"pending_human_review", "verified_public", "public_browser_only"}:
@@ -283,6 +303,11 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
     for expert_id in expert_ids:
         if source_count[expert_id] != len(expert_urls[expert_id]):
             raise RegistryError(f"Bronlijst en bronmetadata verschillen voor {expert_id}")
+        if content_count[expert_id] < MIN_CONTENT_SOURCES_PER_EXPERT:
+            raise RegistryError(
+                f"{expert_id} heeft minstens {MIN_CONTENT_SOURCES_PER_EXPERT} inhoudelijke bronnen nodig "
+                "(paper, rapport, interview, artikel, presentatie, podcast of video)"
+            )
 
     return (
         sorted(normalized_experts, key=lambda item: item["expert_id"]),
