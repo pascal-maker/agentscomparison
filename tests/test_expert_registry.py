@@ -7,8 +7,11 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from expert_benchmark import validate_benchmark  # noqa: E402
 from expert_registry import (  # noqa: E402
+    CONTENT_SOURCE_TYPES,
     RegistryError,
+    benchmark_holdout,
     canonical_url,
     coverage_report,
     jsonl_text,
@@ -102,3 +105,42 @@ def test_report_exposes_uncovered_domains() -> None:
     assert "# Vlaamse energie-experts" in report
     assert "Nog niet afgedekt" not in report
     assert "Er is nog geen broninhoud gedownload" in report
+
+
+def test_benchmark_split_keeps_holdout_away_from_karen() -> None:
+    _, sources = validate_registry(load_registry(ROOT / "config" / "experts.yaml"))
+    benchmark = [source for source in sources if source["use"] == "benchmark"]
+
+    assert 0.25 <= len(benchmark) / len(sources) <= 0.35
+    for expert_id in {source["expert_id"] for source in sources}:
+        own = [source for source in sources if source["expert_id"] == expert_id]
+        assert any(source["use"] == "benchmark" for source in own)
+        assert any(source["use"] == "karen" and source["source_type"] in CONTENT_SOURCE_TYPES for source in own)
+    assert all(source["source_type"] in CONTENT_SOURCE_TYPES for source in benchmark)
+    holdout = benchmark_holdout(sources)
+    assert set(holdout["benchmark_only_urls"]) == {source["source_url"] for source in benchmark}
+
+
+def _benchmark_item(source: dict) -> dict:
+    return {
+        "id": "q1",
+        "expert_id": source["expert_id"],
+        "question": "Wat is het capaciteitstarief?",
+        "expert_answer": "Een nettarief op basis van je piekverbruik.",
+        "quote": "kort citaat",
+        "source_url": source["source_url"],
+        "published_at": source["published_at"],
+    }
+
+
+def test_benchmark_rejects_karen_and_unapproved_sources() -> None:
+    _, sources = validate_registry(load_registry(ROOT / "config" / "experts.yaml"))
+    holdout = next(source for source in sources if source["use"] == "benchmark")
+    knowledge = next(source for source in sources if source["use"] == "karen")
+    approved = {holdout["source_url"], knowledge["source_url"]}
+
+    assert validate_benchmark([_benchmark_item(holdout)], sources, approved)
+    with pytest.raises(RegistryError, match="kennisbron van Karen"):
+        validate_benchmark([_benchmark_item(knowledge)], sources, approved)
+    with pytest.raises(RegistryError, match="niet menselijk is goedgekeurd"):
+        validate_benchmark([_benchmark_item(holdout)], sources, set())

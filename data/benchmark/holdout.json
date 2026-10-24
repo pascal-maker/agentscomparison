@@ -1,0 +1,35 @@
+{
+  "benchmark_only_urls": [
+    "https://energyville.be/en/news/expert-talk-battery-every-home",
+    "https://energyville.be/en/news/expert-talk-energyville-actively-supporting-belgiums-pivotal-role-north-sea",
+    "https://energyville.be/en/news/expert-talk-net-zero-2050-why-technology-alone-wont-deliver-climate-neutral-europe",
+    "https://energyville.be/en/news/expert-talk-what-will-energy-system-future-look",
+    "https://energyville.be/en/news/flemish-innovation-partners-want-industrialise-renovation-and-construction-accelerating-design",
+    "https://energyville.be/nl/nieuws/dubbelinterview-open-thor-ecosysteem-om-energiepuzzel-te-leggen",
+    "https://energyville.be/nl/nieuws/expert-talk-een-nieuwe-rol-voor-gebouwen-het-energiesysteem-van-de-toekomst",
+    "https://epes.ugent.be/publications/PhDJoannesLaveyne",
+    "https://wps-feb.ugent.be/Papers/wp_24_1101_REV.pdf",
+    "https://wps-feb.ugent.be/Papers/wp_25_1115.pdf",
+    "https://www.itinera.team/nl/publicaties/opiniestukken/zijn-we-klaar-voor-de-kernuitstap",
+    "https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/vlaaderen-afbouw-aardgas-gevolgen-faq",
+    "https://www.ugent.be/eb/economics/en/research/gei/gei5",
+    "https://www.vlaanderen.be/architectuur-bekeken-vanuit-het-donutmodel-een-gesprek-met-griet-verbeeck",
+    "https://www.vrt.be/vrtnws/nl/2024/10/01/elektriciteit-interessanter-maken-dan-aardgas-mission-impossibl",
+    "https://www.vrt.be/vrtnws/nl/2026/10/10/stijging-tot-60-een-overzicht-van-alle-energiecontracten-in-vl"
+  ],
+  "karen_search_domains": [
+    "biblio.ugent.be",
+    "documentserver.uhasselt.be",
+    "energyville.be",
+    "installatieenbouw.be",
+    "research.ugent.be",
+    "vito.be",
+    "www.esat.kuleuven.be",
+    "www.kuleuven.be",
+    "www.test-aankoop.be",
+    "www.uantwerpen.be",
+    "www.ugent.be",
+    "www.uhasselt.be",
+    "www.vrt.be"
+  ]
+}

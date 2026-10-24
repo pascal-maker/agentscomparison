@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -59,6 +60,11 @@ MAX_SOURCES_PER_EXPERT = 5
 MIN_QUALITY_SCORE = 0.65
 MIN_CONTENT_SOURCES_PER_EXPERT = 2
 MAX_PROFILE_QUALITY_SCORE = 0.75
+
+# Benchmarkbronnen worden nooit kennis voor Karen; anders meet de benchmark het geheugen in plaats van het oordeel.
+BENCHMARK_SHARE = 0.30
+# Bronnen waarin de expert zelf aan het woord is, leveren de beste vraag-antwoordparen op.
+BENCHMARK_SOURCE_PREFERENCE = ("interview", "podcast", "youtube", "news_article", "presentation", "paper", "report", "government_publication")
 
 
 class RegistryError(ValueError):
@@ -309,10 +315,43 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
                 "(paper, rapport, interview, artikel, presentatie, podcast of video)"
             )
 
+    assign_source_use(normalized_sources)
     return (
         sorted(normalized_experts, key=lambda item: item["expert_id"]),
         sorted(normalized_sources, key=lambda item: (item["expert_id"], item["source_url"])),
     )
+
+
+def assign_source_use(sources: list[dict[str, Any]]) -> None:
+    """Mark per expert ~30% of the sources as benchmark-only and the rest as Karen knowledge.
+
+    Deterministic: the choice depends only on source type and URL, so reruns give the same split.
+    Every expert gets at least one benchmark source and keeps at least one content source for Karen.
+    """
+    by_expert: dict[str, list[dict[str, Any]]] = {}
+    for source in sources:
+        by_expert.setdefault(source["expert_id"], []).append(source)
+    for expert_sources in by_expert.values():
+        content = [source for source in expert_sources if source["source_type"] in CONTENT_SOURCE_TYPES]
+        wanted = max(1, int(BENCHMARK_SHARE * len(expert_sources) + 0.5))
+        count = min(wanted, len(content) - 1)
+        ranked = sorted(
+            content,
+            key=lambda source: (
+                BENCHMARK_SOURCE_PREFERENCE.index(source["source_type"]),
+                hashlib.sha256(source["source_url"].encode()).hexdigest(),
+            ),
+        )
+        benchmark = {source["source_url"] for source in ranked[:count]}
+        for source in expert_sources:
+            source["use"] = "benchmark" if source["source_url"] in benchmark else "karen"
+
+
+def benchmark_holdout(sources: list[dict[str, Any]]) -> dict[str, Any]:
+    """URLs Karen must never ingest or retrieve, and the domains she may search."""
+    holdout = sorted(source["source_url"] for source in sources if source["use"] == "benchmark")
+    domains = sorted({urlsplit(source["source_url"]).hostname for source in sources if source["use"] == "karen"})
+    return {"benchmark_only_urls": holdout, "karen_search_domains": domains}
 
 
 def jsonl_text(records: Iterable[dict[str, Any]]) -> str:
@@ -348,6 +387,10 @@ def coverage_report(experts: list[dict[str, Any]], sources: list[dict[str, Any]]
         "",
         f"- Experts: **{len(experts)}**",
         f"- Kandidaat-bron-URL's: **{len(sources)}**",
+        (
+            f"- Alleen benchmark: **{sum(source['use'] == 'benchmark' for source in sources)}**; "
+            f"kennis voor Karen: **{sum(source['use'] == 'karen' for source in sources)}**"
+        ),
         "- Regio: **Vlaanderen**",
         "- Minimum quality score: **0.65**",
         "",
@@ -362,6 +405,10 @@ def coverage_report(experts: list[dict[str, Any]], sources: list[dict[str, Any]]
             f"| {expert['name']} | {expert['expert_type']} | {expert['organization']} | "
             f"{domains} | {sources_by_expert[expert['expert_id']]} |"
         )
+    lines.extend(["", "## Benchmarkbronnen (nooit kennis voor Karen)", ""])
+    for source in sources:
+        if source["use"] == "benchmark":
+            lines.append(f"- {source['expert_id']}: [{source['title']}]({source['source_url']}) ({source['source_type']})")
     lines.extend(["", "## Dekking per energiedomein", ""])
     for domain, names in experts_by_domain.items():
         rendered = ", ".join(sorted(names)) if names else "**Nog niet afgedekt**"

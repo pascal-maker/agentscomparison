@@ -4,6 +4,7 @@
 
 - Experts: **15**
 - Kandidaat-bron-URL's: **50**
+- Alleen benchmark: **16**; kennis voor Karen: **34**
 - Regio: **Vlaanderen**
 - Minimum quality score: **0.65**
 
@@ -26,6 +27,25 @@
 | Ronnie Belmans | academic | KU Leuven / EnergyVille | distribution_grids, electricity_market, energy_regulation, flexibility_demand_response, nuclear_energy, renewable_energy | 3 |
 | Sam Hamels | academic | UGent | electricity_prices, flexibility_demand_response, heat_pumps | 2 |
 | Stijn Verbeke | research_institute | VITO / EnergyVille / UAntwerpen | consumer_energy_advice, flexibility_demand_response, heat_pumps, renovation_energy_efficiency | 3 |
+
+## Benchmarkbronnen (nooit kennis voor Karen)
+
+- daan_six: [Dubbelinterview Open Thor: ecosysteem om de energiepuzzel te leggen](https://energyville.be/nl/nieuws/dubbelinterview-open-thor-ecosysteem-om-energiepuzzel-te-leggen) (interview)
+- dirk_saelens: [Flemish innovation partners want to industrialise renovation and construction](https://energyville.be/en/news/flemish-innovation-partners-want-industrialise-renovation-and-construction-accelerating-design) (news_article)
+- geert_deconinck: [Expert Talk: what will the energy system of the future look like?](https://energyville.be/en/news/expert-talk-what-will-energy-system-future-look) (interview)
+- gert_peersman: [Impact van de energiefactuur op het energieverbruik, consumptie- en spaargedrag van Belgische gezinnen](https://www.ugent.be/eb/economics/en/research/gei/gei5) (report)
+- griet_verbeeck: [Architectuur bekeken vanuit het donutmodel — een gesprek met Griet Verbeeck](https://www.vlaanderen.be/architectuur-bekeken-vanuit-het-donutmodel-een-gesprek-met-griet-verbeeck) (podcast)
+- hakan_ergun: [Expert Talk: EnergyVille supporting Belgium's pivotal role in the North Sea](https://energyville.be/en/news/expert-talk-energyville-actively-supporting-belgiums-pivotal-role-north-sea) (interview)
+- joannes_laveyne: [Potential Sources of Flexibility for the Belgian Electricity System](https://epes.ugent.be/publications/PhDJoannesLaveyne) (paper)
+- johan_albrecht: [Zijn we klaar voor de kernuitstap?](https://www.itinera.team/nl/publicaties/opiniestukken/zijn-we-klaar-voor-de-kernuitstap) (podcast)
+- johan_driesen: [Expert Talk: a battery in every home?](https://energyville.be/en/news/expert-talk-battery-every-home) (interview)
+- jordi_van_paemel: [Afbouw aardgas in Vlaanderen](https://www.test-aankoop.be/woning-energie/gas-elektriciteit-mazout-pellets/nieuws/vlaaderen-afbouw-aardgas-gevolgen-faq) (news_article)
+- luc_pauwels: [Elektriciteit interessanter maken dan aardgas](https://www.vrt.be/vrtnws/nl/2024/10/01/elektriciteit-interessanter-maken-dan-aardgas-mission-impossibl) (news_article)
+- luc_pauwels: [Stijging tot 60%: een overzicht van alle energiecontracten in Vlaanderen](https://www.vrt.be/vrtnws/nl/2026/10/10/stijging-tot-60-een-overzicht-van-alle-energiecontracten-in-vl) (news_article)
+- marten_ovaere: [Mind the Peak: the role of peak demand charges and real-time pricing in residential electricity flexibility](https://wps-feb.ugent.be/Papers/wp_25_1115.pdf) (paper)
+- ronnie_belmans: [Net Zero 2050: why technology alone won't deliver a climate-neutral Europe](https://energyville.be/en/news/expert-talk-net-zero-2050-why-technology-alone-wont-deliver-climate-neutral-europe) (interview)
+- sam_hamels: [The proof of the pudding is in the heating: a field experiment on household engagement with heat pump flexibility](https://wps-feb.ugent.be/Papers/wp_24_1101_REV.pdf) (paper)
+- stijn_verbeke: [Expert talk: een nieuwe rol voor gebouwen in het energiesysteem van de toekomst](https://energyville.be/nl/nieuws/expert-talk-een-nieuwe-rol-voor-gebouwen-het-energiesysteem-van-de-toekomst) (interview)
 
 ## Dekking per energiedomein
 
