@@ -306,8 +306,8 @@ def validate_registry(payload: dict[str, Any]) -> tuple[list[dict[str, Any]], li
             raise RegistryError(f"{url} is een profiel- of instellingspagina en mag maximaal {MAX_PROFILE_QUALITY_SCORE} scoren")
         if source["source_type"] in CONTENT_SOURCE_TYPES:
             content_count[expert_id] += 1
-        if source["approval_status"] != "pending_human_review":
-            raise RegistryError(f"{url} moet op menselijke controle wachten")
+        if source["approval_status"] not in {"approved", "pending_human_review"}:
+            raise RegistryError(f"{url} heeft een onbekende approval_status")
         if source["access_status"] not in {"pending_human_review", "verified_public", "public_browser_only"}:
             raise RegistryError(f"{url} heeft een onbekende access_status")
         source_count[expert_id] += 1

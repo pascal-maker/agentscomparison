@@ -29,8 +29,12 @@ def test_curated_registry_meets_review_contract() -> None:
     assert all(1 <= len(expert["source_urls"]) <= 5 for expert in experts)
     assert len({source["source_url"] for source in sources}) == len(sources)
     assert all(source["quality_score"] >= 0.65 for source in sources)
-    assert all(source["approval_status"] == "pending_human_review" for source in sources)
-    assert all(source["access_status"] == "pending_human_review" for source in sources)
+    statuses = {
+        status: sum(source["approval_status"] == status for source in sources)
+        for status in {"approved", "pending_human_review"}
+    }
+    assert statuses == {"approved": 46, "pending_human_review": 4}
+    assert all(source["access_status"] in {"verified_public", "public_browser_only"} for source in sources)
 
 
 def test_materialized_outputs_match_reviewed_yaml() -> None:
@@ -120,6 +124,11 @@ def test_benchmark_split_keeps_holdout_away_from_karen() -> None:
     assert all(source["source_type"] in CONTENT_SOURCE_TYPES for source in benchmark)
     holdout = benchmark_holdout(sources)
     assert set(holdout["benchmark_only_urls"]) == {source["source_url"] for source in benchmark}
+    assert "www.vrt.be" in holdout["karen_search_domains"]
+    assert all(
+        "://" not in domain and "\\" not in domain and "/" not in domain
+        for domain in holdout["karen_search_domains"]
+    )
 
 
 def _benchmark_item(source: dict) -> dict:
