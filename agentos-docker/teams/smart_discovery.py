@@ -197,6 +197,15 @@ def smart_discover(
 
     sections, title, summary = fill_template(template, evidence, config)
 
+    # Every slot failed (no API key, invalid key, model unavailable): there is no report to write.
+    failures = [
+        q for s in sections for q in s.open_questions if q.startswith("Error generating section:")
+    ]
+    if sections and len(failures) == len(sections) and not any(s.bullets for s in sections):
+        result["error"] = f"No section could be generated. First error: {failures[0].split(':', 1)[1].strip()}"
+        logger.error(result["error"])
+        return result
+
     # ========================================================================
     # Step 4: Enforce slide budget
     # ========================================================================

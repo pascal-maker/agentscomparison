@@ -217,6 +217,13 @@ def test_slide_budget():
 # Test: Smart Discovery - Technical Input
 # ============================================================================
 
+# Both call Claude for every report section, so they need a real ANTHROPIC_API_KEY.
+needs_claude = pytest.mark.skipif(
+    not os.getenv("ANTHROPIC_API_KEY", "").strip(), reason="integration test: needs ANTHROPIC_API_KEY"
+)
+
+
+@needs_claude
 def test_smart_discovery_technical():
     """Test smart discovery with technical input."""
     config = CustomerConfig(
@@ -254,6 +261,7 @@ def test_smart_discovery_technical():
     # assert "Open Questions" in md_content or result["validation"]["valid"]
 
 
+@needs_claude
 def test_smart_discovery_product():
     """Test smart discovery with product input."""
     config = CustomerConfig(
@@ -284,7 +292,25 @@ def test_smart_discovery_product():
 # Test: PowerPoint Structure
 # ============================================================================
 
-def test_powerpoint_has_title_and_agenda():
+@pytest.fixture
+def fake_claude(monkeypatch):
+    """Offline stand-in for the per-slot Claude calls: each slot gets bullets grounded in real evidence."""
+    import teams.smart_discovery as sd
+
+    def fill(template, evidence, config):
+        items = list(evidence.items.values())
+        sections = []
+        for i, slot in enumerate(template.slots):
+            section = GroundedSection(name=slot.name)
+            for item in items[i * 3:i * 3 + 3] or items[:1]:
+                section.add_bullet(item.quote[:80], [item.id])
+            sections.append(section)
+        return sections, f"Discovery Report: {config.name}", "Offline summary for tests."
+
+    monkeypatch.setattr(sd, "fill_template", fill)
+
+
+def test_powerpoint_has_title_and_agenda(fake_claude):
     """Test that PowerPoint has required slides."""
     from pptx import Presentation
 
@@ -327,7 +353,7 @@ def test_powerpoint_has_title_and_agenda():
     assert has_agenda, "Second slide should be Agenda"
 
 
-def test_powerpoint_speaker_notes():
+def test_powerpoint_speaker_notes(fake_claude):
     """Test that PowerPoint has evidence in speaker notes."""
     from pptx import Presentation
 
@@ -445,3 +471,24 @@ if __name__ == "__main__":
 
     print("=" * 60)
     print(f"Results: {passed} passed, {failed} failed")
+
+
+def test_smart_discovery_fails_when_no_section_can_be_generated(monkeypatch):
+    """Without a working model every slot fails; that must not be reported as a successful report."""
+    import teams.smart_discovery as sd
+
+    def all_slots_fail(template, evidence, config):
+        sections = []
+        for slot in template.slots:
+            section = GroundedSection(name=slot.name)
+            section.add_open_question("Error generating section: invalid x-api-key")
+            sections.append(section)
+        return sections, "Discovery Report", ""
+
+    monkeypatch.setattr(sd, "fill_template", all_slots_fail)
+    config = CustomerConfig(name="Countroll", must_include=["Executive Summary", "Key Findings"])
+    result = sd.smart_discover(raw_content=TECHNICAL_INPUT, customer_name="Countroll", config=config)
+
+    assert result["success"] is False
+    assert "invalid x-api-key" in result["error"]
+    assert result["markdown_path"] is None
