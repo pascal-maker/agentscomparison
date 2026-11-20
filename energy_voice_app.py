@@ -551,7 +551,8 @@ def reset_session(state: dict[str, Any] | None):# used to reset the session
     return [], None, _status("Klaar voor je vraag", "Ik ben Karen, jouw energieagent"), INITIAL_RESULTS, session# used to return the visible messages, skip, current status, current results and session
 
 
-with gr.Blocks(title="EnergyAgent Karen", css=CSS, theme=gr.themes.Soft()) as gradio_demo:
+# Gradio 6: theme and css are passed where the UI is mounted (see mount_gradio_app below).
+with gr.Blocks(title="EnergyAgent Karen") as gradio_demo:
     live_sources_label = (
         "Live broncontrole ingeschakeld" if os.getenv("BROWSERBASE_API_KEY", "").strip()
         else "Live broncontrole niet ingesteld"#
@@ -594,7 +595,6 @@ with gr.Blocks(title="EnergyAgent Karen", css=CSS, theme=gr.themes.Soft()) as gr
         with gr.Column(scale=1):
             chatbot = gr.Chatbot(
                 value=[],
-                type="messages",
                 label="Gesprek",
                 height=390,
                 show_label=False,
@@ -879,7 +879,7 @@ async def home() -> RedirectResponse:
     return RedirectResponse(url="/ui/")
 
 
-app = gr.mount_gradio_app(api_app, gradio_demo, path="/ui")
+app = gr.mount_gradio_app(api_app, gradio_demo, path="/ui", css=CSS, theme=gr.themes.Soft())
 
 
 def _register_zerogpu_functions() -> None:
