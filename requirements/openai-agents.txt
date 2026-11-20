@@ -2,3 +2,4 @@ openai-agents[voice]
 sounddevice
 numpy>=2.5.3
 python-dotenv
+websockets>=16.1
